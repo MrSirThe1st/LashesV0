@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   dots: {
     width: 10,
     height: 10,
-    backgroundColor: "white",
+    backgroundColor: "black",
     marginHorizontal: 10,
     borderRadius: 5,
   },

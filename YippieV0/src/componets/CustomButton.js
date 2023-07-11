@@ -49,7 +49,7 @@ const CustomButton = ({flatListRef, flatListIndex, dataLength}) => {
 }
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#738061',
+        backgroundColor: 'black',
         padding: 10,
         borderRadius: 100,
         justifyContent: 'center',
