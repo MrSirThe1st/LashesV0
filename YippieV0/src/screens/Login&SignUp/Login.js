@@ -1,0 +1,153 @@
+import React, {useState} from "react";
+import { StyleSheet, View, Image, Text, Pressable, TextInput} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { SafeAreaView } from "react-native-safe-area-context";
+import BackButton from "../../componets/BackButton";
+
+const Login = ({ navigation }) => {
+  const [email, onChangeEmail] = useState('');
+  const [username, onChangeUsername] = useState('');
+  const [password, onChangePassword] = useState('');
+  return (
+    <SafeAreaView style={styles.container}>
+      <View>
+        <BackButton navigation={navigation} />
+      </View>
+      <View style={styles.Wrapper}>
+      <View style={styles.inputContainer}>
+        <Icon name='alternate-email' size={24} color='black' style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={onChangeEmail}
+          placeholder={'Email'}
+          keyboardType={'email-address'}
+        />
+      </View>
+        <Text>Use this email only for your Seller's account</Text>
+      <View style={styles.inputContainer}>
+        <Icon name='account-circle' size={24} color='black' style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          value={username}
+          onChangeText={onChangeUsername}
+          placeholder={'Userame'}
+          keyboardType={'default'}
+        />
+      </View>
+        <Text>The username will be publicly visible</Text>
+      <View style={styles.inputContainer}>
+        <Icon name='lock' size={24} color='black' style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={onChangePassword}
+          placeholder={'Password'}
+          keyboardType={'default'}
+        />
+      </View>
+        <Text>Combine upper and lower case letters and numbers</Text>
+      </View>
+      <View style={styles.bottomContainer}>
+        <View style={styles.InnerbottomContainer}>
+          <Pressable style={styles.button}>
+            <View style={styles.buttonContent}>
+              <Image
+                source={require('../../assets/icons/google(1).png')}
+                style={[styles.buttonIcon, { width: 30, height: 30 }]}
+              />
+              <Text style={styles.text}>Continue With Google</Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.button}>
+            <View style={styles.buttonContent}>
+              <Image
+                source={require('../../assets/icons/facebook(1).png')}
+                style={[styles.buttonIcon, { width: 30, height: 30 }]}
+              />
+              <Text style={styles.text}>Continue With Facebook</Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.button}>
+            <View style={styles.buttonContent}>
+              <Image
+                // source={require('../assets/icons/EmailIcon.png')}
+                style={[styles.buttonIcon, { width: 20, height: 20 }]}
+              />
+              <Text style={styles.text}>Log In With Email</Text>
+            </View>
+          </Pressable>
+          <Text>New to the app?</Text>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  Wrapper: {
+    flex: 2,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  bottomContainer: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    elevation: 10
+  },
+  InnerbottomContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'space-evenly'
+  },
+  button: {
+    backgroundColor: '#f2f3f4',
+    marginHorizontal: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    borderRadius: 5,
+    width: "95%",
+    alignItems:'center'
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  buttonIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  text: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 18
+  },
+  input:{
+    width:"90%",
+    height: 45,
+    margin: 12,
+    fontSize: 18,
+    color:'black'
+  },
+  inputContainer:{
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    borderWidth: 1,
+    borderColor: 'black',
+    borderRadius: 5,
+    paddingHorizontal:15,
+    paddingVertical:10,
+    margin: 12,
+    width:"90%",
+    height: 45,
+  }
+});
+
+export default Login;

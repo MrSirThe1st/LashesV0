@@ -7,7 +7,7 @@ import Animated,{
 }
 from "react-native-reanimated";
 
-const CustomButton = ({flatListRef, flatListIndex, dataLength}) => {
+const CustomButton = ({flatListRef, flatListIndex, dataLength, navigation}) => {
     const buttonAnimationStyle = useAnimatedStyle(() => {
         return{
             width: flatListIndex.value === dataLength -1 ? withSpring(140) : withSpring(60),
@@ -36,7 +36,7 @@ const CustomButton = ({flatListRef, flatListIndex, dataLength}) => {
             if(flatListIndex.value < dataLength -1){
                 flatListRef.current.scrollToIndex({index: flatListIndex.value +1})
             }else {
-                console.log("navigate to the next screen")
+                navigation.navigate('Selection'); 
             }
         }}
         >
@@ -49,9 +49,9 @@ const CustomButton = ({flatListRef, flatListIndex, dataLength}) => {
 }
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'black',
+        backgroundColor: '#1e90ff',
         padding: 10,
-        borderRadius: 100,
+        borderRadius: 5,
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden'
@@ -60,8 +60,9 @@ const styles = StyleSheet.create({
         position: 'absolute'
     },
     textButton: {
-        color: 'white',
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight:'bold',
+        color:'white',
         position: 'absolute'
     }
 
