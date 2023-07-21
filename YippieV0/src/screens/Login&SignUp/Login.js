@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../componets/BackButton";
 
+
 const Login = ({ navigation }) => {
   const [email, onChangeEmail] = useState('');
   const [username, onChangeUsername] = useState('');
@@ -44,19 +45,26 @@ const Login = ({ navigation }) => {
           onChangeText={onChangePassword}
           placeholder={'Password'}
           keyboardType={'default'}
+          secureTextEntry={true}
         />
+        <View style={styles.forgotPasswordContainer}>
+          <Pressable>
+            <Text style={styles.forgotPasswordText}>Forgot?</Text>
+          </Pressable>
+        </View>
       </View>
         <Text>Combine upper and lower case letters and numbers</Text>
       </View>
       <View style={styles.bottomContainer}>
         <View style={styles.InnerbottomContainer}>
+          <Text style={styles.forgotPasswordText}>Choose instead to</Text>
           <Pressable style={styles.button}>
             <View style={styles.buttonContent}>
               <Image
                 source={require('../../assets/icons/google(1).png')}
                 style={[styles.buttonIcon, { width: 30, height: 30 }]}
               />
-              <Text style={styles.text}>Continue With Google</Text>
+              <Text style={styles.text}>Login With Google</Text>
             </View>
           </Pressable>
           <Pressable style={styles.button}>
@@ -65,7 +73,7 @@ const Login = ({ navigation }) => {
                 source={require('../../assets/icons/facebook(1).png')}
                 style={[styles.buttonIcon, { width: 30, height: 30 }]}
               />
-              <Text style={styles.text}>Continue With Facebook</Text>
+              <Text style={styles.text}>Login With Facebook</Text>
             </View>
           </Pressable>
           <Pressable style={styles.button}>
@@ -77,7 +85,12 @@ const Login = ({ navigation }) => {
               <Text style={styles.text}>Log In With Email</Text>
             </View>
           </Pressable>
-          <Text>New to the app?</Text>
+          <View style={styles.footer}>
+            <Text>New to the app?</Text>
+            <Pressable>
+              <Text  style={styles.forgotPasswordText}>Sign up here</Text>
+            </Pressable>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -147,6 +160,22 @@ const styles = StyleSheet.create({
     margin: 12,
     width:"90%",
     height: 45,
+  },
+  forgotPasswordContainer: {
+    position: 'absolute',
+    right: 12,
+    justifyContent: 'center',
+    height: '100%',
+  },
+  forgotPasswordText: {
+    color: '#1e90ff',
+    fontWeight: 'bold',
+    marginLeft: 5
+  },
+  footer:{
+    flexDirection:'row',
+    alignItems:'center',
+    justifyContent:'center'
   }
 });
 
