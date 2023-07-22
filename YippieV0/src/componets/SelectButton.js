@@ -1,13 +1,15 @@
 import React from "react";
 import {StyleSheet, View, Image, Text, Pressable} from 'react-native';
+
+
 const SelectButton = (props) => {
-    const {SignUpText,buttonText} = props
+    const {SignUpText,buttonText,Icon} = props
     return (
         <View style={styles.container}>
           <View style={styles.square}>
             <Image
               style={styles.icon} 
-              source={require('../assets/icons/lashes-Good3.png')}
+              source={Icon}
               resizeMode="contain"
             />
           </View>
@@ -45,9 +47,10 @@ const styles = StyleSheet.create({
       margin:10
     },
     icon: {
-      width: 50,
-      height: 50,
+      width: 100,
+      height: 100,
       borderRadius: 50,
+      resizeMode:'contain'
     },
     textContainer: {
       marginVertical: 10,

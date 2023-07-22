@@ -4,11 +4,12 @@ import Navigation from "./src/Navigation/Navigation";
 import Login from "./src/screens/Login&SignUp/Login";
 import SignUp from "./src/screens/Login&SignUp/SignUp";
 import Home from "./src/screens/BuyerUI/Home";
+import Selection from "./src/screens/selection/Selection";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Home/>
+      <Navigation/>
       <StatusBar style="auto" />
     </View>
   );

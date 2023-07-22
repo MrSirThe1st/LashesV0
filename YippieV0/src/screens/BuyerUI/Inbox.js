@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const Categories = () => {
+const Inbox = () => {
   return (
     <View>
-      <Text>Categories</Text>
+      <Text>Inbox</Text>
     </View>
   )
 }
 
-export default Categories
+export default Inbox
 
 const styles = StyleSheet.create({})

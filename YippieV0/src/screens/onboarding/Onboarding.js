@@ -94,7 +94,7 @@ const Onboarding = ({ navigation }) => {
     });
     return (
       <View style={[styles.itemContainer, { width: SCREEN_WIDTH }]}>
-        <Animated.Image source={item.image} style={imageAnimationStyle} />
+        <Animated.Image source={item.image} style={imageAnimationStyle} resizeMode="contain"/>
         <Animated.View style={textAnimationStyle}>
           <Text style={styles.itemTitle}>{item.title}</Text>
           <Text style={styles.itemText}>{item.text}</Text>

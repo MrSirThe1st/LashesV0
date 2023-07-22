@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  Text
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -36,7 +37,7 @@ export default function Home() {
           <Services/>
       </View>
       <View>
-        <Text>content cards</Text>
+        <Text>content cards displayed based on intrest</Text>
       </View>
     </SafeAreaView>
   );

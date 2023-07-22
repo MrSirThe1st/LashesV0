@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const Categories = () => {
+const Orders = () => {
   return (
     <View>
-      <Text>Categories</Text>
+      <Text>Orders</Text>
     </View>
   )
 }
 
-export default Categories
+export default Orders
 
 const styles = StyleSheet.create({})
