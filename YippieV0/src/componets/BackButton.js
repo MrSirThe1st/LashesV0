@@ -10,7 +10,7 @@ const BackButton = ({ navigation }) => {
                 <Image
                     source={require('../assets/icons/ArrowIcon.png')}
                     style={[styles.arrow]}
-                    resizeMode="contain" // Ensures the image fits within the Image component
+                    resizeMode="contain"
                 />
                 <Text style={styles.text}>Go Back</Text>
             </View>

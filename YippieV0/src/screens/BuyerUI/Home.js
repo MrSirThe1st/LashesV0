@@ -1,8 +1,13 @@
 import React from "react";
-import { Text, View, StyleSheet, SectionList, Pressable, Image, TextInput } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  TextInput,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import Carousel from "../../props/Carousel/Carousel";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import Services from "../../componets/Services";
 
 
 const YourLogoComponent = () => (
@@ -21,18 +26,18 @@ export default function Home() {
       </View>
       <View style={styles.content}>
         <View style={styles.SearchContainer}>
-          <Icon name='search' size={28} color='black' style={styles.icon} />
+          <Icon name="search" size={28} color="black" style={styles.icon} />
           <TextInput
             style={styles.input}
             placeholder="Search for services or sellers"
             placeholderTextColor="gray"
           />
         </View>
-        <View>
-          <Carousel/>
-        </View>
+          <Services/>
       </View>
-
+      <View>
+        <Text>content cards</Text>
+      </View>
     </SafeAreaView>
   );
 }
@@ -40,7 +45,7 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+    backgroundColor:'white'
   },
   stickyHeader: {
     flexDirection: "row",
@@ -51,20 +56,20 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  SearchContainer:{
+  SearchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#dcdcdc",
+    backgroundColor: "#f2f2f2",
     borderRadius: 5,
     padding: 8,
-    margin: 8,
-    justifyContent:'space-between'
+    margin: 12,
+    justifyContent: "space-between",
   },
   input: {
     flex: 1,
     color: "black",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   icon: {
     marginRight: 10,

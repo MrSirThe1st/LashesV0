@@ -1,10 +1,11 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { SliderBox } from "react-native-image-slider-box";
-import { services } from "../data/data2";
+import {services} from "./Services"
+
 
 const Carousel = () => {
-  const images = services.map((service)=> service.image);
+  const images = services.map((service) => service.image);
   return (
     <View>
       <SliderBox
