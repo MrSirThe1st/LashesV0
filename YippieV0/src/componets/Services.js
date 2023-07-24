@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Services = () => {
+const Services = ({navigation}) => {
   const services = [
     {
       id: "0",
@@ -37,11 +37,6 @@ const Services = () => {
       image: require("../assets/homeAssets/cake.png"),
       name: "name",
     },
-    {
-      id: "5",
-      image: require("../assets/homeAssets/birthday.png"),
-      name: "event planning",
-    },
   ];
   return (
     <View style={styles.Container}>
@@ -53,7 +48,7 @@ const Services = () => {
         }}
       >
         <Text style={styles.Text}>Categories</Text>
-        <TouchableWithoutFeedback onPress={() => navigation.Categories()}>
+        <TouchableWithoutFeedback onPress={() => navigation.navigate("Categories")}>
           <View style={[styles.ArrowContainer]}>
             <Text style={styles.ArrowText}>See all</Text>
             <Icon name="chevron-right" size={25} color="#1e90ff" style={styles.arrow}  />

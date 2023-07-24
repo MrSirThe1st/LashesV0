@@ -22,11 +22,13 @@ const Selection = ({navigation}) => {
             SignUpText={`I'm a buyer`}
             buttonText={'Buyer sign up'}
             Icon={require("../../assets/homeAssets/happy.png")}
+            onPress={()=>{navigation.navigate('SignUp')}}
           />
           <SelectButton
             SignUpText={`I'm a Seller`}
             buttonText={'Seller sign up'}
             Icon={require("../../assets/homeAssets/money-currency.png")}
+            onPress={()=>{navigation.navigate('SignUp')}}
           />
         </View>
       </View>
@@ -35,7 +37,7 @@ const Selection = ({navigation}) => {
         <Separator/>
         <Text style={styles.paragraph}>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonummy ligula volutpat id, tristique libero. Aliquam in lorem sit amet leo accumsan luctus. Integer sodales velit tellus, ut faucibus ac, gravida velit. Vestibulum in mauris arcu, ut vulputate metus. Integer scelerisque elementum posuere.</Text>
           <View style={styles.bottomContainerRow}>
-            <Pressable><Text style={styles.textSkip}>Login</Text></Pressable>
+            <Pressable onPress={()=>{navigation.navigate('Login')}}><Text style={styles.textSkip}>Login</Text></Pressable>
             <Pressable onPress={()=>{navigation.navigate('Home')}}><Text style={styles.textSkip}>Skip</Text></Pressable>
           </View>
       </View>

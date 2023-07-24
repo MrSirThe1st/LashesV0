@@ -19,7 +19,7 @@ const YourLogoComponent = () => (
   />
 );
 
-export default function Home() {
+export default function Home({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.stickyHeader}>
@@ -34,7 +34,7 @@ export default function Home() {
             placeholderTextColor="gray"
           />
         </View>
-          <Services/>
+          <Services navigation={navigation}/>
       </View>
       <View>
         <Text>content cards displayed based on intrest</Text>
