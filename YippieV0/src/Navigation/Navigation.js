@@ -47,7 +47,7 @@ const HomeTabNavigator = () => (
     (<FontAwesome5 name="envelope" size={24} color="black" />)
   }}/>
 
-    <Tab.Screen name="Profile" component={Profile} options={{
+    <Tab.Screen name="Profile" component={Profile} options={{headerShown: false,
       tabBarIcon:({focused}) => focused ?(<MaterialCommunityIcons name="face-man-outline" size={24} color="#1e90ff" />):
       (<MaterialCommunityIcons name="face-man-outline" size={24} color="black" />)
   }}/>

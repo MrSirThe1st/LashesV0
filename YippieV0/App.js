@@ -6,6 +6,7 @@ import SignUp from "./src/screens/Login&SignUp/SignUp";
 import Home from "./src/screens/BuyerUI/Home";
 import Selection from "./src/screens/selection/Selection";
 import CategoriesPage from "./src/screens/Categories/CategoriesPage";
+import Profile from "./src/screens/BuyerUI/Profile";
 
 export default function App() {
   return (
