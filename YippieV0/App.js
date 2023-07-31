@@ -7,11 +7,14 @@ import Home from "./src/screens/BuyerUI/Home";
 import Selection from "./src/screens/selection/Selection";
 import CategoriesPage from "./src/screens/Categories/CategoriesPage";
 import Profile from "./src/screens/BuyerUI/Profile";
+import Onboarding from "./src/screens/onboarding/Onboarding";
+import SellerSignUp from "./src/screens/SellerUI/SellerSignUp";
+import NavigationForm from "./src/screens/SellerUI/MultiStepForm/NavigationForm";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Navigation/>
+      <NavigationForm/>
       <StatusBar style="auto" />
     </View>
   );

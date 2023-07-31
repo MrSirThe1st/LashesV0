@@ -58,7 +58,7 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {/* <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }} /> */}
+        <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }} />
         <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false }}/>
         <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false }}/>
         <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
