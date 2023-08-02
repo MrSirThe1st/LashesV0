@@ -1,7 +1,7 @@
 export const data = [
     {
         id:1,
-        image: require('../../assets/onboardingAssets/lashes-Good3.png'),
+        image: require('../../assets/icons/lashes-GoodBLue.png'),
         title: 'WELCOME TO LASHES',
         text: 'Develop a brand identity'
     },

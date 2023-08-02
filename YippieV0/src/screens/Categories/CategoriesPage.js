@@ -12,62 +12,62 @@ import React from "react";
 const services = [
   {
     id: "1",
-    image: require("../../assets/homeAssets/image1.jpg"),
+    image: require("../../assets/homeAssets/mountain.png"),
     name: "name",
   },
   {
     id: "2",
-    image: require("../../assets/homeAssets/cake.png"),
+    image: require("../../assets/homeAssets/sunset.png"),
     name: "name",
   },
   {
     id: "3",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/mountain.png"),
     name: "name",
   },
   {
     id: "4",
-    image: require("../../assets/homeAssets/sewing(1).png"),
+    image: require("../../assets/homeAssets/island.png"),
     name: "name",
   },
   {
     id: "5",
-    image: require("../../assets/homeAssets/cake.png"),
+    image: require("../../assets/homeAssets/mountain.png"),
     name: "name",
   },
   {
     id: "6",
-    image: require("../../assets/homeAssets/cake.png"),
+    image: require("../../assets/homeAssets/island.png"),
     name: "name",
   },
   {
     id: "7",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/sunset.png"),
     name: "name",
   },
   {
     id: "8",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/mountain.png"),
     name: "name",
   },
   {
     id: "9",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/island.png"),
     name: "name",
   },
   {
     id: "10",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/mountain.png"),
     name: "name",
   },
   {
     id: "11",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/sunset.png"),
     name: "name",
   },
   {
     id: "12",
-    image: require("../../assets/homeAssets/nail-art.png"),
+    image: require("../../assets/homeAssets/island.png"),
     name: "name",
   },
 ];

@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Image,
   TextInput,
-  Text
+  Text,
+  StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -14,7 +15,7 @@ import Services from "../../componets/Services";
 const YourLogoComponent = () => (
   <Image
     source={require("../../assets/icons/lashes-Good3.png")}
-    style={{ width: 100, height: 40 }}
+    style={{ width: 100, height: 40,}}
     resizeMode="contain"
   />
 );
@@ -22,6 +23,7 @@ const YourLogoComponent = () => (
 export default function Home({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
+    <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/>
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>
@@ -37,7 +39,7 @@ export default function Home({ navigation }) {
           <Services navigation={navigation}/>
       </View>
       <View>
-        <Text>content cards displayed based on intrest</Text>
+        
       </View>
     </SafeAreaView>
   );

@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Pressable,
   TouchableWithoutFeedback,
+  Dimensions
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -14,32 +15,47 @@ const Services = ({navigation}) => {
   const services = [
     {
       id: "0",
-      image: require("../assets/homeAssets/birthday.png"),
+      image: require("../assets/homeAssets/mountain.png"),
       name: "event",
     },
     {
       id: "1",
-      image: require("../assets/homeAssets/cake.png"),
+      image: require("../assets/homeAssets/island.png"),
       name: "name",
     },
     {
       id: "2",
-      image: require("../assets/homeAssets/nail-art.png"),
+      image: require("../assets/homeAssets/sunset.png"),
       name: "name",
     },
     {
       id: "3",
-      image: require("../assets/homeAssets/sewing(1).png"),
+      image: require("../assets/homeAssets/mountain.png"),
       name: "name",
     },
     {
       id: "4",
-      image: require("../assets/homeAssets/cake.png"),
+      image: require("../assets/homeAssets/island.png"),
+      name: "name",
+    },
+    {
+      id: "5",
+      image: require("../assets/homeAssets/salon.jpg"),
+      name: "name",
+    },
+    {
+      id: "6",
+      image: require("../assets/homeAssets/salon.jpg"),
       name: "name",
     },
   ];
+  const windowWidth = Dimensions.get("window").width;
+  const itemWidth = windowWidth / 4;
+  const imageWidth = itemWidth - 24; // Adjusted width to leave space for margins and padding
+  const imageHeight = imageWidth * 0.8; // Assuming an aspect ratio of 5:4 (you can adjust this based on your image aspect ratio)
+
   return (
-    <View style={styles.Container}>
+    <View style={styles.container}>
       <View
         style={{
           justifyContent: "space-between",
@@ -47,19 +63,29 @@ const Services = ({navigation}) => {
           alignItems: "center",
         }}
       >
-        <Text style={styles.Text}>Categories</Text>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate("Categories")}>
-          <View style={[styles.ArrowContainer]}>
-            <Text style={styles.ArrowText}>See all</Text>
-            <Icon name="chevron-right" size={25} color="#1e90ff" style={styles.arrow}  />
+        <Text style={styles.text}>Categories</Text>
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate("Categories")}
+        >
+          <View style={styles.arrowContainer}>
+            <Text style={styles.arrowText}>See all</Text>
+            <Icon
+              name="chevron-right"
+              size={25}
+              color="#1e90ff"
+              style={styles.arrow}
+            />
           </View>
         </TouchableWithoutFeedback>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {services.map((service) => (
-          <Pressable style={styles.Pressable} key={service.id}>
-            <View style={styles.PressableImage}>
-              <Image source={service.image} style={styles.Image} />
+          <Pressable
+            style={[styles.pressable, { width: itemWidth }]}
+            key={service.id}
+          >
+            <View style={[styles.pressableImage, { width: imageWidth, height: imageHeight }]}>
+              <Image source={service.image} style={styles.image} />
             </View>
             <View>
               <Text>{service.name}</Text>
@@ -74,30 +100,29 @@ const Services = ({navigation}) => {
 export default Services;
 
 const styles = StyleSheet.create({
-  Container: {},
-  Image: {
-    width: 70,
-    height: 70,
+  container: {},
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "contain",
+    borderRadius:5
   },
-  Pressable: {
+  pressable: {
     alignItems: "center",
     justifyContent: "center",
   },
-  PressableImage: {
+  pressableImage: {
     backgroundColor: "#f2f2f2",
-    margin: 12,
-    padding: 12,
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
   },
-  Text: {
+  text: {
     margin: 10,
     fontWeight: "bold",
     fontSize: 20,
   },
-  ArrowContainer: {
-
+  arrowContainer: {
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
@@ -106,7 +131,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     marginTop: 10,
   },
-  ArrowText: {
+  arrowText: {
     margin: 12,
   },
 });

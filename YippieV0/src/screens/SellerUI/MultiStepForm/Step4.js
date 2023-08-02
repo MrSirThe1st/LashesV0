@@ -4,7 +4,7 @@ import React from 'react'
 const Step4 = () => {
   return (
     <View>
-      <Text>Step4</Text>
+      <Text>Fields for social pressence</Text>
     </View>
   )
 }
