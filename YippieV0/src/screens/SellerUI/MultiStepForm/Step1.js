@@ -114,7 +114,7 @@ const Step1 = () => {
       <View style={[styles.formEntry]}>
         <Controller
           control={control}
-          rues={{
+          rules={{
             required: true,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -143,7 +143,7 @@ const Step1 = () => {
       <View style={[styles.formEntry]}>
         <Controller
           control={control}
-          rues={{
+          rules={{
             required: true,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
@@ -171,7 +171,7 @@ const Step1 = () => {
       <View style={[styles.formEntry]}>
         <Controller
           control={control}
-          rues={{
+          rules={{
             required: true,
           }}
           render={({ field: { onChange, onBlur, value } }) => (

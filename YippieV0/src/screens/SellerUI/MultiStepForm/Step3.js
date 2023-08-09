@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity } from "react-native";
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
-import { Button, MD3Colors, ProgressBar, TextInput } from "react-native-paper";
+import { ProgressBar, TextInput } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { Dropdown } from "react-native-element-dropdown";
@@ -21,6 +21,7 @@ const data = [
 
 const Step3 = () => {
   const [isFocus, setIsFocus] = useState(false);
+  
   const navigation = useNavigation();
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -28,11 +29,6 @@ const Step3 = () => {
     });
   }, [navigation]);
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({ defaultValues: WizardStore.useState((s) => s) });
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -40,17 +36,31 @@ const Step3 = () => {
       WizardStore.update((s) => {
         s.progress = 66;
       });
+
+    console.log("updated state...", WizardStore.getRawState().progress);
   }, [isFocused]);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: WizardStore.useState((s) => s),
+  });
+
 
   const onSubmit = (data) => {
     // Update WizardStore with form data and navigate to the next step
     WizardStore.update((s) => {
-      s.progress = 99;
+      s.progress = 100;
       s.item = data.item
       s.overview = data.overview
     });
-    navigation.navigate("Step3");
+    navigation.navigate("LastStep");
   };
+
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,7 +130,6 @@ const Step3 = () => {
               mode="outlined"
               label="Overview"
               placeholder="write your overview"
-              secureTextEntry
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}

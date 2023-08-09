@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity } from "react-native";
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
-import { Button, MD3Colors, ProgressBar, TextInput } from "react-native-paper";
+import { ProgressBar, } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import { useNavigation } from "@react-navigation/native";
 import { Dropdown } from "react-native-element-dropdown";
 import axios from "axios";
 import {API_KEY} from '@env'
 import {BASE_URL} from '@env'
+
 
 const data = [
   { label: 'category', value: '1' },
@@ -145,7 +146,7 @@ const Step2 = () => {
       s.password = data.password;
       s.country = data.country;
       s.city = data.city;
-      s.state = data.city;
+      s.state = data.state;
     });
     navigation.navigate("Step3");
   };
