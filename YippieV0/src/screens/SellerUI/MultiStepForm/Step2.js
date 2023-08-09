@@ -4,7 +4,6 @@ import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
 import { ProgressBar, } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
 import { Dropdown } from "react-native-element-dropdown";
 import axios from "axios";
 import {API_KEY} from '@env'
@@ -22,7 +21,7 @@ const data = [
   { label: 'category', value: '8' },
 ];
 
-const Step2 = () => {
+const Step2 = ({ navigation }) => {
   // State variables for country and city dropdown data
   const [countryData, setCountryData] = useState([]);
   const [stateData, setStateData] = useState([]);
@@ -118,25 +117,28 @@ const Step2 = () => {
       });
   };
 
-  const navigation = useNavigation();
+ 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
     });
   }, [navigation]);
 
+  const isFocused = useIsFocused();
+
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({ defaultValues: WizardStore.useState((s) => s) });
-  const isFocused = useIsFocused();
+  
 
   useEffect(() => {
     isFocused &&
       WizardStore.update((s) => {
         s.progress = 33;
       });
+    console.log("updated state...", WizardStore.getRawState().progress);
   }, [isFocused]);
 
   const onSubmit = (data) => {
@@ -156,7 +158,7 @@ const Step2 = () => {
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
       <ProgressBar
       style={styles.progressBar}
-      progress={WizardStore.getRawState().progress}
+      progress={WizardStore.useState().progress / 100}
       color="#1e90ff" // Set the color to your primary color
       />
       <View style={{ paddingHorizontal: 16 }}>

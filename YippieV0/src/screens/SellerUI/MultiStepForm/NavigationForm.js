@@ -19,7 +19,7 @@ const NavigationForm = () => {
     <PaperProvider theme={customTheme}>
       <NavigationContainer>
         <Stack.Navigator initialRouteName="Step1">
-          <Stack.Screen name="Account creation" component={Step1} />
+          <Stack.Screen name="Step1" component={Step1} />
           <Stack.Screen name="Step2" component={Step2} />
           <Stack.Screen name="Step3" component={Step3} />
           <Stack.Screen name="Step4" component={Step4} />

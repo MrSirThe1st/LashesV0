@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View, Alert,TouchableOpacity, SafeAreaView, StatusBar, Image} from 'react-native'
 import React, { useEffect } from "react";
-import { SubmitHandler, useForm, Controller } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from '../../../Store';
-import { Button, MD3Colors, ProgressBar, TextInput} from "react-native-paper";
+import { ProgressBar, TextInput} from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
 
-const Step1 = () => {
 
-  const navigation = useNavigation();
+const Step1 = ({ navigation }) => {
+
+ 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
@@ -59,7 +59,7 @@ const Step1 = () => {
         <Controller
           control={control}
           rules={{
-            required: true,
+            required: false,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
@@ -87,7 +87,7 @@ const Step1 = () => {
         <Controller
           control={control}
           rules={{
-            required: true,
+            required: false,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
@@ -115,7 +115,7 @@ const Step1 = () => {
         <Controller
           control={control}
           rules={{
-            required: true,
+            required: false,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
@@ -144,7 +144,7 @@ const Step1 = () => {
         <Controller
           control={control}
           rules={{
-            required: true,
+            required: false,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
@@ -172,7 +172,7 @@ const Step1 = () => {
         <Controller
           control={control}
           rules={{
-            required: true,
+            required: false,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput

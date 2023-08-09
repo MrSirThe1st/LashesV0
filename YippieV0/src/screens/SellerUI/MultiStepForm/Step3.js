@@ -4,9 +4,8 @@ import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
 import { ProgressBar, TextInput } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
 import { Dropdown } from "react-native-element-dropdown";
- 
+
 
 const data = [
   { label: 'category', value: '1' },
@@ -19,10 +18,12 @@ const data = [
   { label: 'category', value: '8' },
 ];
 
-const Step3 = () => {
+const Step3 = ({ navigation }) => {
   const [isFocus, setIsFocus] = useState(false);
+
+  // Fetch country data from API when the component mounts
   
-  const navigation = useNavigation();
+ 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
@@ -31,59 +32,54 @@ const Step3 = () => {
 
   const isFocused = useIsFocused();
 
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({ defaultValues: WizardStore.useState((s) => s) });
+  
+
   useEffect(() => {
     isFocused &&
       WizardStore.update((s) => {
         s.progress = 66;
       });
-
     console.log("updated state...", WizardStore.getRawState().progress);
   }, [isFocused]);
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-  } = useForm({
-    mode: "onBlur",
-    defaultValues: WizardStore.useState((s) => s),
-  });
-
 
   const onSubmit = (data) => {
     // Update WizardStore with form data and navigate to the next step
     WizardStore.update((s) => {
       s.progress = 100;
-      s.item = data.item
+      s.password = data.password;
+      s.country = data.country;
+      s.city = data.city;
+      s.state = data.state;
       s.overview = data.overview
     });
-    navigation.navigate("LastStep");
+    navigation.navigate("Step4");
   };
-
-  
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
       <ProgressBar
       style={styles.progressBar}
-      progress={WizardStore.getRawState().progress}
+      progress={WizardStore.useState().progress / 100}
       color="#1e90ff" // Set the color to your primary color
       />
       <View style={{ paddingHorizontal: 16 }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <Text style={styles.title}>
-            Tell Us What <Text style={{ color: "#1e90ff" }}>Service</Text> you <Text style={{ color: "#1e90ff" }}>Provide</Text>
+            Let's Take Your <Text style={{ color: "#1e90ff" }}> step 4 info </Text>
           </Text>
         </View>
 
-        {/* Country and City Dropdowns */}
+        
         <View style={styles.DropdownContainer}>
-          
           <View>
             <Controller
               control={control}
-              rules={{ required: true }} // Add any validation rules if needed
               render={({ field: { onChange, onBlur, value } }) => (
                 <Dropdown
                   style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
@@ -113,6 +109,8 @@ const Step3 = () => {
             />
           </View>
         </View>
+
+
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <Text style={styles.title}>
             Give us a small <Text style={{ color: "#1e90ff" }}> Overview </Text> about yourself
@@ -120,33 +118,35 @@ const Step3 = () => {
         </View>
 
         <View style={[styles.formEntry]}>
-        <Controller
-          control={control}
-          rues={{
-            required: true,
-          }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              mode="outlined"
-              label="Overview"
-              placeholder="write your overview"
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value}
-              editable
-              multiline
-              numberOfLines={4}
-              maxLength={200}
-              
-            />
-          )}
-          name="overview"
-        />
-      </View>
+          <Controller
+            control={control}
+            rues={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                mode="outlined"
+                label="Overview"
+                placeholder="write your overview"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+                editable
+                multiline
+                numberOfLines={4}
+                maxLength={200}
+                
+              />
+            )}
+            name="overview"
+          />
+        </View>
       <Text>Drop link to personal website</Text>
       <Text>Fields for social pressence</Text>
       <Text>Add education</Text>
       <Text>Add certification</Text>
+
+
         {/* Next button */}
         <View style={styles.BottomContainer}>
           <TouchableOpacity

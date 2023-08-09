@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet, Text, View, SafeAreaView, StatusBar} from "react-native";
 import { SubmitHandler, useForm, Controller} from "react-hook-form";
 import { WizardStore } from "../../../Store";
@@ -7,20 +7,18 @@ import {
   ProgressBar,
   Portal,
   Dialog,
-  SummaryEntry
 } from "react-native-paper";
-import { useIsFocused } from "@react-navigation/native";
-import { useNavigation } from "@react-navigation/native";
-import { Dropdown } from "react-native-element-dropdown";
 
-const Step4 = () => {
-  // const [isFocus, setIsFocus] = useState(false);
-  // const navigation = useNavigation();
-  // React.useLayoutEffect(() => {
-  //   navigation.setOptions({
-  //     headerLeft: () => null,
-  //   });
-  // }, [navigation]);
+
+const Step4 = ({ navigation }) => {
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => null,
+    });
+  }, [navigation]);
+
+ 
   const information = WizardStore.useState();
 
   const [visible, setVisible] = React.useState(false);
@@ -54,7 +52,7 @@ const Step4 = () => {
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
       <ProgressBar
       style={styles.progressBar}
-      progress={WizardStore.getRawState().progress}
+      progress={WizardStore.useState().progress / 100}
       color="#1e90ff" // Set the color to your primary color
       />
       <View style={{ paddingHorizontal: 16 }}>
@@ -74,14 +72,12 @@ const Step4 = () => {
         <SummaryEntry name={information.UserName} label={"UserName"} />
 
         <SummaryEntry name={information.cellphoneNumber} label={"cellphoneNumber"} />
+        
+        <SummaryEntry name={information.email} label={"email"} />
 
         <SummaryEntry name={information.overview} label={"overview"} />
 
         <SummaryEntry name={information.country} label={"country"}/>
-
-        <SummaryEntry name={information.termsAccepted} label={"Accepted User Terms"}/>
-
-        <SummaryEntry name={information.privacyAccepted} label={"Accepted User Privacy Policy"}/>
 
         <SummaryEntry name={information.state} label={"state"}/>
 
@@ -94,6 +90,7 @@ const Step4 = () => {
         >
           GO BACK
         </Button>
+
         <Button
           style={styles.button}
           mode="outlined"
@@ -107,6 +104,16 @@ const Step4 = () => {
 }
 
 export default Step4;
+
+export const SummaryEntry = ({ name, label }) => {
+  return (
+    <View style={{ marginBottom: 16 }}>
+      <Text style={{ marginBottom: 8, fontWeight: "700" }}>{label}</Text>
+      <Text style={{ marginBottom: 8 }}>{name}</Text>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
