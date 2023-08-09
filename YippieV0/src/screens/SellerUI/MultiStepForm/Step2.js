@@ -162,134 +162,136 @@ const Step2 = ({ navigation }) => {
       color="#1e90ff" // Set the color to your primary color
       />
       <View style={{ paddingHorizontal: 16 }}>
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
-          <Text style={styles.title}>
-            Let's Take Your <Text style={{ color: "#1e90ff" }}> Location </Text>
-          </Text>
+
+        <View style={styles.FormContainer}>
+          <View style={styles.DropdownContainer}>
+            <View style={{ alignItems: "center", justifyContent: "center", marginBottom:10}}>
+            <Text style={styles.title}>
+              Let's Take Your <Text style={{ color: "#1e90ff" }}> Location </Text>
+            </Text>
+            </View>
+            <View>
+              <Controller
+                control={control}
+                rules={{ required: false}} // Add any validation rules if needed
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Dropdown
+                    style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={countryData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocus ? "Select country" : "..."}
+                    searchPlaceholder="Search..."
+                    value={value}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={item => {
+                      setCountry(item.value);
+                      handleState(item.value);
+                      setCountryName(item.label);
+                      setIsFocus(false);
+                    }}
+                  />
+                )}
+                name="country"
+                defaultValue={country} // Set the initial value from WizardStore
+              />
+            </View>
+            <View>
+              <Controller
+                control={control}
+                rules={{ required: false }} // Add any validation rules if needed
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Dropdown
+                    style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={cityData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocus ? "Select state" : "..."}
+                    searchPlaceholder="Search..."
+                    value={state}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={item => {
+                      setState(item.value);
+                      handleCity(country, item.value);
+                      setStateName(item.label);
+                      setIsFocus(false);
+                    }}
+                  />
+                )}
+                name="state"
+                defaultValue={state} // Set the initial value from WizardStore
+              />
+            </View>
+            <View>
+              <Controller
+                control={control}
+                rules={{ required: false }} 
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <Dropdown
+                    style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={cityData}
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocus ? "Select city" : "..."}
+                    searchPlaceholder="Search..."
+                    value={city}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={item => {
+                      setCity(item.value);
+                      setCityName(item.label);
+                      setIsFocus(false);
+                    }}
+                  />
+                )}
+                name="city"
+                defaultValue={city} // Set the initial value from WizardStore
+              />
+            </View>
+            <Text>Add language</Text>
+          </View>
+
+          
+          {/* Next button */}
+          <View style={styles.BottomContainer}>
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              activeOpacity={1}
+              style={{
+                backgroundColor: "#1e90ff",
+                padding: 10,
+                borderRadius: 5,
+                fontSize: 18,
+                fontWeight: "bold",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: "white" }}>Next step</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        {/* Country and City Dropdowns */}
-        <View style={styles.DropdownContainer}>
-          <View>
-            <Controller
-              control={control}
-              rules={{ required: false}} // Add any validation rules if needed
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Dropdown
-                  style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={countryData}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={!isFocus ? "Select country" : "..."}
-                  searchPlaceholder="Search..."
-                  value={value}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                  onChange={item => {
-                    setCountry(item.value);
-                    handleState(item.value);
-                    setCountryName(item.label);
-                    setIsFocus(false);
-                  }}
-                />
-              )}
-              name="country"
-              defaultValue={country} // Set the initial value from WizardStore
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              rules={{ required: false }} // Add any validation rules if needed
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Dropdown
-                  style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={cityData}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={!isFocus ? "Select state" : "..."}
-                  searchPlaceholder="Search..."
-                  value={state}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                  onChange={item => {
-                    setState(item.value);
-                    handleCity(country, item.value);
-                    setStateName(item.label);
-                    setIsFocus(false);
-                  }}
-                />
-              )}
-              name="state"
-              defaultValue={state} // Set the initial value from WizardStore
-            />
-          </View>
-          <View>
-            <Controller
-              control={control}
-              rules={{ required: false }} 
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Dropdown
-                  style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-                  placeholderStyle={styles.placeholderStyle}
-                  selectedTextStyle={styles.selectedTextStyle}
-                  inputSearchStyle={styles.inputSearchStyle}
-                  iconStyle={styles.iconStyle}
-                  data={cityData}
-                  search
-                  maxHeight={300}
-                  labelField="label"
-                  valueField="value"
-                  placeholder={!isFocus ? "Select city" : "..."}
-                  searchPlaceholder="Search..."
-                  value={city}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                  onChange={item => {
-                    setCity(item.value);
-                    setCityName(item.label);
-                    setIsFocus(false);
-                  }}
-                />
-              )}
-              name="city"
-              defaultValue={city} // Set the initial value from WizardStore
-            />
-          </View>
-          <Text>Add language</Text>
-        </View>
-
-        
-        {/* Next button */}
-        <View style={styles.BottomContainer}>
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            activeOpacity={1}
-            style={{
-              backgroundColor: "#1e90ff",
-              padding: 10,
-              borderRadius: 5,
-              fontSize: 18,
-              fontWeight: "bold",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white" }}>Next step</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </SafeAreaView>
   );
@@ -306,14 +308,11 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+    backgroundColor:'white'
   },
   progressBar: {
     marginBottom: 16,
     paddingHorizontal: 0,
-  },
-  BottomContainer: {
-    alignItems: "center",
-    justifyContent: "center",
   },
   title: {
     fontSize: 30,
@@ -352,5 +351,15 @@ const styles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+  },
+  FormContainer:{
+    paddingHorizontal: 16,
+    height:"100%",
+    justifyContent:'space-between',
+  },
+  BottomContainer:{
+    alignItems:'center',
+    marginBottom:50,
+    justifyContent:'center'
   },
 });
