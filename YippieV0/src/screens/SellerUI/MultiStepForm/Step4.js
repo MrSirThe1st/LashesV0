@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity} from "react-native";
-import { SubmitHandler, useForm, Controller} from "react-hook-form";
+import UserAvatar from 'react-native-user-avatar';
 import { WizardStore } from "../../../Store";
 import { 
   Button, 
@@ -10,7 +10,7 @@ import {
 } from "react-native-paper";
 
 
-const Step4 = ({ navigation }) => {
+const Step4 = ({ navigation,}) => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -53,12 +53,12 @@ const Step4 = ({ navigation }) => {
       <ProgressBar
       style={styles.progressBar}
       progress={WizardStore.useState().progress / 100}
-      color="#1e90ff" // Set the color to your primary color
+      color="#1e90ff" 
       />
       <View style={styles.FormContainer}>
         <View>
         <View style={{alignItems:'center', justifyContent:'center', marginBottom:10,}}>
-          <Text style={styles.title}>Take a last look at your<Text style={{ color: '#1e90ff' }}>Profile</Text></Text>
+          <Text style={styles.title}>Take a last look at your <Text style={{ color: '#1e90ff' }}>Profile</Text></Text>
         </View>
           <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>
@@ -71,50 +71,61 @@ const Step4 = ({ navigation }) => {
                   <Button onPress={clearAndReset}>Yes</Button>
                 </Dialog.Actions>
               </Dialog>
-            </Portal>
+          </Portal>
 
             <View style={styles.summaryEntriesContainer}>
 
-              <View style={styles.summaryEntryContainer}>
-                <SummaryEntry
-                  style={styles.summaryEntry}
-                  name={information.UserName}
-                  label={"UserName"}
-                />
+              <View style={styles.summaryEntryContainer1}>
+                <View>
+                  <View style={{flexDirection:'row'}}>
+                    <View >
+                      <UserAvatar size={50} /*name={route.params.username}*/ bgColor='#1e90ff' borderRadius={50}/>
+                    </View>
+                    <View >
+                      <SummaryEntry
+                        name={information.UserName}
+                        label={"UserName"}
+                      />
+                      <View style={{flexDirection:'row'}}>
+                        <SummaryEntry 
+                          name={information.city} 
+                          label={"city"}/>
+                        <SummaryEntry 
+                          name={information.state} 
+                          label={"state"}/>
+                        <SummaryEntry 
+                          name={information.country} 
+                          label={"country"}/>
+                      </View>  
+                    </View>
+                  </View>
+                  <View>
+                    <SummaryEntry
+                      name={information.item} 
+                      label={"item"} />
+                    <SummaryEntry
+                      name={information.overview} 
+                      label={"overview"} />
+                  </View>
+                </View>
               </View>
 
               <View style={styles.summaryEntryContainer}>
                 <SummaryEntry
-                  style={styles.summaryEntry}
                   name={information.cellphoneNumber}
                   label={"cellphoneNumber"}
                 />
                 <SummaryEntry
-                  style={styles.summaryEntry}
                   name={information.email}
                   label={"email"}
                 />
-                <SummaryEntry
-                  style={styles.summaryEntry}
-                  name={information.overview} 
-                  label={"overview"} />
-              </View>
-            
-              <View style={styles.summaryEntryContainer}>
-                <SummaryEntry 
-                    style={styles.summaryEntry}
-                    name={information.country} 
-                    label={"country"}/>
-
-                <SummaryEntry 
-                    style={styles.summaryEntry}
-                    name={information.state} 
-                    label={"state"}/>
-
-                <SummaryEntry 
-                    style={styles.summaryEntry}
-                    name={information.city} 
-                    label={"city"}/>
+                <TouchableOpacity
+                  style={styles.button}
+                  mode="outlined"
+                  onPress={() => setVisible(true)}
+                >
+                  <Text style={styles.buttonText}>Submit Profile</Text>
+                </TouchableOpacity>
               </View>
 
           </View>
@@ -128,14 +139,6 @@ const Step4 = ({ navigation }) => {
           >
             <Text style={styles.buttonText}>Go Back</Text>
           </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.button}
-            mode="outlined"
-            onPress={() => setVisible(true)}
-          >
-            <Text style={styles.buttonText}>Submit</Text>
-          </TouchableOpacity>
         </View>
   
       </View>
@@ -147,9 +150,9 @@ export default Step4;
 
 export const SummaryEntry = ({ name, label }) => {
   return (
-    <View style={{ marginBottom: 16 }}>
-      <Text style={{ marginBottom: 8, fontWeight: "700" }}>{label}</Text>
-      <Text style={{ marginBottom: 8 }}>{name}</Text>
+    <View style={styles.SummaryEntry}>
+      <Text style={{ marginBottom: 4, fontWeight: "700" }}>{label}</Text>
+      <Text style={{ marginBottom: 4}}>{name}</Text>
     </View>
   );
 };
@@ -165,25 +168,34 @@ const styles = StyleSheet.create({
   },
   summaryEntriesContainer: {
     alignItems:'center',
-    justifyContent:'center'
+    justifyContent:'center',
   },
-  summaryEntry: {
+  SummaryEntry: {
     marginBottom: 5,
+    flexDirection:'row',
+    marginHorizontal:10
   },
   summaryEntryContainer:{
-    borderColor:"#1e90ff",
+    width:"100%",
+    marginBottom:20,
+    borderRadius:10,
+    padding:15,
+    backgroundColor:'#eaf5ff'
+  },
+  summaryEntryContainer1:{
     width:"100%",
     marginBottom:20,
     borderRadius:10,
     padding:10,
-    alignItems:'center',
-    justifyContent:'center',
-    backgroundColor:'#eaf5ff'
+    backgroundColor:'#eaf5ff',
+    flexDirection:'row'
   },
   button:{
     backgroundColor:"#1e90ff",
     borderRadius:5,
-    padding:10
+    padding:10,
+    margin:10,
+    alignItems:'center',
   },
   buttonText: {
     color: 'white', 

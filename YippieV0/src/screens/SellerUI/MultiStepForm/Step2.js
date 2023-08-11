@@ -150,7 +150,7 @@ const Step2 = ({ navigation }) => {
       s.city = data.city;
       s.state = data.state;
     });
-    navigation.navigate("Step3");
+    navigation.navigate("Step3",{ username: WizardStore.getRawState().UserName });
   };
 
   return (

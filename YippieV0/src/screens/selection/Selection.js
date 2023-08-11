@@ -28,7 +28,7 @@ const Selection = ({navigation}) => {
             SignUpText={`I'm a Seller`}
             buttonText={'Seller sign up'}
             Icon={require("../../assets/homeAssets/money-currency.png")}
-            onPress={()=>{navigation.navigate('SignUp')}}
+            onPress={()=>{navigation.navigate('Step1')}}
           />
         </View>
       </View>
@@ -50,7 +50,7 @@ export default Selection;
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fafdff',
     width:'100%'
   },
   upperContainer: {

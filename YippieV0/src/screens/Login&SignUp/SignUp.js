@@ -105,9 +105,9 @@ const SignUp = ({ navigation }) => {
             </View>
           </Pressable>
           <View style={styles.footer}>
-            <Text>New to the app?</Text>
+            <Text>Already have an account?</Text>
             <Pressable>
-              <Text  style={styles.forgotPasswordText}>Sign up here</Text>
+              <Text  style={styles.forgotPasswordText}>Login here</Text>
             </Pressable>
           </View>
         </View>
@@ -119,6 +119,7 @@ const SignUp = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:'white'
   },
   Wrapper: {
     flex: 2,
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly'
   },
   button: {
-    backgroundColor: '#f2f3f4',
+    backgroundColor: '#eaf5ff',
     marginHorizontal: 20,
     paddingHorizontal: 15,
     paddingVertical: 15,
@@ -166,7 +167,7 @@ const styles = StyleSheet.create({
     height: 45,
     margin: 12,
     fontSize: 18,
-    color:'black'
+    color:'black',
   },
   inputContainer:{
     flexDirection: 'row', 
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
   title:{
     fontSize: 30,
-    fontWeight:'bold'
+    fontWeight:'bold',
   }
 });
 

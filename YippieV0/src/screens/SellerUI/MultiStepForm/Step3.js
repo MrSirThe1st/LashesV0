@@ -57,7 +57,7 @@ const Step3 = ({ navigation }) => {
       s.state = data.state;
       s.overview = data.overview
     });
-    navigation.navigate("Step4");
+    navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName });
   };
 
   return (

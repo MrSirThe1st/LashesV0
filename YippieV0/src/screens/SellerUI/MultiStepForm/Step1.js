@@ -1,13 +1,16 @@
 import { StyleSheet, Text, View, Alert,TouchableOpacity, SafeAreaView, StatusBar, Image} from 'react-native'
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from '../../../Store';
 import { ProgressBar, TextInput} from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
+import UserAvatar from 'react-native-user-avatar';
+
 
 
 const Step1 = ({ navigation }) => {
-
+  
+  const [username, setUsername] = useState(""); 
  
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -39,7 +42,7 @@ const Step1 = ({ navigation }) => {
       s.password = data.password;
       s.confirmPassword = data.confirmPassword
     });
-    navigation.navigate("Step2");
+    navigation.navigate("Step2",{ username: WizardStore.getRawState().UserName });
   };
   return (
     <SafeAreaView  style={styles.container}>
@@ -55,6 +58,7 @@ const Step1 = ({ navigation }) => {
         <View style={{alignItems:'center', justifyContent:'center',}}>
           <Text style={styles.title}>Let's Take In Your <Text style={{ color: '#1e90ff' }}>Informations</Text></Text>
         </View>
+        
         {/* username */}
         <View style={styles.formEntry}>
           <Controller
@@ -68,7 +72,7 @@ const Step1 = ({ navigation }) => {
                 label="UserName"
                 placeholder="Enter your UserName"
                 onBlur={onBlur}
-                onChangeText={onChange}
+                onChangeText={(text)=>{setUsername(text); onChange(text);}}
                 value={value}
                 
               />
@@ -195,6 +199,11 @@ const Step1 = ({ navigation }) => {
               Create a password before proceeding.
             </Text>
           )}
+        </View>
+        <View style={{alignItems:'center', justifyContent:'center', marginVertical:20}}>
+          <View >
+            <UserAvatar size={100} name={username} bgColor='#1e90ff' borderRadius={50}/>
+          </View>
         </View>
       </View>
       
