@@ -16,7 +16,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <PaperProvider>
-        <Navigation/>
+        <SignUp/>
       </PaperProvider>
       <StatusBar style="auto" />
     </View>
@@ -26,6 +26,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
   },
 });

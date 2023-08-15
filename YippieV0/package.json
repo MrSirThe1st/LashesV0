@@ -16,6 +16,7 @@
     "axios": "^1.4.0",
     "expo": "~48.0.15",
     "expo-status-bar": "~1.4.4",
+    "firebase": "^10.1.0",
     "goober": "^2.1.13",
     "lodash": "^4.17.21",
     "pullstate": "^1.25.0",
