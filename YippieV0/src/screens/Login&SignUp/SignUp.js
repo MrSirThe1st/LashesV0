@@ -1,34 +1,54 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { StyleSheet, View, Image, Text, Pressable, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../componets/BackButton";
 import { FIREBASE_AUTH } from "../../config/firebase";
+import { FIRESTORE_DB } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
 
-
-const SignUp = ({ navigation }) => {
+const SignUp = ({ navigation, route }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [username, setUsername] = useState('');
   const [cellphoneNumber, setCellphoneNumber] = useState('');
   const [loading, setLoading] = useState('')
+  const [user, setUser] = useState(null) 
+  const [users, setUsers] = useState([]) 
+
+
   const auth = FIREBASE_AUTH;
+  const db = FIRESTORE_DB;
+  const { role } = route.params;
 
   
   const signUp = async () => {
-    setLoading(true);
-    try{
-      const response = await createUserWithEmailAndPassword(auth, email, password);
-      console.log(response);
-      alert('Signed up successfully')
-    } catch (error){
-      console.log(error);
-      alert('Sign up failed: ' + error.message)
-    } finally {
-      setLoading(false);
+    if (password === confirmPassword) {
+      setLoading(true);
+      try {
+        const response = await createUserWithEmailAndPassword(auth, email, password);
+        console.log(response);
+        alert('Signed up successfully');
+
+        await setDoc(doc(db, "users", "bNe8l8271eZ5UE5iQwKm"), {
+          username: username,
+          role: role,
+          email: email,
+          cellphoneNumber:cellphoneNumber
+        }).then(()=>{console.log('data submitted')})
+      } catch (error) {
+        console.log(error);
+        alert('Sign up : ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert('Passwords do not match');
     }
   }
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -44,7 +64,8 @@ const SignUp = ({ navigation }) => {
           value={username}
           onChangeText={setUsername}
           placeholder={'Userame'}
-          keyboa  rdType={'default'}
+          keyboardType={'default'}
+          autoCapitalize = "none"
         />
       </View>
         <Text>The username will be publicly visible</Text>
@@ -67,7 +88,7 @@ const SignUp = ({ navigation }) => {
           onChangeText={setCellphoneNumber}
           placeholder={'Cellphone Number'}
           keyboardType={'default'}
-          secureTextEntry={true}
+          secureTextEntry={false}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -83,6 +104,18 @@ const SignUp = ({ navigation }) => {
         />
       </View>
         <Text>Combine upper and lower case letters and numbers</Text>
+        <View style={styles.inputContainer}>
+        <Icon name='lock' size={24} color='black' style={styles.icon} />
+        <TextInput
+          style={styles.input}
+          value={confirmPassword}
+          onChangeText={(text) => setConfirmPassword(text)}
+          placeholder={'confirm Password'}
+          keyboardType={'default'}
+          secureTextEntry={true}
+          autoCapitalize = "none"
+        />
+      </View>
         {/* Loading indicator */}
         {loading ? (
           <ActivityIndicator size="large" color="#1e90ff" />
@@ -120,7 +153,7 @@ const SignUp = ({ navigation }) => {
           </Pressable>
           
           <View style={styles.footer}>
-            <Text>Already have an account?</Text>
+                <Text>Already have an account?</Text>
                 <Pressable
                   onPress={()=>{navigation.navigate('Login')}}
                   >
@@ -203,7 +236,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   forgotPasswordText: {
-    color: '#fafdff',
+    color: '#1e90ff',
     fontWeight: 'bold',
     marginLeft: 5
   },

@@ -1,5 +1,5 @@
-import React from "react";
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity} from "react-native";
+import React, {useState} from "react";
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, ActivityIndicator} from "react-native";
 import UserAvatar from 'react-native-user-avatar';
 import { WizardStore } from "../../../Store";
 import { 
@@ -8,9 +8,12 @@ import {
   Portal,
   Dialog,
 } from "react-native-paper";
+import { FIREBASE_AUTH } from "../../../config/firebase";
+import { FIRESTORE_DB } from "../../../config/firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore"; 
 
-
-const Step4 = ({ navigation,}) => {
+const Step4 = ({ navigation,route }) => {
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -18,34 +21,82 @@ const Step4 = ({ navigation,}) => {
     });
   }, [navigation]);
 
- 
+  const auth = FIREBASE_AUTH;
+  const db = FIRESTORE_DB;
+  const { role } = route.params;
   const information = WizardStore.useState();
 
   const [visible, setVisible] = React.useState(false);
-
   const showDialog = () => setVisible(true);
-
   const hideDialog = () => setVisible(false);
 
-  const clearAndReset = () => {
-    WizardStore.replace({
-      UserName: "",
-      termsAccepted: "",
-      privacyAccepted: "",
-      email: "",
-      cellphoneNumber: "",
-      password: "",
-      confirmPassword: "",
-      overview:"",
-      country: null,
-      city: null,
-      state: null,
-      item:null,
-      progress: 0,
-    });
-    setVisible(false);
-    navigation.replace("Step1");
-  };
+  // const clearAndReset = () => {
+  //   WizardStore.replace({
+  //     UserName: "",
+  //     termsAccepted: "",
+  //     privacyAccepted: "",
+  //     email: "",
+  //     cellphoneNumber: "",
+  //     password: "",
+  //     confirmPassword: "",
+  //     overview:"",
+  //     country: null,
+  //     city: null,
+  //     state: null,
+  //     item:null,
+  //     progress: 0,
+  //   });
+  //   setVisible(false);
+  //   navigation.replace("Step1");
+  // };
+
+  const [loading, setLoading] = useState('')
+ 
+  const email = WizardStore.getRawState().email;
+  const password = WizardStore.getRawState().password;
+  const confirmPassword = WizardStore.getRawState().confirmPassword;
+  const username = WizardStore.getRawState().UserName;
+  const cellphoneNumber = WizardStore.getRawState().cellphoneNumber;
+  const item = WizardStore.getRawState().item;
+  const overview = WizardStore.getRawState().overview;
+  
+  console.log('Email:', email);
+console.log('Password:', password);
+console.log('Confirm Password:', confirmPassword);
+console.log('Username:', username);
+console.log('Cellphone Number:', cellphoneNumber);
+console.log('Item:', item);
+console.log('overview:', overview);
+console.log('role:', role);
+
+  const signUp = async () => {
+    
+    if (password === confirmPassword) {
+      setLoading(true);
+      try {
+        const response = await createUserWithEmailAndPassword(auth, email, password);
+        console.log(response);
+        alert('Signed up successfully');
+  
+        await setDoc(doc(db, "users", "TJHb9A94i6Ow1UNsSeS7"), {
+          username: username,
+          role: role,
+          email: email,
+          cellphoneNumber: cellphoneNumber,
+          overview :overview,
+          item: item
+        }).then(()=>{console.log('data submitted')})
+  
+      } catch (error) {
+        console.log(error);
+        alert('Sign up failed: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      alert('Passwords do not match');
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -68,7 +119,7 @@ const Step4 = ({ navigation,}) => {
                 </Dialog.Content>
                 <Dialog.Actions>
                   <Button onPress={hideDialog}>Cancel</Button>
-                  <Button onPress={clearAndReset}>Yes</Button>
+                  {/* <Button onPress={clearAndReset}>Yes</Button> */}
                 </Dialog.Actions>
               </Dialog>
           </Portal>
@@ -119,13 +170,18 @@ const Step4 = ({ navigation,}) => {
                   name={information.email}
                   label={"email"}
                 />
-                <TouchableOpacity
+       
+                  <ActivityIndicator size="large" color="#1e90ff" />
+       
+                  <TouchableOpacity
                   style={styles.button}
                   mode="outlined"
-                  onPress={() => setVisible(true)}
+                  onPress={signUp}
                 >
                   <Text style={styles.buttonText}>Submit Profile</Text>
                 </TouchableOpacity>
+     
+                
               </View>
 
           </View>

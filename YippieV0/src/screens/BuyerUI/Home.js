@@ -1,16 +1,18 @@
-import React from "react";
+import React, { useEffect, useState }from "react";
 import {
   View,
   StyleSheet,
   Image,
   TextInput,
   Text,
-  StatusBar
+  StatusBar,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Services from "../../componets/Services";
-
+import { FIRESTORE_DB } from "../../config/firebase";
+import { FIREBASE_AUTH } from "../../config/firebase";
 
 const YourLogoComponent = () => (
   <Image
@@ -20,12 +22,67 @@ const YourLogoComponent = () => (
   />
 );
 
-export default function Home({ navigation }) {
+export default function Home({ navigation}) {
+
+  const firestore = FIRESTORE_DB;
+  const auth = FIREBASE_AUTH;
+  
+  const [user, setUser] = useState(null) 
+
+  useEffect(() => {
+    if (user) {
+      firestore
+        .collection("users")
+        .doc(auth.currentUser.uid)
+        .get()
+        .then(snapshot => {
+          setUser(snapshot.data());
+        })
+        .catch(error => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user && user.role === "buyer") {
+      firestore
+        .collection("users")
+        .where("role", "==", "seller")
+        .onSnapshot(users => {
+          if (!users.empty) {
+            const USERS = [];
+  
+            users.forEach(user => {
+              USERS.push(user.data());
+            });
+  
+            setUsers(USERS);
+          }
+        });
+    }
+  }, [user]);
+
   return (
     <SafeAreaView style={styles.container}>
     <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/>
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
+      </View>
+      <View style={{ padding: 10, backgroundColor: "#b1b1b1", paddingTop: 55 }}>
+        <Text style={{ fontSize: 24, fontWeight: "800" }}>Welcome {user?.role}</Text>
+      </View>
+      <Text style={{
+        fontSize: 20,
+        fontWeight: "600",
+        marginBottom: 20
+        }}
+      >
+        Here is the list of {user?.role === "user" ? "seller" : null}
+      </Text>
+      <Pressable onPress={()=>auth.signOut()}><Text>Sign Out</Text></Pressable>
+      <View>
+        <Text>profile picture on top right</Text>
       </View>
       <View style={styles.content}>
         <View style={styles.SearchContainer}>

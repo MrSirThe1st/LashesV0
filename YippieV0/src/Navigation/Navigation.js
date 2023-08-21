@@ -1,4 +1,4 @@
-import React,{ useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -20,10 +20,12 @@ import Step1 from "../screens/SellerUI/MultiStepForm/Step1";
 import Step2 from "../screens/SellerUI/MultiStepForm/Step2";
 import Step3 from "../screens/SellerUI/MultiStepForm/Step3";
 import Step4 from "../screens/SellerUI/MultiStepForm/Step4";
-
+import { onAuthStateChanged } from "firebase/auth";
+import { FIREBASE_AUTH } from "../config/firebase";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+const auth = FIREBASE_AUTH;
 
 const HomeTabNavigator = () => (
   <Tab.Navigator screenOptions={{
@@ -57,21 +59,49 @@ const HomeTabNavigator = () => (
   </Tab.Navigator>
 );
 
+
 const Navigation = () => {
+  const [user, setUser] = useState(null);
+
+  const [loading, setLoading] = useState('')
+
+  useEffect (()=>{
+    const unsubscribe =  onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      console.log('user', user);
+      setUser(user);
+      setLoading(false);
+    });
+    return () => {
+      unsubscribe();
+    }
+  },[])
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }}/>
-        <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false }}/>
-        <Stack.Screen name="Step1" component={Step1} />
-        <Stack.Screen name="Step2" component={Step2} />
-        <Stack.Screen name="Step3" component={Step3} />
-        <Stack.Screen name="Step4" component={Step4} />
-        <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
-        <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }} />
-        <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false }}/>  
+    
+         
+            <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }}/>
+            <Stack.Screen name="Step1" component={Step1} />
+            <Stack.Screen name="Step2" component={Step2} />
+            <Stack.Screen name="Step3" component={Step3} />
+            <Stack.Screen name="Step4" component={Step4} />
+            <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+            <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}/>
+            <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false }}/>
+            <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false }}/>
+ 
+ 
+
       </Stack.Navigator>
     </NavigationContainer>
   );

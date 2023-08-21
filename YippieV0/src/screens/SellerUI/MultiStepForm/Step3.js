@@ -18,7 +18,8 @@ const data = [
   { label: 'category', value: '8' },
 ];
 
-const Step3 = ({ navigation }) => {
+const Step3 = ({ navigation,route  }) => {
+  const { role } = route.params;
   const [isFocus, setIsFocus] = useState(false);
 
   // Fetch country data from API when the component mounts
@@ -51,13 +52,9 @@ const Step3 = ({ navigation }) => {
     // Update WizardStore with form data and navigate to the next step
     WizardStore.update((s) => {
       s.progress = 100;
-      s.password = data.password;
-      s.country = data.country;
-      s.city = data.city;
-      s.state = data.state;
-      s.overview = data.overview
+      s.overview = data.overview;
     });
-    navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName });
+    navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName , role:role});
   };
 
   return (
@@ -100,7 +97,6 @@ const Step3 = ({ navigation }) => {
                       onBlur={() => setIsFocus(false)}
                       onChange={item => {
                         // Handle the selected item from the fourth dropdown if needed
-                        // For example: setFourthDropdownValue(item.value);
                         setIsFocus(false);
                       }}
                     />

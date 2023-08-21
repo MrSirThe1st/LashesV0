@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { StyleSheet, View, Image, Text, Pressable, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Image, Text, Pressable, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../componets/BackButton";

@@ -22,13 +22,13 @@ const Selection = ({navigation}) => {
             SignUpText={`I'm a buyer`}
             buttonText={'Buyer sign up'}
             Icon={require("../../assets/homeAssets/happy.png")}
-            onPress={()=>{navigation.navigate('SignUp')}}
+            onPress={()=>{navigation.navigate('SignUp', { role: 'buyer' })}}
           />
           <SelectButton
             SignUpText={`I'm a Seller`}
             buttonText={'Seller sign up'}
             Icon={require("../../assets/homeAssets/money-currency.png")}
-            onPress={()=>{navigation.navigate('Step1')}}
+            onPress={()=>{navigation.navigate('Step1', { role: 'seller' })}}
           />
         </View>
       </View>

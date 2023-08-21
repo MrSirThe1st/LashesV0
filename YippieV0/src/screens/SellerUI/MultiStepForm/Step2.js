@@ -21,7 +21,9 @@ const data = [
   { label: 'category', value: '8' },
 ];
 
-const Step2 = ({ navigation }) => {
+const Step2 = ({ navigation,route  }) => {
+  const { role } = route.params;
+
   // State variables for country and city dropdown data
   const [countryData, setCountryData] = useState([]);
   const [stateData, setStateData] = useState([]);
@@ -33,6 +35,7 @@ const Step2 = ({ navigation }) => {
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+
 
   // Fetch country data from API when the component mounts
   useEffect(() => {
@@ -145,12 +148,11 @@ const Step2 = ({ navigation }) => {
     // Update WizardStore with form data and navigate to the next step
     WizardStore.update((s) => {
       s.progress = 66;
-      s.password = data.password;
       s.country = data.country;
       s.city = data.city;
       s.state = data.state;
     });
-    navigation.navigate("Step3",{ username: WizardStore.getRawState().UserName });
+    navigation.navigate("Step3",{ username: WizardStore.getRawState().UserName , role:role});
   };
 
   return (

@@ -8,10 +8,15 @@ import UserAvatar from 'react-native-user-avatar';
 
 
 
-const Step1 = ({ navigation }) => {
+const Step1 = ({ navigation, route }) => {
   
   const [username, setUsername] = useState(""); 
- 
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [ConfirmPassword, setConfirmPassword] = useState('');
+  const [cellphoneNumber, setCellphoneNumber] = useState('');
+  const { role } = route.params;
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
@@ -42,7 +47,7 @@ const Step1 = ({ navigation }) => {
       s.password = data.password;
       s.confirmPassword = data.confirmPassword
     });
-    navigation.navigate("Step2",{ username: WizardStore.getRawState().UserName });
+    navigation.navigate("Step2",{ username: WizardStore.getRawState().UserName, });
   };
   return (
     <SafeAreaView  style={styles.container}>
@@ -73,7 +78,7 @@ const Step1 = ({ navigation }) => {
                 placeholder="Enter your UserName"
                 onBlur={onBlur}
                 onChangeText={(text)=>{setUsername(text); onChange(text);}}
-                value={value}
+                value={username}
                 
               />
             )}
@@ -100,9 +105,10 @@ const Step1 = ({ navigation }) => {
                 label="Email"
                 placeholder="Enter your email"
                 onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
+                onChangeText={(text)=>{setEmail(text); onChange(text);}}
+                value={email}
                 keyboardType={'email-address'}
+                autoCapitalize = "none"
               />
             )}
             name="email"
@@ -128,8 +134,8 @@ const Step1 = ({ navigation }) => {
                 label="Cellphone Number"
                 placeholder="Enter your cellphoneNumber "
                 onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
+                onChangeText={setCellphoneNumber}
+                value={cellphoneNumber}
                 keyboardType="numeric"
               />
             )}
@@ -157,11 +163,12 @@ const Step1 = ({ navigation }) => {
                 label="Password"
                 placeholder="Create a password "
                 right={<TextInput.Icon icon="eye" />}
-                secureTextEntry
+                secureTextEntry={true}
                 onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
+                onChangeText={(text)=>{setPassword(text); onChange(text);}}
+                value={password}
                 keyboardType="numeric"
+                autoCapitalize = "none"
               />
             )}
             name="password"
@@ -187,9 +194,10 @@ const Step1 = ({ navigation }) => {
                 right={<TextInput.Icon icon="eye" />}
                 secureTextEntry
                 onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
+                onChangeText={(text)=>{setConfirmPassword(text); onChange(text);}}
+                value={ConfirmPassword}
                 keyboardType="numeric"
+                autoCapitalize = "none"
               />
             )}
             name="confirmPassword"

@@ -13,9 +13,7 @@ import {
   Text,
   View,
   SafeAreaView,
-  FlatList,
   useWindowDimensions,
-  Image,
 } from "react-native";
 import { data } from "../../props/data/data";
 import Pagination from "../../componets/Pagination";
