@@ -97,7 +97,7 @@ const Step1 = ({ navigation, route }) => {
           <Controller
             control={control}
             rules={{
-              required: false,
+              required: true,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
@@ -126,7 +126,7 @@ const Step1 = ({ navigation, route }) => {
           <Controller
             control={control}
             rules={{
-              required: false,
+              required: true,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput

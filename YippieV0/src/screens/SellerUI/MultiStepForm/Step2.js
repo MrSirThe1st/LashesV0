@@ -152,7 +152,7 @@ const Step2 = ({ navigation,route  }) => {
       s.city = data.city;
       s.state = data.state;
     });
-    navigation.navigate("Step3",{ username: WizardStore.getRawState().UserName , role:role});
+    navigation.navigate("Step3",{ username: WizardStore.getRawState().UserName});
   };
 
   return (

@@ -11,13 +11,13 @@ import Onboarding from "./src/screens/onboarding/Onboarding";
 import NavigationForm from "./src/screens/SellerUI/MultiStepForm/NavigationForm";
 import Step2 from "./src/screens/SellerUI/MultiStepForm/Step2";
 import { Provider as PaperProvider } from 'react-native-paper'
-
+import SellerProfile from "./src/screens/SellerUI/SelleProfile";
 
 export default function App() {
   return (
     <View style={styles.container}>
         <PaperProvider>
-          <Navigation/>
+          <SellerProfile/>
         </PaperProvider>
       <StatusBar style="auto" />
     </View>

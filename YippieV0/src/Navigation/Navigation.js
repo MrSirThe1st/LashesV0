@@ -25,7 +25,7 @@ import { FIREBASE_AUTH } from "../config/firebase";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-const auth = FIREBASE_AUTH;
+
 
 const HomeTabNavigator = () => (
   <Tab.Navigator screenOptions={{
@@ -62,7 +62,7 @@ const HomeTabNavigator = () => (
 
 const Navigation = () => {
   const [user, setUser] = useState(null);
-
+  const [users, setUsers] = useState([])
   const [loading, setLoading] = useState('')
 
   useEffect (()=>{
@@ -71,9 +71,7 @@ const Navigation = () => {
       setUser(user);
       setLoading(false);
     });
-    return () => {
-      unsubscribe();
-    }
+    return unsubscribe;
   },[])
 
   if (loading) {
@@ -83,25 +81,26 @@ const Navigation = () => {
       </View>
     );
   }
-
-
   return (
     <NavigationContainer>
       <Stack.Navigator>
-    
-         
-            <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }}/>
-            <Stack.Screen name="Step1" component={Step1} />
-            <Stack.Screen name="Step2" component={Step2} />
-            <Stack.Screen name="Step3" component={Step3} />
-            <Stack.Screen name="Step4" component={Step4} />
-            <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-            <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}/>
-            <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false }}/>
-            <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false }}/>
- 
- 
-
+        {loading ? ( 
+          <ActivityIndicator size="large" color="#1e90ff" />
+        ) : user ? (
+          <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false }}/>
+        ) : (
+          <>
+          <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }}/>
+          <Stack.Screen name="Step1" component={Step1} />
+          <Stack.Screen name="Step2" component={Step2} />
+          <Stack.Screen name="Step3" component={Step3} />
+          <Stack.Screen name="Step4" component={Step4} />
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+          <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}/>
+          <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false }}/>
+        </>
+        )
+        }
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -69,21 +69,7 @@ export default function Home({ navigation}) {
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>
-      <View style={{ padding: 10, backgroundColor: "#b1b1b1", paddingTop: 55 }}>
-        <Text style={{ fontSize: 24, fontWeight: "800" }}>Welcome {user?.role}</Text>
-      </View>
-      <Text style={{
-        fontSize: 20,
-        fontWeight: "600",
-        marginBottom: 20
-        }}
-      >
-        Here is the list of {user?.role === "user" ? "seller" : null}
-      </Text>
       <Pressable onPress={()=>auth.signOut()}><Text>Sign Out</Text></Pressable>
-      <View>
-        <Text>profile picture on top right</Text>
-      </View>
       <View style={styles.content}>
         <View style={styles.SearchContainer}>
           <Icon name="search" size={28} color="black" style={styles.icon} />

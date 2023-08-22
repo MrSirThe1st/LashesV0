@@ -6,7 +6,7 @@ import BackButton from "../../componets/BackButton";
 import { FIREBASE_AUTH } from "../../config/firebase";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore"; 
+import { doc, setDoc, addDoc, collection} from "firebase/firestore"; 
 
 const SignUp = ({ navigation, route }) => {
   const [email, setEmail] = useState('');
@@ -15,8 +15,6 @@ const SignUp = ({ navigation, route }) => {
   const [username, setUsername] = useState('');
   const [cellphoneNumber, setCellphoneNumber] = useState('');
   const [loading, setLoading] = useState('')
-  const [user, setUser] = useState(null) 
-  const [users, setUsers] = useState([]) 
 
 
   const auth = FIREBASE_AUTH;
@@ -32,7 +30,7 @@ const SignUp = ({ navigation, route }) => {
         console.log(response);
         alert('Signed up successfully');
 
-        await setDoc(doc(db, "users", "bNe8l8271eZ5UE5iQwKm"), {
+        await addDoc(collection(db, "users"), {
           username: username,
           role: role,
           email: email,

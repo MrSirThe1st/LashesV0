@@ -54,7 +54,7 @@ const Step3 = ({ navigation,route  }) => {
       s.progress = 100;
       s.overview = data.overview;
     });
-    navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName , role:role});
+    navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName});
   };
 
   return (
