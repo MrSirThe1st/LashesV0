@@ -1,38 +1,38 @@
 import React from 'react';
 import {
-  StatusBar,
   StyleSheet,
-  SafeAreaView,
   ScrollView,
   View,
   Text,
   Image,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { StatusBar } from 'expo-status-bar'
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Styles from './Styles';
 const SECTIONS = [
+
     {
-      header: 'Preferences',
-      icon: 'settings',
-      items: (
-        <View style={Styles.customContent}>
-          <Text>Your Custom Content Here</Text>
-        </View>
-      ),
-    },
-    {
-      header: 'Help',
+      header: 'Catalogue',
       icon: 'help-circle',
       items: (
         <View style={Styles.customContent}>
-          <Text>Your Content Here</Text>
+          <TouchableOpacity
+            onPress={() => {
+              // navigation.navigate('AddProduct')
+            }}>
+            <View style={Styles.addProduct}>
+              <Text style={Styles.addText}>Add a product</Text>
+              <FeatherIcon color="#fff" name="plus" size={16} />
+            </View>
+          </TouchableOpacity>
         </View>
       ),
     },
     {
       header: 'Content',
-      icon: 'align-center',
+      icon: 'help-circle',
       items: (
         <View style={Styles.customContent}>
           <Text>Custom Content Here</Text>
@@ -42,6 +42,15 @@ const SECTIONS = [
     {
       header: 'Stats',
       icon: 'align-center',
+      items: (
+        <View style={Styles.customContent}>
+          <Text>Your Custom Content</Text>
+        </View>
+      ),
+    },
+    {
+      header: 'Preferences',
+      icon: 'settings',
       items: (
         <View style={Styles.customContent}>
           <Text>Your Custom Content</Text>
@@ -68,9 +77,6 @@ const SellerProfile = () => {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Settings</Text>
-          <Text style={styles.subtitle}>
-            Lorem ipsum dolor sit amet consectetur.
-          </Text>
         </View>
 
         <View style={styles.profile}>
@@ -239,11 +245,13 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   container: {
-    paddingVertical: 24,
+    paddingTop:24,
+    flex:1,
   },
   content: {
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderColor: '#e3e3e3',
+    flex:1
   },
 });

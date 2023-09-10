@@ -1,21 +1,19 @@
-import { StyleSheet, Text, View, Alert,TouchableOpacity, SafeAreaView, StatusBar, Image} from 'react-native'
+import { StyleSheet, Text, View, Alert,TouchableOpacity, SafeAreaView, StatusBar, TextInput} from 'react-native'
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from '../../../Store';
-import { ProgressBar, TextInput} from "react-native-paper";
+import { ProgressBar} from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
-import UserAvatar from 'react-native-user-avatar';
 
 
 
 const Step1 = ({ navigation, route }) => {
-  
   const [username, setUsername] = useState(""); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
   const [cellphoneNumber, setCellphoneNumber] = useState('');
-  const { role } = route.params;
+  const { role } = route.params || {};
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,15 +70,21 @@ const Step1 = ({ navigation, route }) => {
               required: false,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                mode="outlined"
-                label="UserName"
-                placeholder="Enter your UserName"
-                onBlur={onBlur}
-                onChangeText={(text)=>{setUsername(text); onChange(text);}}
-                value={username}
-                
-              />
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>UserName</Text>
+
+                <TextInput
+                  autoCapitalize="none"
+                  onBlur={onBlur}
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  onChangeText={(text)=>{setUsername(text); onChange(text);}}
+                  placeholder="john"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  value={username}
+                />
+            </View>
             )}
             name="UserName"
           />
@@ -97,19 +101,24 @@ const Step1 = ({ navigation, route }) => {
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: false,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                mode="outlined"
-                label="Email"
-                placeholder="Enter your email"
-                onBlur={onBlur}
-                onChangeText={(text)=>{setEmail(text); onChange(text);}}
-                value={email}
-                keyboardType={'email-address'}
-                autoCapitalize = "none"
-              />
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>Email address</Text>
+
+                <TextInput
+                  autoCapitalize="none"
+                  onBlur={onBlur}
+                  autoCorrect={false}
+                  keyboardType="email-address"
+                  onChangeText={(text)=>{setEmail(text); onChange(text);}}
+                  placeholder="john@example.com"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  value={email}
+                />
+            </View>
             )}
             name="email"
           />
@@ -126,18 +135,23 @@ const Step1 = ({ navigation, route }) => {
           <Controller
             control={control}
             rules={{
-              required: true,
+              required: false,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                mode="outlined"
-                label="Cellphone Number"
-                placeholder="Enter your cellphoneNumber "
-                onBlur={onBlur}
-                onChangeText={setCellphoneNumber}
-                value={cellphoneNumber}
-                keyboardType="numeric"
-              />
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>cellphone Number</Text>
+
+                <TextInput
+                  autoCorrect={false}
+                  onChangeText={(text)=>{setCellphoneNumber(text); onChange(text);}}
+                  placeholder="cellphone number"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  secureTextEntry={true}
+                  value={cellphoneNumber}
+                  onBlur={onBlur}
+                />
+            </View>
             )}
             name="cellphoneNumber"
           />
@@ -158,18 +172,21 @@ const Step1 = ({ navigation, route }) => {
               required: false,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                mode="outlined"
-                label="Password"
-                placeholder="Create a password "
-                right={<TextInput.Icon icon="eye" />}
-                secureTextEntry={true}
-                onBlur={onBlur}
-                onChangeText={(text)=>{setPassword(text); onChange(text);}}
-                value={password}
-                keyboardType="numeric"
-                autoCapitalize = "none"
-              />
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>Password</Text>
+
+                <TextInput
+                  autoCorrect={false}
+                  onChangeText={(text)=>{setPassword(text); onChange(text);}}
+                  placeholder="********"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  secureTextEntry={true}
+                  value={password}
+                  autoCapitalize = "none"
+                  onBlur={onBlur}
+                />
+            </View>
             )}
             name="password"
           />
@@ -187,18 +204,21 @@ const Step1 = ({ navigation, route }) => {
               required: false,
             }}
             render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                mode="outlined"
-                label="Confirm Password"
-                placeholder="Create a password "
-                right={<TextInput.Icon icon="eye" />}
-                secureTextEntry
-                onBlur={onBlur}
-                onChangeText={(text)=>{setConfirmPassword(text); onChange(text);}}
-                value={ConfirmPassword}
-                keyboardType="numeric"
-                autoCapitalize = "none"
-              />
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>Confirm password</Text>
+
+                <TextInput
+                  autoCorrect={false}
+                  onChangeText={(text)=>{setConfirmPassword(text); onChange(text);}}
+                  placeholder="********"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  secureTextEntry={true}
+                  value={ConfirmPassword}
+                  autoCapitalize = "none"
+                  onBlur={onBlur}
+                />
+            </View>
             )}
             name="confirmPassword"
           />
@@ -207,11 +227,6 @@ const Step1 = ({ navigation, route }) => {
               Create a password before proceeding.
             </Text>
           )}
-        </View>
-        <View style={{alignItems:'center', justifyContent:'center', marginVertical:20}}>
-          <View >
-            <UserAvatar size={100} name={username} bgColor='#1e90ff' borderRadius={50}/>
-          </View>
         </View>
       </View>
       
@@ -245,11 +260,12 @@ const styles = StyleSheet.create({
     margin: 8,
   },
   formEntry: {
-    margin: 8,
+    marginHorizontal: 8,
+    marginVertical:4
   },
   container: {
     flex: 1,
-    backgroundColor:'white'
+    backgroundColor:'#fafdff'
   },
   progressBar: {
     marginBottom: 16,
@@ -257,7 +273,8 @@ const styles = StyleSheet.create({
   },
   BottomContainer:{
     alignItems:'center',
-    marginBottom:50
+    marginBottom:50,
+    marginTop:'auto'
   },
   title:{
     fontSize: 30,
@@ -267,5 +284,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     height:"100%",
     justifyContent:'space-between'
-  }
+  },
+  input: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 8,
+  },
+  inputControl: {
+    height: 44,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  },
 })

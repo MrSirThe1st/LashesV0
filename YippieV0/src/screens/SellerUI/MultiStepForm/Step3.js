@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, TextInput} from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
-import { ProgressBar, TextInput } from "react-native-paper";
+import { ProgressBar} from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import { Dropdown } from "react-native-element-dropdown";
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 
 const data = [
@@ -21,6 +22,9 @@ const data = [
 const Step3 = ({ navigation,route  }) => {
   const { role } = route.params;
   const [isFocus, setIsFocus] = useState(false);
+  const [service, setService] = useState("");
+  const [brief, setBrief] = useState("");
+  const [overview, setOverview] = useState("");
 
   // Fetch country data from API when the component mounts
   
@@ -53,6 +57,7 @@ const Step3 = ({ navigation,route  }) => {
     WizardStore.update((s) => {
       s.progress = 100;
       s.overview = data.overview;
+      s.brief = data.brief;
     });
     navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName});
   };
@@ -69,7 +74,7 @@ const Step3 = ({ navigation,route  }) => {
         <View>
           <View style={{ alignItems: "center", justifyContent: "center", marginBottom:10}}>
             <Text style={styles.title}>
-              Let's Take Your <Text style={{ color: "#1e90ff" }}> step 4 info </Text>
+              Tell us what you<Text style={{ color: "#1e90ff" }}> do </Text>
             </Text>
           </View>
 
@@ -106,36 +111,86 @@ const Step3 = ({ navigation,route  }) => {
                 />
               </View>
             </View>
-
-
+            <View style={styles.formEntry}>
+              <Controller
+              control={control}
+              rules={{
+                required: false,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.input}>
+                  <Text style={styles.inputLabel}>Not what you are looking for?</Text>
+                  <TextInput
+                    autoCorrect={false}
+                    onChangeText={(text)=>{setService(text); onChange(text);}}
+                    placeholder="create a new service"
+                    placeholderTextColor="#6b7280"
+                    style={styles.inputControl}
+                    value={service}
+                    autoCapitalize = "none"
+                    onBlur={onBlur}
+                  />
+              </View>
+              )}
+              name="service"
+              />
+            </View>
+            <View style={styles.formEntry}>
+              <Controller
+              control={control}
+              rules={{
+                required: false,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.input}>
+                  <Text style={styles.inputLabel}>write a small brief?</Text>
+                  <TextInput
+                    autoCorrect={false}
+                    onChangeText={(text)=>{setBrief(text); onChange(text);}}
+                    placeholder="eg. I make incredible nails"
+                    placeholderTextColor="#6b7280"
+                    style={styles.inputControl}
+                    value={brief}
+                    autoCapitalize = "none"
+                    onBlur={onBlur}
+                  />
+              </View>
+              )}
+              name="brief"
+              />
+            </View>
+              
             <View style={{ alignItems: "center", justifyContent: "center" }}>
               <Text style={styles.title}>
                 Give us a small <Text style={{ color: "#1e90ff" }}> Overview </Text> about yourself
               </Text>
             </View>
 
-            <View style={[styles.formEntry]}>
+            <View style={styles.formEntry}>
               <Controller
-                control={control}
-                rues={{
-                  required: true,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
+              control={control}
+              rules={{
+                required: false,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.inputOverview}>
                   <TextInput
-                    mode="outlined"
-                    label="Overview"
-                    placeholder="write your overview"
+                    autoCorrect={false}
+                    onChangeText={(text)=>{setOverview(text); onChange(text);}}
+                    placeholder="Overview"
+                    placeholderTextColor="#6b7280"
+                    style={styles.inputControlOverview}
+                    value={overview}
+                    autoCapitalize = "none"
                     onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
                     editable
                     multiline
                     numberOfLines={4}
-                    maxLength={200}
-                    
+                    maxLength={150}
                   />
-                )}
-                name="overview"
+              </View>
+              )}
+              name="overview"
               />
             </View>
           <Text>Drop link to personal website</Text>
@@ -178,7 +233,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor:'white'
+    backgroundColor:'#eaf5ff'
   },
   progressBar: {
     marginBottom: 16,
@@ -190,7 +245,6 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    borderColor: "gray",
     borderWidth: 0.5,
     borderRadius: 5,
     paddingHorizontal: 8,
@@ -230,6 +284,37 @@ const styles = StyleSheet.create({
   BottomContainer:{
     alignItems:'center',
     marginBottom:50,
+    marginTop:'auto',
     justifyContent:'center'
+  },
+  input: {
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#222',
+    marginBottom: 8,
+  },
+  inputControl: {
+    height: 44,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  },
+  inputControlOverview:{
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+  },
+  formEntry: {
+    marginHorizontal: 8,
+    marginVertical:4
   },
 });

@@ -16,6 +16,7 @@ export const WizardStore = new Store({
   city: null,
   state: null,
   item:null,
+  brief:"",
 });
 
 registerInDevtools({

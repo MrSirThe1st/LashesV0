@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Onboarding from "../screens/onboarding/Onboarding";
@@ -87,17 +86,17 @@ const Navigation = () => {
         {loading ? ( 
           <ActivityIndicator size="large" color="#1e90ff" />
         ) : user ? (
-          <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false }}/>
+          <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false,animation: "none"}}/>
         ) : (
           <>
-          <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false }}/>
-          <Stack.Screen name="Step1" component={Step1} />
-          <Stack.Screen name="Step2" component={Step2} />
-          <Stack.Screen name="Step3" component={Step3} />
-          <Stack.Screen name="Step4" component={Step4} />
-          <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-          <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false }}/>
-          <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false }}/>
+          <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false,animation: "none"}}/>
+          <Stack.Screen name="Step1" component={Step1} options={{animation: "none"}}/>
+          <Stack.Screen name="Step2" component={Step2} options={{animation: "none"}}/>
+          <Stack.Screen name="Step3" component={Step3} options={{animation: "none"}}/>
+          <Stack.Screen name="Step4" component={Step4} options={{animation: "none"}}/>
+          <Stack.Screen name="Login" component={Login} options={{ headerShown: false,animation: "none"}}/>
+          <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false,animation: "none"}}/>
+          <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false,animation: "none" }}/>
         </>
         )
         }

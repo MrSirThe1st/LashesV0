@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import {getFirestore, collection, getDocs} from 'firebase/firestore'
+import {getFirestore} from 'firebase/firestore'
+import {getStorage, ref, } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyA1OcQEw7E8Fhfkgj3mPDtVSRVw1sIMGig",
@@ -12,14 +13,23 @@ const firebaseConfig = {
   measurementId: "G-MEMS2PH6Q3"
 };
 
-
+// intitialization
 export const FIREBASE_APP = initializeApp(firebaseConfig);
+
+
+//authentication
 export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
-export const FIRESTORE_DB = getFirestore(FIREBASE_APP)
+export const FIRESTORE_DB = getFirestore(FIREBASE_APP);
 
 
+//storage
+export const storage = getStorage(FIREBASE_APP);
 
-// collection
+export const storageRef = ref(storage);
+export const imagesRef = ref(storage, 'images');
+export const thumbnailsRef = ref(imagesRef,'thumbnails');
+export const profileRef = ref(imagesRef, 'profile');
+export const productsRef = ref(imagesRef, 'products')
 
 
 

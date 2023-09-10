@@ -12,12 +12,16 @@ import NavigationForm from "./src/screens/SellerUI/MultiStepForm/NavigationForm"
 import Step2 from "./src/screens/SellerUI/MultiStepForm/Step2";
 import { Provider as PaperProvider } from 'react-native-paper'
 import SellerProfile from "./src/screens/SellerUI/SelleProfile";
+import AddProduct from "./src/screens/SellerUI/AddProduct";
+import Example from "./src/screens/SellerUI/MultiStepForm/test";
+import Step1 from "./src/screens/SellerUI/MultiStepForm/Step1";
+import Step4 from "./src/screens/SellerUI/MultiStepForm/Step4";
 
 export default function App() {
   return (
     <View style={styles.container}>
         <PaperProvider>
-          <SellerProfile/>
+          <Navigation/>
         </PaperProvider>
       <StatusBar style="auto" />
     </View>

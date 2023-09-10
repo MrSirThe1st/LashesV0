@@ -11,8 +11,10 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Services from "../../componets/Services";
+import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const YourLogoComponent = () => (
   <Image
@@ -24,11 +26,25 @@ const YourLogoComponent = () => (
 
 export default function Home({ navigation}) {
 
+  const [sellerData, setSellerData] = useState([]);
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
-  
   const [user, setUser] = useState(null) 
 
+  useEffect(()=>{
+    async function fetchData() {
+      const q = query(collection(firestore, "users"), where("role", "==", "seller"));
+      try {
+        const querySnapshot = await getDocs(q);
+        const sellers = querySnapshot.docs.map((doc) => doc.data());
+        setSellerData(sellers);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }  
+    fetchData();
+  },[]);
+  
   useEffect(() => {
     if (user) {
       firestore
@@ -57,7 +73,8 @@ export default function Home({ navigation}) {
               USERS.push(user.data());
             });
   
-            setUsers(USERS);
+            setUser(USERS);
+            setSellerData(USERS);
           }
         });
     }
@@ -80,9 +97,9 @@ export default function Home({ navigation}) {
           />
         </View>
           <Services navigation={navigation}/>
-      </View>
-      <View>
-        
+        <View style={styles.Cardlists}>
+          <CardLists sellerData={sellerData}/>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -105,7 +122,7 @@ const styles = StyleSheet.create({
   SearchContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#fafdff",
     borderRadius: 5,
     padding: 8,
     margin: 12,
@@ -120,4 +137,8 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
   },
+  Cardlists:{
+    backgroundColor:"white",
+    flex:1
+  }
 });
