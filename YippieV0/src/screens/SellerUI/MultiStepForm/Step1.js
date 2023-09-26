@@ -13,7 +13,7 @@ const Step1 = ({ navigation, route }) => {
   const [password, setPassword] = useState('');
   const [ConfirmPassword, setConfirmPassword] = useState('');
   const [cellphoneNumber, setCellphoneNumber] = useState('');
-  const { role } = route.params || {};
+  const { role } = route.params;
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,7 +45,7 @@ const Step1 = ({ navigation, route }) => {
       s.password = data.password;
       s.confirmPassword = data.confirmPassword
     });
-    navigation.navigate("Step2",{ username: WizardStore.getRawState().UserName, });
+    navigation.navigate("Step2",{  role: 'seller' });
   };
   return (
     <SafeAreaView  style={styles.container}>

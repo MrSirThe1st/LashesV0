@@ -5,59 +5,86 @@ import { StyleSheet,
     Image,
     FlatList
  } from 'react-native'
-import React from 'react'
+import React, {useState, useEffect} from "react";
+import {getDownloadURL } from 'firebase/storage';
+import { storage } from '../config/firebase';
+import { ref } from 'firebase/storage';
 
 
-const CardItem = ({ seller }) => {
+const CardItem = ({ seller,navigation }) => {
+
+  const [imageUrl, setImageUrl] = useState('');
+  
+  
+  useEffect(() => {
+  
+    const fetchImage = async () => {
+      console.log("Fetching image for:", seller.thumbnails[0]);
+      const imageRef = ref(storage, seller.thumbnails[0]); 
+      try {
+        const url = await getDownloadURL(imageRef);
+        setImageUrl(url);
+      } catch (error) {
+        console.error('Image Load Error: ', error);
+      }
+    };
+
+    if (seller.thumbnails[0]) {
+      fetchImage();
+    }
+  }, [seller.thumbnails]);
 
   const renderCardItem = () => {
+    
     return (
-      <TouchableOpacity
-      onPress={() => {
-        // handle onPress
-      }}
-    >
-      <View style={styles.card}>
-        <Image
-          alt=""
-          resizeMode="cover"
-          source={{ uri: seller.image }} 
-          style={styles.cardImg}
-        />
-  
-        <View style={styles.cardBody}>
-          <Text>
-            <Text style={styles.cardTitle}>{seller.city}</Text>
-            <Text style={styles.cardAirport}>{seller.country}</Text>
-            <Text style={styles.cardAirport}>{seller.state}</Text> 
-          </Text>
-  
-          <View style={styles.cardRow}>
-            <View style={styles.cardRowItem}>      
-              <Text style={styles.cardRowItemTextName}>{seller.username}</Text>
+      
+      <TouchableOpacity onPress={()=>navigation.navigate("AccountInfo",{seller,thumbnails: seller.thumbnails})}>
+        <View style={styles.card}>
+          {imageUrl ? (
+            <Image
+              alt=""
+              resizeMode="cover"
+              source={{ uri: imageUrl }}
+              style={styles.cardImg}
+            />
+          ) : (
+            <Text>Loading image...</Text>
+          )}
+
+          
+          <View style={styles.cardBody}>
+            <View style ={{flexDirection:'column'}}>
+                <Text style={styles.cardTitle}>{seller.city} <Text style={styles.cardAirport}>{seller.country}</Text></Text>
+                <Text style={styles.cardAirport}>{seller.brief}</Text> 
             </View>
-  
-            <View style={styles.cardRowItem}>     
-              <Text style={styles.cardRowItemText}>{seller.title}</Text>
+            
+            <View style={styles.cardRow}>
+              <View style={styles.cardRowItem}>      
+                <Text style={styles.cardRowItemTextName}>{seller.username}</Text>
+              </View>
+              <View style={styles.cardRowItem}>     
+                <Text style={styles.cardRowItemText}>{seller.title}</Text>
+              </View>
+            </View>
+            <View style={{}}>
+              <Text style={styles.cardPrice}>
+                <Text>from </Text>
+                <Text style={styles.cardPriceValue}>R{seller.price}</Text>
+              </Text>
+
+
+                <TouchableOpacity
+                  onPress={() => {
+                
+                  }}
+                >
+                  <View style={styles.btn}>
+                    <Text style={styles.btnText}>message</Text>
+                  </View>
+                </TouchableOpacity>
             </View>
           </View>
-  
-          <Text style={styles.cardPrice}>
-            <Text>from </Text>
-            <Text style={styles.cardPriceValue}>R{seller.price}</Text>
-          </Text>
-  
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-          >
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>message</Text>
-            </View>
-          </TouchableOpacity>
         </View>
-      </View>
     </TouchableOpacity>
     );
   };
@@ -69,12 +96,12 @@ const CardItem = ({ seller }) => {
   );
 };
 
-const CardLists = ({ sellerData }) => {
+const CardLists = ({ sellerData, navigation}) => {
   return (
     <FlatList
       data={sellerData}
       keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => <CardItem seller={item} />}
+      renderItem={({ item }) => <CardItem seller={item} navigation={navigation}/>}
       contentContainerStyle={styles.cardListContainer}
     />
   );
@@ -90,7 +117,7 @@ const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 8,
         paddingBottom:10,
-        paddingTop:40
+        paddingTop:10
       },
       card: {
         flexDirection: 'row',
@@ -98,7 +125,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         marginBottom: 16,
         backgroundColor: '#fafdff',
-        padding:8
+        // padding:8
       },
       cardImg: {
         width: 120,
@@ -116,7 +143,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
       },
       cardTitle: {
-        fontSize: 22,
+        fontSize: 16,
         fontWeight: '700',
         color: '#173153',
         marginRight: 8,
@@ -136,7 +163,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: 6,
+        paddingHorizontal: 6, 
       },
       cardRowItemText: {
         marginLeft: 4,

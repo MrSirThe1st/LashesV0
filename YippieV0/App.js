@@ -16,6 +16,9 @@ import AddProduct from "./src/screens/SellerUI/AddProduct";
 import Example from "./src/screens/SellerUI/MultiStepForm/test";
 import Step1 from "./src/screens/SellerUI/MultiStepForm/Step1";
 import Step4 from "./src/screens/SellerUI/MultiStepForm/Step4";
+import AccountInfo from "./src/screens/SellerUI/AccountInfo";
+import Inbox from "./src/screens/BuyerUI/Inbox";
+import Stars from "./src/componets/Stars";
 
 export default function App() {
   return (

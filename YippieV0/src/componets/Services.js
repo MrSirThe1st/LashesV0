@@ -105,11 +105,12 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
-    borderRadius:5
+    borderRadius:5,
   },
   pressable: {
     alignItems: "center",
     justifyContent: "center",
+    marginBottom:30
   },
   pressableImage: {
     backgroundColor: "#f2f2f2",

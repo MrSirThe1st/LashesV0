@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from "react";
 import {
   StyleSheet,
   View,
@@ -9,49 +9,27 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import FeatherIcon from 'react-native-vector-icons/Feather';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
-const CARD_WIDTH = Math.min(Dimensions.get('screen').width * 0.75, 400);
+import Swiper from 'react-native-swiper';
+import { useRoute } from '@react-navigation/native';
+import Stars from "../../componets/Stars";
 
-export default function AccountInfo() {
+export default function AccountInfo({navigation}) {
+  const route = useRoute();
+  const { seller } = route.params;
+  const { thumbnails } = route.params;
+  const [selectedImages, setSelectedImages] = useState([]);
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => null,
+    });
+  }, [navigation]);
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <View style={styles.headerAction}>
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}>
-              <FeatherIcon name="chevron-left" size={24} />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.headerSearch}>
-            <View style={styles.headerSearchIcon}>
-              <FeatherIcon color="#121A26" name="search" size={19} />
-            </View>
-
-            <TextInput
-              autoCapitalize="words"
-              autoComplete="name"
-              placeholder="Jackson Wilson"
-              placeholderTextColor="#778599"
-              style={styles.headerSearchInput}
-            />
-          </View>
-
-          <View style={[styles.headerAction, { alignItems: 'flex-end' }]}>
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}>
-              <FeatherIcon name="more-vertical" size={24} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>     
+      <ScrollView style={styles.container}>
         <View style={styles.profile}>
           <View style={styles.profileTop}>
             <View style={styles.avatar}>
@@ -67,39 +45,33 @@ export default function AccountInfo() {
             </View>
 
             <View style={styles.profileBody}>
-              <Text style={styles.profileTitle}>{'Nickolas\nMiller'}</Text>
+              <Text style={styles.profileTitle}>{seller.username}</Text>
 
               <Text style={styles.profileSubtitle}>
-                UI/UX Designer
+                category
                 {' · '}
-                <Text style={{ color: '#266EF1' }}>Time Studio</Text>
+                <Text style={{ color: '#266EF1' }}>{seller.email}</Text>
               </Text>
             </View>
           </View>
 
           <Text style={styles.profileDescription}>
-            Skilled in user research, wireframing, prototyping, and
-            collaborating with cross-functional teams.
+            {seller.brief}
           </Text>
+          <View style={styles.about}>
+            <Text style={styles.aboutTitle}>About</Text>
 
-          <View style={styles.profileTags}>
-            {['ios', 'android', 'web', 'ui', 'ux'].map((tag, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  // handle onPress
-                }}>
-                <Text style={styles.profileTagsItem}>#{tag}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+            <Text style={styles.aboutDescription}>
+            {seller.overview}
+            </Text>
+        </View>
         </View>
 
         <View style={styles.stats}>
           {[
-            { label: 'Location', value: 'USA' },
-            { label: 'Job Type', value: 'Full Time' },
-            { label: 'Experience', value: '6 years' },
+            { label: 'Location', value: seller.city },
+            { label: 'country', value: seller.country},
+            { label: '20 Reviews', value: <Stars/> },
           ].map(({ label, value }, index) => (
             <View
               key={index}
@@ -131,151 +103,32 @@ export default function AccountInfo() {
             </View>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.list}>
-          <View style={styles.listHeader}>
-            <Text style={styles.listTitle}>My Experience</Text>
-
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}>
-              <Text style={styles.listAction}>View All</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-            contentContainerStyle={styles.listContent}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}>
-            {[
-              {
-                icon: 'figma',
-                label: 'Senior UI/UX Designer',
-                company: 'Figma',
-                jobType: 'Full Time',
-                years: '2019-2023',
-              },
-              {
-                icon: 'github',
-                label: 'Mid-level Designer',
-                company: 'GitHub',
-                jobType: 'Full Time',
-                years: '2017-2019',
-              },
-              {
-                icon: 'twitter',
-                label: 'Junior Designer',
-                company: 'Twitter',
-                jobType: 'Full Time',
-                years: '2015-2017',
-              },
-            ].map(({ icon, label, company, jobType, years }, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  // handle onPress
-                }}>
-                <View style={styles.card}>
-                  <View style={styles.cardTop}>
-                    <View style={styles.cardIcon}>
-                      <FeatherIcon color="#000" name={icon} size={24} />
-                    </View>
-
-                    <View style={styles.cardBody}>
-                      <Text style={styles.cardTitle}>{label}</Text>
-
-                      <Text style={styles.cardSubtitle}>{company}</Text>
-                    </View>
+        <View style={styles.photos}>
+              <Swiper
+                renderPagination={(index, total) => (
+                  <View style={styles.photosPagination}>
+                    <Text style={styles.photosPaginationText}>
+                      {index + 1} / {total}
+                    </Text>
                   </View>
-
-                  <View style={styles.cardFooter}>
-                    <Text style={styles.cardFooterText}>{jobType}</Text>
-
-                    <Text style={styles.cardFooterText}>{years}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-
-        <View style={styles.list}>
-          <View style={styles.listHeader}>
-            <Text style={styles.listTitle}>Recommended for you</Text>
-
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}>
-              <Text style={styles.listAction}>View All</Text>
-            </TouchableOpacity>
-          </View>
-
-          <ScrollView
-            contentContainerStyle={styles.listContent}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}>
-            {[
-              {
-                icon: 'figma',
-                label: 'Senior UI/UX Designer',
-                company: 'Figma',
-                jobType: 'Full Time',
-                years: '2019-2023',
-              },
-              {
-                icon: 'github',
-                label: 'Mid-level Designer',
-                company: 'GitHub',
-                jobType: 'Full Time',
-                years: '2017-2019',
-              },
-              {
-                icon: 'twitter',
-                label: 'Junior Designer',
-                company: 'Twitter',
-                jobType: 'Full Time',
-                years: '2015-2017',
-              },
-            ].map(({ icon, label, company, jobType, years }, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  // handle onPress
-                }}>
-                <View style={styles.card}>
-                  <View style={styles.cardTop}>
-                    <View style={styles.cardIcon}>
-                      <FeatherIcon color="#000" name={icon} size={24} />
-                    </View>
-
-                    <View style={styles.cardBody}>
-                      <Text style={styles.cardTitle}>{label}</Text>
-
-                      <Text style={styles.cardSubtitle}>{company}</Text>
-                    </View>
-                  </View>
-
-                  <View style={styles.cardFooter}>
-                    <Text style={styles.cardFooterText}>{jobType}</Text>
-
-                    <Text style={styles.cardFooterText}>{years}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
+                )}>
+                {thumbnails.map((thumbnail, index) => (
+                  <Image
+                    alt=""
+                    key={index}
+                    source={{ uri: thumbnail }}
+                    style={styles.photosImg}
+                  />
+                ))}
+              </Swiper>
+            </View>
+      </ScrollView >
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  profile: {
-    paddingVertical: 18,
-  },
+
   btnGroup: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -290,93 +143,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderWidth: 2,
-    backgroundColor: 'transparent',
-    borderColor: '#266EF1',
-  },
-  list: {
-    marginTop: 18,
-    marginHorizontal: -6,
-  },
-  listHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 6,
-  },
-  listContent: {
-    paddingVertical: 12,
-    paddingHorizontal: 0,
-  },
-  card: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    backgroundColor: '#fff',
-    marginHorizontal: 6,
-    shadowColor: '#90a0ca',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 1,
-    width: CARD_WIDTH,
+    backgroundColor: '#1e90ff',
+    
   },
   container: {
-    paddingVertical: 12,
+    paddingVertical: 5,
     paddingHorizontal: 24,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  headerSearch: {
-    position: 'relative',
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-  },
-  headerSearchInput: {
-    backgroundColor: '#fff',
-    width: '100%',
-    height: 40,
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    fontWeight: '500',
-    paddingLeft: 40,
-    shadowColor: '#90a0ca',
-    shadowOffset: {
-      width: 4,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  headerSearchIcon: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    height: 40,
-    width: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 2,
-  },
-  headerAction: {
-    width: 40,
-    height: 40,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
   },
   profileTop: {
     flexDirection: 'row',
@@ -391,7 +166,7 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
   },
   profileTitle: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: 'bold',
     lineHeight: 32,
     color: '#121a26',
@@ -403,37 +178,16 @@ const styles = StyleSheet.create({
     color: '#778599',
   },
   profileDescription: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: 'bold',
     lineHeight: 18,
-    color: '#778599',
+    
   },
-  profileTags: {
-    marginTop: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  profileTagsItem: {
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 18,
-    color: '#266ef1',
-    marginRight: 4,
-  },
+
   stats: {
     backgroundColor: '#fff',
     flexDirection: 'row',
-    padding: 20,
-    borderRadius: 12,
-    shadowColor: '#90a0ca',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 1,
+    padding: 10,
   },
   statsItem: {
     flexDirection: 'column',
@@ -442,27 +196,23 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    borderLeftWidth: 1,
-    borderColor: 'rgba(189, 189, 189, 0.32)',
+   
+  
+    borderColor: '#1e90ff',
   },
   statsItemText: {
     fontSize: 14,
     fontWeight: '400',
     lineHeight: 18,
     color: '#778599',
-    marginBottom: 5,
+ 
   },
-  statsItemValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    lineHeight: 20,
-    color: '#121a26',
-  },
+  
   btnText: {
     fontSize: 14,
     lineHeight: 20,
     fontWeight: '600',
-    color: '#266EF1',
+    color: '#fff',
   },
   btnPrimary: {
     flexDirection: 'row',
@@ -472,8 +222,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderWidth: 1,
-    backgroundColor: '#266EF1',
-    borderColor: '#266EF1',
+    backgroundColor: '#1e90ff',
+    borderColor: '#1e90ff',
   },
   btnPrimaryText: {
     fontSize: 14,
@@ -481,18 +231,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#fff',
   },
-  listTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    lineHeight: 22,
-    color: '#121a26',
-  },
-  listAction: {
-    fontSize: 14,
-    fontWeight: '500',
-    lineHeight: 20,
-    color: '#778599',
-  },
+
   avatar: {
     position: 'relative',
   },
@@ -500,6 +239,8 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 9999,
+    borderWidth:2,
+    borderColor:'#1e90ff'
   },
   avatarNotification: {
     position: 'absolute',
@@ -512,44 +253,52 @@ const styles = StyleSheet.create({
     height: 21,
     backgroundColor: '#22C55E',
   },
-  cardTop: {
+  photos: {
+    marginTop: 12,
+    position: 'relative',
+    height: 240,
+    overflow: 'hidden',
+    borderRadius: 12,
+  },
+  photosPagination: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: '#1e90ff',
+    borderRadius: 12,
   },
-  cardIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 9999,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#eff1f5',
-  },
-  cardBody: {
-    paddingLeft: 12,
-  },
-  cardTitle: {
-    fontSize: 15,
+  photosPaginationText: {
     fontWeight: '600',
-    lineHeight: 18,
-    color: '#121a26',
+    fontSize: 14,
+    color: '#fbfbfb',
+  },
+  photosImg: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    width: '100%',
+    height: 240,
+  },
+  about: {
+    marginHorizontal: 20,
+  },
+  aboutTitle: {
+    fontWeight: '700',
+    fontSize: 20,
+    lineHeight: 32,
+    color: '#242329',
     marginBottom: 4,
   },
-  cardSubtitle: {
-    fontSize: 14,
+  aboutDescription: {
     fontWeight: '500',
-    lineHeight: 18,
-    color: '#778599',
+    fontSize: 12,
+    lineHeight: 20,
+    color: '#7b7c7e',
   },
-  cardFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 18,
-  },
-  cardFooterText: {
-    fontSize: 13,
-    fontWeight: '500',
-    lineHeight: 18,
-    color: '#778599',
-  },
+
 });

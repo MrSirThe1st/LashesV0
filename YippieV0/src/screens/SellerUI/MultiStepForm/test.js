@@ -1,184 +1,258 @@
-// import React from 'react';
+// import React, {useState, useEffect} from "react";
 // import {
 //   StyleSheet,
 //   View,
-//   ScrollView,
-//   StatusBar,
-//   SafeAreaView,
+//   Dimensions,
 //   TouchableOpacity,
+//   TextInput,
 //   Text,
+//   ScrollView,
 //   Image,
 // } from 'react-native';
+// import { SafeAreaView } from 'react-native-safe-area-context'
+// import { StatusBar } from 'expo-status-bar'
 // import Swiper from 'react-native-swiper';
-// import FeatherIcon from 'react-native-vector-icons/Feather';
-// import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+// import { useRoute } from '@react-navigation/native';
+// import Stars from "../../../componets/Stars";
 
-// const IMAGES = [
-//   'https://images.unsplash.com/photo-1617704548623-340376564e68?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8dGVzbGElMjBtb2RlbCUyMHN8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60',
-//   'https://images.unsplash.com/photo-1639358336404-b847ac2a3272?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2340&q=80',
-//   'https://images.unsplash.com/photo-1652509525608-6b44097ea5a7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NjN8fHRlc2xhJTIwbW9kZWwlMjBzfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60',
-// ];
+// export default function Example({}) {
 
-// export default function Example() {
+//   const [selectedImages, setSelectedImages] = useState([]);
+
+ 
+
 //   return (
-//     <View style={{ flex: 1 }}>
-//       <StatusBar barStyle="dark-content" />
-//       <SafeAreaView style={{ flex: 1, backgroundColor: '#eaf5ff' }}>
-//         <View style={styles.container}>
-//           <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+//     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>     
+//       <View style={styles.container}>
+//         <View style={styles.profile}>
+//           <View style={styles.profileTop}>
+//             <View style={styles.avatar}>
+//               <Image
+//                 alt=""
+//                 source={{
+//                   uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
+//                 }}
+//                 style={styles.avatarImg}
+//               />
 
+//               <View style={styles.avatarNotification} />
+//             </View>
 
-//             <View style={styles.photos}>
+//             <View style={styles.profileBody}>
+//               <Text style={styles.profileTitle}>{'Nickolas'}</Text>
+
+//               <Text style={styles.profileSubtitle}>
+//                 UI/UX Designer
+//                 {' · '}
+//                 <Text style={{ color: '#266EF1' }}>Time Studio</Text>
+//               </Text>
+//             </View>
+//           </View>
+
+//           <Text style={styles.profileDescription}>
+//             Skilled in user research, wireframing, prototyping, and
+//           </Text>
+//           <View style={styles.about}>
+//             <Text style={styles.aboutTitle}>About</Text>
+
+//             <Text style={styles.aboutDescription}>
+//               Experience the vibrant city of London like never before with our
+//               London bus tour! Sit back and relax on our comfortable open-top bus
+//               as we take you on a journey through the iconic landmarks and
+//               historic streets of this world-famous metropolis.
+              
+//             </Text>
+//         </View>
+//         </View>
+
+//         <View style={styles.stats}>
+//           {[
+//             { label: 'Location', value: 'Cape town' },
+//             { label: 'Category', value: 'Baking'},
+//             { label: '20 Reviews', value: <Stars/> },
+//           ].map(({ label, value }, index) => (
+//             <View
+//               key={index}
+//               style={[styles.statsItem, index === 0 && { borderLeftWidth: 0 }]}>
+//               <Text style={styles.statsItemText}>{label}</Text>
+
+//               <Text style={styles.statsItemValue}>{value}</Text>
+//             </View>
+//           ))}
+//         </View>
+
+//         <View style={styles.btnGroup}>
+//           <TouchableOpacity
+//             onPress={() => {
+//               // handle onPress
+//             }}
+//             style={{ flex: 1, paddingHorizontal: 6 }}>
+//             <View style={styles.btn}>
+//               <Text style={styles.btnText}>Follow</Text>
+//             </View>
+//           </TouchableOpacity>
+//           <TouchableOpacity
+//             onPress={() => {
+//               // handle onPress
+//             }}
+//             style={{ flex: 1, paddingHorizontal: 6 }}>
+//             <View style={styles.btnPrimary}>
+//               <Text style={styles.btnPrimaryText}>Message</Text>
+//             </View>
+//           </TouchableOpacity>
+//         </View>
+//         <View style={styles.photos}>
 //               <Swiper
 //                 renderPagination={(index, total) => (
 //                   <View style={styles.photosPagination}>
 //                     <Text style={styles.photosPaginationText}>
-//                       {index + 1} of {total}
+//                       {index + 1} / {total}
 //                     </Text>
 //                   </View>
 //                 )}>
-//                 {IMAGES.map((src, index) => (
+//                 {selectedImages.map((imageUri, index) => (
 //                   <Image
 //                     alt=""
 //                     key={index}
-//                     source={{ uri: src }}
+//                     source={{ uri: imageUri }}
 //                     style={styles.photosImg}
 //                   />
 //                 ))}
 //               </Swiper>
 //             </View>
-//             <View style={styles.addProduct}>
-//               <Text style={styles.addText}>Add a cover image</Text>
-//               <FeatherIcon color="#fff" name="plus" size={16} />
-//             </View>
-//             <TouchableOpacity
-//               onPress={() => {
-//                 // handle onPress
-//               }}
-//               style={styles.picker}>
-//               <View style={styles.pickerDates}>
-//                 <Text style={[styles.pickerDatesText, { marginBottom: 2 }]}>
-//                   {information.UserName}
-//                 </Text>
-//                 <Text style={styles.pickerDatesText}>
-//                   {information.city}
-//                 </Text>
-//                 <Text style={styles.pickerDatesText}>
-//                   {information.country}
-//                 </Text>
-//                 <Text style={styles.pickerDatesText}>
-//                   {information.state}
-//                 </Text>
-//               </View>
-//             </TouchableOpacity>
-//             <View style={styles.info}>
-//               <Text style={styles.infoTitle}>Tesla Model S 2022</Text>
-
-//               <View style={styles.infoRating}>
-//                 <Text style={styles.infoRatingLabel}>5.0</Text>
-
-//                 <FeatherIcon color="#4c6cfd" name="star" size={15} />
-
-//                 <Text style={styles.infoRatingText}>(7 ratings)</Text>
-//               </View>
-
-//               <Text style={styles.infoDescription}>
-//               {information.overview}
-//               </Text>
-//             </View>
-//             <View style={styles.stats}>
-//               {[
-//                 [
-//                   { label: 'label', value: information.email },
-//                   { label: 'label', value: information.cellphoneNumber },
-//                 ],
-//                 [
-//                   { label: 'label', value: information.item },
-//                   { label: 'label', value: information.role },
-//                 ],
-//               ].map((row, rowIndex) => (
-//                 <View
-//                   key={rowIndex}
-//                   style={[
-//                     styles.statsRow,
-//                     rowIndex === 0 && { borderTopWidth: 0 },
-//                   ]}>
-//                   {row.map(({ label, value }, index) => (
-//                     <View
-//                       key={index}
-//                       style={[
-//                         styles.statsItem,
-//                         index === 0 && { borderLeftWidth: 0 },
-//                       ]}>
-//                       <Text style={styles.statsItemText}>{label}</Text>
-
-//                       <Text style={styles.statsItemValue}>{value}</Text>
-//                     </View>
-//                   ))}
-//                 </View>
-//               ))}
-//             </View>
-
-            
-
-//           </ScrollView>
-//         </View>
-//       </SafeAreaView>
-
-//       <View style={styles.overlay}>
-//         <View style={styles.overlayContent}>
-//           <View style={styles.overlayContentTop}>
-//             <Text style={styles.overlayContentPrice}>$56/day</Text>
-//           </View>
-//         </View>
-//         <TouchableOpacity
-//           onPress={signup}
-//           mode="outlined"
-//           >
-//           <View style={styles.btn}>
-//             <Text style={styles.btnText}>Submit Profile</Text>
-
-//             <MaterialCommunityIcons
-//               color="#fff"
-//               name="arrow-right-circle"
-//               size={18}
-//               style={{ marginLeft: 12 }}
-//             />
-//           </View>
-//         </TouchableOpacity>
 //       </View>
-//     </View>
+//     </SafeAreaView>
 //   );
 // }
 
 // const styles = StyleSheet.create({
-//   container: {
-//     paddingVertical: 0,
+//   profile: {
+//     paddingVertical: 18,
+//   },
+//   btnGroup: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'space-between',
+//     marginHorizontal: -6,
+//     marginTop: 18,
+//   },
+//   btn: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     borderRadius: 8,
+//     paddingVertical: 8,
 //     paddingHorizontal: 16,
+//     borderWidth: 2,
+//     backgroundColor: 'transparent',
+//     borderColor: '#1e90ff',
+//   },
+//   container: {
+//     paddingVertical: 12,
+//     paddingHorizontal: 24,
 //     flexGrow: 1,
 //     flexShrink: 1,
 //     flexBasis: 0,
 //   },
-//   overlay: {
-//     position: 'absolute',
-//     bottom: 0,
-//     left: 0,
-//     right: 0,
+//   profileTop: {
+//     flexDirection: 'row',
+//     alignItems: 'flex-start',
+//     justifyContent: 'space-between',
+//     marginBottom: 16,
+//   },
+//   profileBody: {
+//     flexGrow: 1,
+//     flexShrink: 1,
+//     flexBasis: 0,
+//     paddingLeft: 16,
+//   },
+//   profileTitle: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     lineHeight: 32,
+//     color: '#121a26',
+//     marginBottom: 6,
+//   },
+//   profileSubtitle: {
+//     fontSize: 15,
+//     fontWeight: '600',
+//     color: '#778599',
+//   },
+//   profileDescription: {
+//     fontSize: 15,
+//     fontWeight: 'bold',
+//     lineHeight: 18,
+    
+//   },
+
+//   stats: {
 //     backgroundColor: '#fff',
 //     flexDirection: 'row',
+//     padding: 10,
+//   },
+//   statsItem: {
+//     flexDirection: 'column',
 //     alignItems: 'center',
-//     justifyContent: 'space-between',
-//     paddingTop: 12,
+//     justifyContent: 'center',
+//     flexGrow: 1,
+//     flexShrink: 1,
+//     flexBasis: 0,
+   
+  
+//     borderColor: '#1e90ff',
+//   },
+//   statsItemText: {
+//     fontSize: 14,
+//     fontWeight: '400',
+//     lineHeight: 18,
+//     color: '#778599',
+ 
+//   },
+  
+//   btnText: {
+//     fontSize: 14,
+//     lineHeight: 20,
+//     fontWeight: '600',
+//     color: '#1e90ff',
+//   },
+//   btnPrimary: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     borderRadius: 8,
+//     paddingVertical: 8,
 //     paddingHorizontal: 16,
-//     paddingBottom: 48,
-//     shadowColor: '#000',
-//     shadowOffset: {
-//       width: 0,
-//       height: 1,
-//     },
-//     shadowOpacity: 0.22,
-//     shadowRadius: 2.22,
-//     elevation: 3,
+//     borderWidth: 1,
+//     backgroundColor: '#1e90ff',
+//     borderColor: '#1e90ff',
+//   },
+//   btnPrimaryText: {
+//     fontSize: 14,
+//     lineHeight: 20,
+//     fontWeight: '600',
+//     color: '#fff',
+//   },
+
+//   avatar: {
+//     position: 'relative',
+//   },
+//   avatarImg: {
+//     width: 80,
+//     height: 80,
+//     borderRadius: 9999,
+//     borderWidth:2,
+//     borderColor:'#1e90ff'
+//   },
+//   avatarNotification: {
+//     position: 'absolute',
+//     borderRadius: 9999,
+//     borderWidth: 2,
+//     borderColor: '#fff',
+//     bottom: 0,
+//     right: -2,
+//     width: 21,
+//     height: 21,
+//     backgroundColor: '#22C55E',
 //   },
 //   photos: {
 //     marginTop: 12,
@@ -187,8 +261,6 @@
 //     overflow: 'hidden',
 //     borderRadius: 12,
 //   },
-
-
 //   photosPagination: {
 //     position: 'absolute',
 //     bottom: 12,
@@ -198,7 +270,7 @@
 //     justifyContent: 'flex-end',
 //     paddingVertical: 6,
 //     paddingHorizontal: 12,
-//     backgroundColor: '#000',
+//     backgroundColor: '#1e90ff',
 //     borderRadius: 12,
 //   },
 //   photosPaginationText: {
@@ -213,131 +285,21 @@
 //     width: '100%',
 //     height: 240,
 //   },
-//   picker: {
-//     marginTop: 12,
-//     paddingVertical: 14,
-//     paddingHorizontal: 20,
-//     borderRadius: 20,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#fff',
-//     borderWidth: 1,
-//     borderColor: '#f5f5f5',
+//   about: {
+//     marginHorizontal: 20,
 //   },
-//   pickerDates: {
-//     marginLeft: 12,
-//   },
-//   pickerDatesText: {
-//     fontSize: 13,
-//     fontWeight: '500',
-//   },
-//   info: {
-//     marginTop: 12,
-//     backgroundColor: '#fff',
-//     paddingVertical: 16,
-//     paddingHorizontal: 20,
-//     borderRadius: 20,
-//   },
-//   infoTitle: {
+//   aboutTitle: {
+//     fontWeight: '700',
 //     fontSize: 20,
-//     lineHeight: 25,
-//     fontWeight: '600',
-//     letterSpacing: 0.38,
-//     color: '#000000',
-//     marginBottom: 6,
-//   },
-//   infoRating: {
-//     marginBottom: 12,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//   },
-//   infoRatingLabel: {
-//     fontSize: 13,
-//     fontWeight: 'bold',
-//     color: '#000',
-//     marginRight: 2,
-//   },
-//   infoRatingText: {
-//     fontSize: 12,
-//     fontWeight: '600',
-//     color: '#8e8e93',
-//     marginLeft: 2,
-//   },
-//   infoDescription: {
-//     fontWeight: '400',
-//     fontSize: 13,
-//     lineHeight: 18,
-//     letterSpacing: -0.078,
-//     color: '#8e8e93',
-//   },
-//   stats: {
-//     marginTop: 12,
-//     backgroundColor: '#fff',
-//     borderRadius: 20,
-//     overflow: 'hidden',
-//   },
-//   statsRow: {
-//     flexDirection: 'row',
-//     backgroundColor: '#fff',
-//     borderTopWidth: 1,
-//     borderColor: '#fff',
-//   },
-//   statsItem: {
-//     flexGrow: 2,
-//     flexShrink: 1,
-//     flexBasis: 0,
-//     paddingVertical: 12,
-//     flexDirection: 'column',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     borderLeftWidth: 1,
-//     borderColor: '#fff',
-//   },
-//   statsItemText: {
-//     fontSize: 13,
-//     fontWeight: '400',
-//     lineHeight: 18,
-//     color: '#8e8e93',
+//     lineHeight: 32,
+//     color: '#242329',
 //     marginBottom: 4,
 //   },
-//   statsItemValue: {
-//     fontSize: 16,
-//     fontWeight: '600',
+//   aboutDescription: {
+//     fontWeight: '500',
+//     fontSize: 12,
 //     lineHeight: 20,
-//     color: '#000',
+//     color: '#7b7c7e',
 //   },
-//   overlayContent: {
-//     flexDirection: 'column',
-//     alignItems: 'flex-start',
-//   },
-//   overlayContentTop: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'flex-start',
-//     marginBottom: 2,
-//   },
-//   overlayContentPrice: {
-//     fontSize: 21,
-//     lineHeight: 26,
-//     fontWeight: '700',
-//     color: '#000',
-//   },
-//   btn: {
-//     paddingVertical: 10,
-//     paddingHorizontal: 20,
-//     borderRadius: 8,
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     borderWidth: 1,
-//     backgroundColor: '#007aff',
-//     borderColor: '#007aff',
-//   },
-//   btnText: {
-//     fontSize: 18,
-//     lineHeight: 26,
-//     fontWeight: '600',
-//     color: '#fff',
-//   },
+
 // });

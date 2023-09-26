@@ -13,12 +13,11 @@ import {
 import { FIREBASE_AUTH } from "../../../config/firebase";
 import { FIRESTORE_DB } from "../../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { addDoc, doc, setDoc } from "firebase/firestore"; 
-import { thumbnailsRef, profileRef, storageRef} from "../../../config/firebase";
-import { uploadBytes,ref } from "firebase/storage";
+import { collection, addDoc} from "firebase/firestore"; 
+import { uploadBytes,ref, getDownloadURL } from "firebase/storage";
 import { storage, } from "../../../config/firebase";
 import * as ImagePicker from 'expo-image-picker';
-import LottieView from "lottie-react-native";
+
 
 
 const Step4 = ({ navigation,route }) => {
@@ -38,25 +37,7 @@ const Step4 = ({ navigation,route }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  // const clearAndReset = () => {
-  //   WizardStore.replace({
-  //     UserName: "",
-  //     termsAccepted: "",
-  //     privacyAccepted: "",
-  //     email: "",
-  //     cellphoneNumber: "",
-  //     password: "",
-  //     confirmPassword: "",
-  //     overview:"",
-  //     country: null,
-  //     city: null,
-  //     state: null,
-  //     item:null,
-  //     progress: 0,
-  //   });
-  //   setVisible(false);
-  //   navigation.replace("Step1");
-  // };
+
 
   const [loading, setLoading] = useState(false)
   const email = WizardStore.getRawState().email;
@@ -67,6 +48,9 @@ const Step4 = ({ navigation,route }) => {
   const item = WizardStore.getRawState().item;
   const overview = WizardStore.getRawState().overview;
   const brief = WizardStore.getRawState().brief;
+  const city = WizardStore.getRawState().city;
+  const country = WizardStore.getRawState().country;
+  const state = WizardStore.getRawState().state;
 
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -109,7 +93,6 @@ const Step4 = ({ navigation,route }) => {
         const response = await fetch(imageUri);
         const blob = await response.blob();
         await uploadBytes(storageReference, blob);
-
         // Get the download URL for the uploaded image
         const downloadURL = await getDownloadURL(storageReference);
         return downloadURL;
@@ -151,6 +134,9 @@ const Step4 = ({ navigation,route }) => {
           item: item,
           brief: brief,
           thumbnails: uploadedImageUrls,
+          city:city,
+          country:country,
+          state:state
         }).then(()=>{console.log('data submitted')})
   
       } catch (error) {
@@ -175,9 +161,9 @@ const Step4 = ({ navigation,route }) => {
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
       <View style={styles.FormContainer}>
         <View>
-        <View style={{alignItems:'center', justifyContent:'center', marginBottom:10,}}>
-          <Text style={styles.title}>Take a last look at your <Text style={{ color: '#1e90ff' }}>Profile</Text></Text>
-        </View>
+          <View style={{alignItems:'center', justifyContent:'center', marginBottom:10,}}>
+            <Text style={styles.title}>Take a last look at your <Text style={{ color: '#1e90ff' }}>Profile</Text></Text>
+          </View>
           <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>
                 <Dialog.Title>Looking Good</Dialog.Title>
@@ -192,12 +178,12 @@ const Step4 = ({ navigation,route }) => {
           </Portal>
 
           <View style={styles.summaryEntriesContainer}>
-          <View style={styles.photos}>
+            <View style={styles.photos}>
               <Swiper
                 renderPagination={(index, total) => (
                   <View style={styles.photosPagination}>
                     <Text style={styles.photosPaginationText}>
-                      {index + 1} of {total}
+                      {index + 1} / {total}
                     </Text>
                   </View>
                 )}>
@@ -218,92 +204,53 @@ const Step4 = ({ navigation,route }) => {
             </View>
             </TouchableOpacity>
             
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={styles.picker}>
+            <View style={styles.picker}>
               <View style={styles.pickerDates}>
                 <Text style={[styles.pickerDatesText, { marginBottom: 2 }]}>
                   {information.UserName}
                 </Text>
                 <Text style={styles.pickerDatesText}>
-                  {information.city}
-                </Text>
-                <Text style={styles.pickerDatesText}>
-                  {information.country}
-                </Text>
-                <Text style={styles.pickerDatesText}>
-                  {information.state}
-                </Text>
+                    {information.city}
+                  </Text>
+                <View style={styles.innerpicker}>
+                  <Text style={styles.pickerDatesText}>
+                    {information.country}
+                  </Text>
+                  <Text style={styles.pickerDatesText}>
+                    {information.state}
+                  </Text>                  
+                      
+                </View>                          
               </View>
-            </TouchableOpacity>
+            </View>
+            <View style={styles.picker}>
+              <View style={styles.pickerDates}>
+                <Text style={[styles.pickerDatesText, { marginBottom: 2 }]}>
+                <Text style={{ color: '#1e90ff' }}>email: </Text>{information.email}
+                </Text>
+                <Text style={styles.pickerDatesText}>
+                  {information.cellphoneNumber}
+                </Text>
+                <Text style={styles.pickerDatesText}>
+                  {information.item}
+                </Text>                         
+              </View>
+            </View>
             <View style={styles.info}>
-              <Text style={styles.infoTitle}>Tesla Model S 2022</Text>
-
-              <View style={styles.infoRating}>
-                <Text style={styles.infoRatingLabel}>5.0</Text>
-
-                <FeatherIcon color="#4c6cfd" name="star" size={15} />
-
-                <Text style={styles.infoRatingText}>(7 ratings)</Text>
-              </View>
-
+              <Text style={styles.infoTitle}>{information.brief}</Text>
               <Text style={styles.infoDescription}>
               {information.overview}
               </Text>
-            </View>
-            <View style={styles.stats}>
-              {[
-                [
-                  { label: 'label', value: information.email },
-                  { label: 'label', value: information.cellphoneNumber },
-                ],
-                [
-                  { label: 'label', value: information.item },
-                  { label: 'label', value: information.role },
-                ],
-              ].map((row, rowIndex) => (
-                <View
-                  key={rowIndex}
-                  style={[
-                    styles.statsRow,
-                    rowIndex === 0 && { borderTopWidth: 0 },
-                  ]}>
-                  {row.map(({ label, value }, index) => (
-                    <View
-                      key={index}
-                      style={[
-                        styles.statsItem,
-                        index === 0 && { borderLeftWidth: 0 },
-                      ]}>
-                      <Text style={styles.statsItemText}>{label}</Text>
-
-                      <Text style={styles.statsItemValue}>{value}</Text>
-                    </View>
-                  ))}
-                </View>
-              ))}
-            </View>
+            </View>            
           </View>
         </View>
-        <View style={styles.BottomContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            mode="outlined"
-            onPress={() => navigation.navigate("Step3")}
-          >
-            <Text style={styles.buttonText}>Go Back</Text>
-          </TouchableOpacity>
-        </View>
-  
       </View>
       </ScrollView>
       
       <View style={styles.overlay}>
         <View style={styles.overlayContent}>
           <View style={styles.overlayContentTop}>
-            <Text style={styles.overlayContentPrice}>$56/day</Text>
+            <Text style={styles.overlayContentPrice}>All <Text style={{ color: '#1e90ff' }}>Good?</Text></Text>
           </View>
         </View>
         <TouchableOpacity
@@ -352,28 +299,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginHorizontal: 10,
   },
-  button: {
-    backgroundColor: "#1e90ff",
-    borderRadius: 5,
-    padding: 10,
-    margin: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
-  },
   FormContainer: {
     paddingHorizontal: 16,
     height: "100%",
     justifyContent: "space-between",
-  },
-  BottomContainer: {
-    alignItems: "center",
-    marginBottom: "auto",
-    marginTop:'auto',
-    justifyContent: "center",
-    flexDirection: "row",
   },
   title: {
     fontSize: 30,
@@ -387,6 +316,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#1e90ff",
     borderRadius: 12,
+    marginVertical:10
   },
   addText: {
     marginRight: 8,
@@ -405,8 +335,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 12,
     paddingHorizontal: 16,
-    paddingBottom: 48,
+    paddingBottom: 12,
     shadowColor: '#000',
+    borderTopRightRadius:10,
+    borderTopLeftRadius:10,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -414,6 +346,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
+    
   },
   photos: {
     marginTop: 12,
@@ -433,7 +366,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     paddingVertical: 6,
     paddingHorizontal: 12,
-    backgroundColor: '#000',
+    backgroundColor: '#1e90ff',
     borderRadius: 12,
   },
   photosPaginationText: {
@@ -455,7 +388,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#f5f5f5',
@@ -466,6 +398,11 @@ const styles = StyleSheet.create({
   pickerDatesText: {
     fontSize: 13,
     fontWeight: '500',
+    marginRight:6
+  },
+  innerpicker:{
+    flexDirection:'row',
+
   },
   info: {
     marginTop: 12,
@@ -506,41 +443,11 @@ const styles = StyleSheet.create({
     letterSpacing: -0.078,
     color: '#8e8e93',
   },
-  stats: {
-    marginTop: 12,
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
   statsRow: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderColor: '#fff',
-  },
-  statsItem: {
-    flexGrow: 2,
-    flexShrink: 1,
-    flexBasis: 0,
-    paddingVertical: 12,
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderLeftWidth: 1,
-    borderColor: '#fff',
-  },
-  statsItemText: {
-    fontSize: 13,
-    fontWeight: '400',
-    lineHeight: 18,
-    color: '#8e8e93',
-    marginBottom: 4,
-  },
-  statsItemValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    lineHeight: 20,
-    color: '#000',
   },
   overlayContent: {
     flexDirection: 'column',
@@ -565,9 +472,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    backgroundColor: '#007aff',
-    borderColor: '#007aff',
+    backgroundColor: '#1e90ff',
   },
   btnText: {
     fontSize: 18,

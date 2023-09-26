@@ -26,7 +26,6 @@ const Step3 = ({ navigation,route  }) => {
   const [brief, setBrief] = useState("");
   const [overview, setOverview] = useState("");
 
-  // Fetch country data from API when the component mounts
   
  
   React.useLayoutEffect(() => {
@@ -59,7 +58,7 @@ const Step3 = ({ navigation,route  }) => {
       s.overview = data.overview;
       s.brief = data.brief;
     });
-    navigation.navigate("Step4",{ username: WizardStore.getRawState().UserName});
+    navigation.navigate("Step4",{  role: 'seller' });
   };
 
   return (
@@ -193,10 +192,6 @@ const Step3 = ({ navigation,route  }) => {
               name="overview"
               />
             </View>
-          <Text>Drop link to personal website</Text>
-          <Text>Fields for social pressence</Text>
-          <Text>Add education</Text>
-          <Text>Add certification</Text>
         </View>
         
         {/* Next button */}
@@ -245,10 +240,10 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     height: 50,
-    borderWidth: 0.5,
     borderRadius: 5,
     paddingHorizontal: 8,
     marginBottom: 20,
+    backgroundColor:'#fff'
   },
   icon: {
     marginRight: 5,

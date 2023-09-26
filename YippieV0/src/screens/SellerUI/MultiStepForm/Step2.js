@@ -38,14 +38,13 @@ const Step2 = ({ navigation,route  }) => {
   }, [isFocused]);
 
   const onSubmit = (data) => {
-    // Update WizardStore with form data and navigate to the next step
     WizardStore.update((s) => {
       s.progress = 66;
       s.country = data.country;
       s.city = data.city;
       s.state = data.state;
     });
-    navigation.navigate("Step3",{ username: WizardStore.getRawState().UserName});
+    navigation.navigate("Step3",{  role: 'seller' });
   };
 
   return (
@@ -87,7 +86,7 @@ const Step2 = ({ navigation,route  }) => {
                       />
                     </View>
                   )}
-                  name="Country"
+                  name="country"
                 />
                   {errors.country && (
                   <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
@@ -118,7 +117,7 @@ const Step2 = ({ navigation,route  }) => {
                       />
                     </View>
                   )}
-                  name="State"
+                  name="state"
                 />
                   {errors.state && (
                   <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
@@ -136,7 +135,7 @@ const Step2 = ({ navigation,route  }) => {
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.input}>
-                      <Text style={styles.inputLabel}>Confirm password</Text>
+                      <Text style={styles.inputLabel}>City</Text>
                       <TextInput
                         autoCorrect={false}
                         onChangeText={(text)=>{setCity(text); onChange(text);}}
@@ -149,7 +148,7 @@ const Step2 = ({ navigation,route  }) => {
                       />
                     </View>
                   )}
-                  name="City"
+                  name="city"
                 />
                   {errors.city && (
                   <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
@@ -158,8 +157,6 @@ const Step2 = ({ navigation,route  }) => {
                 )}
               </View>
             </View>
-            
-            <Text>Add language</Text>
           </View>
 
           

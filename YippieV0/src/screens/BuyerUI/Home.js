@@ -7,6 +7,7 @@ import {
   Text,
   StatusBar,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -15,6 +16,7 @@ import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const YourLogoComponent = () => (
   <Image
@@ -30,6 +32,8 @@ export default function Home({ navigation}) {
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [user, setUser] = useState(null) 
+
+ 
 
   useEffect(()=>{
     async function fetchData() {
@@ -86,7 +90,6 @@ export default function Home({ navigation}) {
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>
-      <Pressable onPress={()=>auth.signOut()}><Text>Sign Out</Text></Pressable>
       <View style={styles.content}>
         <View style={styles.SearchContainer}>
           <Icon name="search" size={28} color="black" style={styles.icon} />
@@ -97,9 +100,10 @@ export default function Home({ navigation}) {
           />
         </View>
           <Services navigation={navigation}/>
-        <View style={styles.Cardlists}>
-          <CardLists sellerData={sellerData}/>
-        </View>
+       
+          <View style={styles.Cardlists}>
+              <CardLists sellerData={sellerData} navigation={navigation}/>
+          </View>  
       </View>
     </SafeAreaView>
   );

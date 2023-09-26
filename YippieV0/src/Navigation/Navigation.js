@@ -19,8 +19,10 @@ import Step1 from "../screens/SellerUI/MultiStepForm/Step1";
 import Step2 from "../screens/SellerUI/MultiStepForm/Step2";
 import Step3 from "../screens/SellerUI/MultiStepForm/Step3";
 import Step4 from "../screens/SellerUI/MultiStepForm/Step4";
+import AccountInfo from "../screens/SellerUI/AccountInfo";
 import { onAuthStateChanged } from "firebase/auth";
 import { FIREBASE_AUTH } from "../config/firebase";
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -86,7 +88,12 @@ const Navigation = () => {
         {loading ? ( 
           <ActivityIndicator size="large" color="#1e90ff" />
         ) : user ? (
-          <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false,animation: "none"}}/>
+          <>
+            <Stack.Screen name="Home" component={HomeTabNavigator} options={{ headerShown: false,animation: "none"}}/>
+            <Stack.Screen name="AccountInfo" component={AccountInfo} options={{ headerShown: true,animation: "none",title: "",headerStyle: {
+      backgroundColor: "#1e90ff", 
+    },}}/>
+          </> 
         ) : (
           <>
           <Stack.Screen name="Onboarding" component={Onboarding} options={{ headerShown: false,animation: "none"}}/>
@@ -97,6 +104,7 @@ const Navigation = () => {
           <Stack.Screen name="Login" component={Login} options={{ headerShown: false,animation: "none"}}/>
           <Stack.Screen name="SignUp" component={SignUp} options={{ headerShown: false,animation: "none"}}/>
           <Stack.Screen name="Selection" component={Selection} options={{ headerShown: false,animation: "none" }}/>
+
         </>
         )
         }

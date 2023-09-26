@@ -1,126 +1,254 @@
-import { StyleSheet, Text, View, SafeAreaView,TouchableOpacity, Image} from 'react-native'
-import React from 'react'
-import Icon from "react-native-vector-icons/MaterialIcons";
-import Separator from '../../componets/Separator';
-import { StatusBar } from 'react-native';
+import React from 'react';
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Pressable
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { StatusBar } from 'expo-status-bar'
+import FeatherIcon from 'react-native-vector-icons/Feather';
+import Styles from './Styles';
+import { FIREBASE_AUTH } from "../../config/firebase";
+const auth = FIREBASE_AUTH;
+
+const SECTIONS = [
+  
+    {
+      header: 'preferences',
+      icon: 'help-circle',
+      items: (
+        <View style={Styles.customContent}>
+          
+        </View>
+      ),
+    },
+    {
+      header: 'favorites',
+      icon: 'help-circle',
+      items: (
+        <View style={Styles.customContent}>
+          <Text>Custom Content Here</Text>
+        </View>
+      ),
+    },
+    {
+      header: 'help',
+      icon: 'align-center',
+      items: (
+        <View style={Styles.customContent}>
+          <Text>Your Custom Content</Text>
+        </View>
+      ),
+    },
+    {
+      header: 'account',
+      icon: 'settings',
+      items: (
+        <View style={Styles.customContent}>
+          <Text>Your Custom Content</Text>
+          <Pressable onPress={()=>auth.signOut()}><Text>Sign Out</Text></Pressable>
+        </View>
+      ),
+    },
+  ];
 
 const Profile = () => {
+  const [value, setValue] = React.useState(0);
+  
+  const { tabs } = React.useMemo(() => {
+    return {
+      tabs: SECTIONS.map(({ header, icon }) => ({
+        name: header,
+        icon,
+      })),
+    };
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1e90ff"
-        barStyle="light-content"/>
-      <View style={styles.stickyHeader}>
-        <View style={styles.avatar}>
-          <Image style={styles.image} source={require('../../assets/homeAssets/avatar.jpg')}/>
-        </View>
-        <Text style={styles.name}>Marc Ilunga Mbuyu</Text>
-      </View>
-
-      <View style={styles.content}>
-        <View style={styles.settingsCard}>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="account-circle" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>Account</Text>
-          </TouchableOpacity>
-          <Separator/>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="settings" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>Settings</Text>
-          </TouchableOpacity>
-          <Separator/>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="favorite" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>favorites</Text>
-          </TouchableOpacity>
-          <Separator/>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="account-balance-wallet" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>payments methode</Text>
-          </TouchableOpacity>
+    <SafeAreaView style={{ backgroundColor: '#f8f8f8', flex: 1 }}>
+      <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Settings</Text>
         </View>
 
-        <View style={styles.settingsCard}>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="account-circle" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>Account</Text>
-          </TouchableOpacity>
-          <Separator/>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="settings" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>Settings</Text>
-          </TouchableOpacity>
-          <Separator/>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="settings" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>preferences</Text>
-          </TouchableOpacity>
-          <Separator/>
-          <TouchableOpacity style={styles.button}>
-            <Icon name="settings" size={28} color="#1e90ff" style={styles.icon} />
-            <Text style={styles.text}>other</Text>
+        <View style={styles.profile}>
+          <View style={styles.profileHeader}>
+            <Image
+              alt=""
+              source={{
+                uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
+              }}
+              style={styles.profileAvatar}
+            />
+
+            <View style={styles.profileBody}>
+              <Text style={styles.profileName}>Marc im</Text>
+
+              <Text style={styles.profileHandle}>Marc im</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              // handle onPress
+            }}>
+            <View style={styles.profileAction}>
+              <Text style={styles.profileActionText}>Edit Profile</Text>
+
+              <FeatherIcon color="#fff" name="edit-3" size={16} />
+            </View>
           </TouchableOpacity>
         </View>
+
+        <View style={styles.content}>
+        <View style={styles.tabs}>
+          {tabs.map(({ name, icon }, index) => {
+            const isActive = index === value;
+
+            return (
+              <View
+                key={name}
+                style={[
+                  styles.tabWrapper,
+                  isActive && { borderBottomColor: '#1e90ff' },
+                ]}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setValue(index);
+                  }}>
+                  <View style={styles.tab}>
+                    <FeatherIcon
+                      color={isActive ? '#1e90ff' : '#eaf5ff'}
+                      name={icon}
+                      size={16}
+                    />
+
+                    <Text
+                      style={[
+                        styles.tabText,
+                        isActive && { color: '#1e90ff' },
+                      ]}>
+                      {name}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            );
+          })}
+        </View>
+        {SECTIONS[value].items}
       </View>
+      </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
 
 const styles = StyleSheet.create({
-  container:{
-    flex: 1,
-    backgroundColor:'#E5E4E2'
+  header: {
+    paddingLeft: 24,
+    paddingRight: 24,
+    marginBottom: 12,
   },
-  stickyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  title: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#1d1d1d',
+    marginBottom: 6,
+  },
+  subtitle: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#929292',
+  },
+  profile: {
+    paddingTop: 12,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#e3e3e3',
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  profileAvatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 9999,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginRight: 12,
+  },
+  profileName: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#3d3d3d',
+  },
+  profileHandle: {
+    marginTop: 4,
+    fontSize: 15,
+    color: '#989898',
+  },
+  profileAction: {
+    marginTop: 16,
     paddingVertical: 10,
-    height: 200,
-    backgroundColor:'#1e90ff',
-    
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#1e90ff',
+    borderRadius: 12,
   },
-  content:{
-    flex:1,
-    alignItems:'center',
-    justifyContent:'center',
-    
+  profileActionText: {
+    marginRight: 8,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
   },
-  settingsCard:{
-    backgroundColor:"#f2f2f2",
-    borderRadius:10,
-    width:'90%',
-    marginVertical:20
-    
+  tabs: {
+    padding: 16,
+    flexDirection: 'row',
   },
-  button:{
-    flexDirection:'row',
-    padding:10,
-    alignItems:'center',
-    justifyContent:'flex-start'
-  },
-  text:{
-    paddingHorizontal:10,
-    fontWeight:'bold'
-  },
-  name:{
-    color:'white',
-    fontSize:25,
-    fontWeight:'bold'
-  },
-  avatar:{
-    borderRadius:50,
-    backgroundColor:'white',
-    width: 80,
-    height: 80,
+  tab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
+    position: 'relative',
     overflow: 'hidden',
-    marginRight: 10
   },
-  image:{
-    flex: 1,
-    width: null,
-    height: null,
-    resizeMode: 'cover',
-  }
-})
+  tabWrapper: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    borderColor: '#e5e7eb',
+    borderBottomWidth: 2,
+  },
+  tabText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#6b7280',
+    marginLeft: 5,
+  },
+  container: {
+    paddingTop:24,
+    flex:1,
+  },
+  content: {
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderColor: '#e3e3e3',
+    flex:1
+  },
+});
