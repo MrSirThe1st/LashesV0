@@ -11,16 +11,24 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import FeatherIcon from 'react-native-vector-icons/Feather';
 import Styles from './Styles';
-const SECTIONS = [
+import { useNavigation } from '@react-navigation/native';
 
+
+
+
+const SellerProfile = () => {
+  const [value, setValue] = React.useState(0);
+  const navigation = useNavigation();
+
+  const SECTIONS = [
     {
       header: 'Catalogue',
-      icon: 'help-circle',
+      icon: 'shopping-bag',
       items: (
         <View style={Styles.customContent}>
           <TouchableOpacity
             onPress={() => {
-              // navigation.navigate('AddProduct')
+              navigation.navigate('AddProduct')
             }}>
             <View style={Styles.addProduct}>
               <Text style={Styles.addText}>Add a product</Text>
@@ -31,7 +39,7 @@ const SECTIONS = [
       ),
     },
     {
-      header: 'Content',
+      header: 'profile',
       icon: 'help-circle',
       items: (
         <View style={Styles.customContent}>
@@ -59,9 +67,6 @@ const SECTIONS = [
     },
   ];
 
-const SellerProfile = () => {
-  const [value, setValue] = React.useState(0);
-
   const { tabs } = React.useMemo(() => {
     return {
       tabs: SECTIONS.map(({ header, icon }) => ({
@@ -73,12 +78,8 @@ const SellerProfile = () => {
 
   return (
     <SafeAreaView style={{ backgroundColor: '#f8f8f8', flex: 1 }}>
-      <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
+      <StatusBar backgroundColor="white" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Settings</Text>
-        </View>
-
         <View style={styles.profile}>
           <View style={styles.profileHeader}>
             <Image
@@ -95,17 +96,6 @@ const SellerProfile = () => {
               <Text style={styles.profileHandle}>Marc im</Text>
             </View>
           </View>
-
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}>
-            <View style={styles.profileAction}>
-              <Text style={styles.profileActionText}>Edit Profile</Text>
-
-              <FeatherIcon color="#fff" name="edit-3" size={16} />
-            </View>
-          </TouchableOpacity>
         </View>
 
         <View style={styles.content}>
@@ -175,9 +165,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 24,
     backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#e3e3e3',
   },
   profileHeader: {
     flexDirection: 'row',
@@ -202,25 +189,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#989898',
   },
-  profileAction: {
-    marginTop: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1e90ff',
-    borderRadius: 12,
-  },
-  profileActionText: {
-    marginRight: 8,
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#fff',
-  },
   tabs: {
     padding: 16,
     flexDirection: 'row',
+
   },
   tab: {
     flexDirection: 'row',
@@ -245,7 +217,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   container: {
-    paddingTop:24,
     flex:1,
   },
   content: {

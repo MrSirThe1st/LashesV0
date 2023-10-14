@@ -53,7 +53,7 @@ const Step1 = ({ navigation, route }) => {
     <ProgressBar
       style={styles.progressBar}
       progress={WizardStore.getRawState().progress}
-      color="#1e90ff" // Set the color to your primary color
+      color="#1e90ff" 
     />
     <View style={styles.FormContainer}>
 

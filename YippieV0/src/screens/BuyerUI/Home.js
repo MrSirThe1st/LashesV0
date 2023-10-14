@@ -16,11 +16,11 @@ import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { Skeleton } from '@rneui/themed';
 
 const YourLogoComponent = () => (
   <Image
-    source={require("../../assets/icons/lashes-Good3.png")}
+    source={require("../../assets/icons/lashes-GoodBLue.png")}
     style={{ width: 100, height: 40,}}
     resizeMode="contain"
   />
@@ -86,7 +86,7 @@ export default function Home({ navigation}) {
 
   return (
     <SafeAreaView style={styles.container}>
-    <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/>
+    {/* <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/> */}
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>

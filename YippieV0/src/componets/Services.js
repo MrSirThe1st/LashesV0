@@ -15,44 +15,65 @@ const Services = ({navigation}) => {
   const services = [
     {
       id: "0",
-      image: require("../assets/homeAssets/mountain.png"),
-      name: "event",
+      image: require("../assets/homeAssets/hair1.jpg"),
+      name: "Hair Styling",
     },
     {
       id: "1",
-      image: require("../assets/homeAssets/island.png"),
-      name: "name",
+      image: require("../assets/homeAssets/makeup.jpg"),
+      name: "Makeup",
     },
     {
       id: "2",
-      image: require("../assets/homeAssets/sunset.png"),
-      name: "name",
+      image: require("../assets/homeAssets/tailor.jpg"),
+      name: "Tailoring",
     },
     {
       id: "3",
-      image: require("../assets/homeAssets/mountain.png"),
-      name: "name",
+      image: require("../assets/homeAssets/manicure.jpg"),
+      name: "Manicures",
     },
     {
       id: "4",
-      image: require("../assets/homeAssets/island.png"),
-      name: "name",
+      image: require("../assets/homeAssets/skincare1.jpg"),
+      name: "Skincare",
     },
     {
       id: "5",
-      image: require("../assets/homeAssets/salon.jpg"),
-      name: "name",
+      image: require("../assets/homeAssets/food.jpg"),
+      name: "Nutrition",
     },
     {
       id: "6",
-      image: require("../assets/homeAssets/salon.jpg"),
-      name: "name",
+      image: require("../assets/homeAssets/jewel.jpg"),
+      name: "Jewelry",
     },
+    {
+      id: "7",
+      image: require("../assets/homeAssets/event.jpg"),
+      name: "Event planning",
+    },
+    {
+      id: "8",
+      image: require("../assets/homeAssets/cake.jpg"),
+      name: "Baking",
+    },
+    {
+      id: "9",
+      image: require("../assets/homeAssets/fitness.jpg"),
+      name: "Health & Fitness",
+    },
+    {
+      id: "10",
+      image: require("../assets/homeAssets/hand.jpg"),
+      name: "Handmade ",
+    },
+    
   ];
   const windowWidth = Dimensions.get("window").width;
-  const itemWidth = windowWidth / 4;
-  const imageWidth = itemWidth - 24; // Adjusted width to leave space for margins and padding
-  const imageHeight = imageWidth * 0.8; // Assuming an aspect ratio of 5:4 (you can adjust this based on your image aspect ratio)
+  const itemWidth = windowWidth / 3;
+  const imageWidth = itemWidth - 24; 
+  const imageHeight = imageWidth * 0.8; 
 
   return (
     <View style={styles.container}>
@@ -100,23 +121,26 @@ const Services = ({navigation}) => {
 export default Services;
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+  },
   image: {
     width: "100%",
     height: "100%",
     resizeMode: "contain",
     borderRadius:5,
+    
   },
   pressable: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom:30
+    marginBottom:30,
   },
   pressableImage: {
     backgroundColor: "#f2f2f2",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+    
   },
   text: {
     margin: 10,

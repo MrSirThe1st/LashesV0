@@ -11,44 +11,32 @@ import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { StatusBar } from 'expo-status-bar'
 import FeatherIcon from 'react-native-vector-icons/Feather';
+import * as ImagePicker from 'expo-image-picker';
+import Swiper from 'react-native-swiper';
+import PicturesData from '../../componets/PicturesData';
+import { BottomSheet } from '@rneui/themed';
 
-
-const data = [
-    { label: 'category', value: '1' },
-    { label: 'category', value: '2' },
-    { label: 'category', value: '3' },
-    { label: 'category', value: '4' },
-    { label: 'category', value: '5' },
-    { label: 'category', value: '6' },
-    { label: 'category', value: '7' },
-    { label: 'category', value: '8' },
-  ];
 
 const AddProduct = () => {
     const [price, setPrice] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
     const [selected, setSelected] = useState(undefined);
     const [query, setQuery] = useState('');
-    const filteredData = data.filter((item) =>
-    item.label.toLowerCase().includes(query.toLowerCase())
-  );
+    const [selectedImages, setSelectedImages] = useState([]);
+    const [uploading, setUploading] = useState(false);
+
 
   const onSearch = (text) => {
     setQuery(text);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor="#1e90ff" barStyle="light-content"/>
+    <View style={styles.container}>
+        <StatusBar backgroundColor="white" barStyle="light-content"/>
         <View style={styles.Wrapper}>
-            <TouchableOpacity style={styles.AddInput}>
-                    <View style={{flexDirection:'row'}}>
-                        <Text style={styles.AddText}>Add</Text>
-                        <FeatherIcon color="#1e90ff" name="file-plus" size={18} />
-                    </View>   
-            </TouchableOpacity>
-            <Text>Select a several pictures of your product:0/5</Text>
+             <PicturesData/> 
             <View style={styles.inputContainer}>
                 <TextInput
                     style={styles.input}
@@ -76,12 +64,20 @@ const AddProduct = () => {
                     placeholder={'description'}
                     keyboardType={'default'}/>
             </View>
-            <View>
-     
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    value={description}
+                    autoCapitalize = "none"
+                    onChangeText={(text) => setCategory(text)}
+                    placeholder={'category'}
+                    keyboardType={'default'}/>
             </View>
-        </View>
+            
+        </View>           
+      
         
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -90,7 +86,8 @@ export default AddProduct;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor:'white'
+        backgroundColor:'white',
+        paddingVertical: 5,
       },
       Wrapper:{
         flex:1,
@@ -98,19 +95,25 @@ const styles = StyleSheet.create({
       },
       AddInput:{
         alignItems:'center',
-        justifyContent:'center',
-        height:"15%",
         width:"95%",
         borderColor:"#1e90ff",
         borderWidth:1,
-        backgroundColor:'#eaf5ff',
-        marginTop:30,
         marginBottom:10,
-        borderRadius:10
+        borderRadius:10,
+
+      },
+      AddInputInner:{
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor: "#1e90ff",
+        borderRadius: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        marginVertical:10
       },
       AddText:{
-        fontSize: 16,
-        fontWeight:'bold'
+        fontSize: 13,
+        color:'white'
       },
       input:{
         width:"95%",
@@ -131,5 +134,37 @@ const styles = StyleSheet.create({
         width:"95%",
         height: 45,
       },
+      photos: {
+        position: 'relative',
+        height: 130,
+        overflow: 'hidden',
+        padding:8
+      },
+      photosPagination: {
+        position: 'absolute',
+        bottom: 12,
+        right: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        backgroundColor: '#1e90ff',
+        borderRadius: 12,
+      },
+      photosPaginationText: {
+        fontWeight: '600',
+        fontSize: 10,
+        color: '#fbfbfb',
+      },
+      photosImg: {
+        flexGrow: 1,
+        flexShrink: 1,
+        flexBasis: 0,
+        width: '100%',
+        height: 130,
+        
+      },
+
     
 })

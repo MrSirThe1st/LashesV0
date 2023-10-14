@@ -72,10 +72,6 @@ const Profile = () => {
     <SafeAreaView style={{ backgroundColor: '#f8f8f8', flex: 1 }}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Settings</Text>
-        </View>
-
         <View style={styles.profile}>
           <View style={styles.profileHeader}>
             <Image
@@ -242,7 +238,6 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   container: {
-    paddingTop:24,
     flex:1,
   },
   content: {

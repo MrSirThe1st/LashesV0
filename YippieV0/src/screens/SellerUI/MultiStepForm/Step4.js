@@ -97,21 +97,19 @@ const Step4 = ({ navigation,route }) => {
         const downloadURL = await getDownloadURL(storageReference);
         return downloadURL;
       });
-
+  
       // Wait for all uploadPromises to complete
       const imageUrls = await Promise.all(uploadPromises);
-
+  
       return imageUrls;
     } catch (error) {
       console.error("Error uploading images: ", error);
       alert("Error uploading images: " + error.message);
-      throw error; // Rethrow the error so the submit process can be stopped.
+      return []; // Return an empty array to avoid issues with the subsequent code.
     } finally {
       setUploading(false);
     }
   };
-
-
   
 
   const signUp = async () => {
@@ -124,6 +122,7 @@ const Step4 = ({ navigation,route }) => {
         alert('Signed up successfully');
         
         const uploadedImageUrls = await uploadImagesToFirebase();
+        const UserUID = response.user.uid;
 
         await addDoc(collection(db, "users"), {
           username: username,
@@ -136,7 +135,8 @@ const Step4 = ({ navigation,route }) => {
           thumbnails: uploadedImageUrls,
           city:city,
           country:country,
-          state:state
+          state:state,
+          uid: UserUID
         }).then(()=>{console.log('data submitted')})
   
       } catch (error) {
@@ -353,7 +353,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     height: 240,
     overflow: 'hidden',
-    borderRadius: 12,
   },
 
 

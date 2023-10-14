@@ -34,7 +34,8 @@ const SignUp = ({ navigation, route }) => {
           username: username,
           role: role,
           email: email,
-          cellphoneNumber:cellphoneNumber
+          cellphoneNumber:cellphoneNumber,
+          role:role
         }).then(()=>{console.log('data submitted')})
       } catch (error) {
         console.log(error);

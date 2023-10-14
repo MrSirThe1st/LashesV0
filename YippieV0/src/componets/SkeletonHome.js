@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Skeleton } from '@rneui/base'
 import { StyleSheet } from 'react-native'
 
-const Test = () => {
+const SkeletonHome = () => {
   return (
     <SafeAreaView style={styles.container}>
           <View style={styles.stickyHeader}>
@@ -70,4 +70,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Test
+export default SkeletonHome

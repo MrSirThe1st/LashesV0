@@ -9,7 +9,9 @@ import React, {useState, useEffect} from "react";
 import {getDownloadURL } from 'firebase/storage';
 import { storage } from '../config/firebase';
 import { ref } from 'firebase/storage';
-
+import { Skeleton } from '@rneui/themed';
+import Stars from './Stars';
+import FeatherIcon from 'react-native-vector-icons/Feather';
 
 const CardItem = ({ seller,navigation }) => {
 
@@ -48,40 +50,50 @@ const CardItem = ({ seller,navigation }) => {
               style={styles.cardImg}
             />
           ) : (
-            <Text>Loading image...</Text>
+            <Skeleton skeletonStyle={{ backgroundColor: '#eaf5ff'}}animation="pulse" width={120} height={154} isLoading={!imageUrl} style={styles.cardImg}>
+              <Image
+                alt=""
+                resizeMode="cover"
+                style={styles.cardImg}
+              />
+          </Skeleton>
           )}
 
           
           <View style={styles.cardBody}>
-            <View style ={{flexDirection:'column'}}>
-                <Text style={styles.cardTitle}>{seller.city} <Text style={styles.cardAirport}>{seller.country}</Text></Text>
-                <Text style={styles.cardAirport}>{seller.brief}</Text> 
+            <View style ={{flexDirection:'row',justifyContent:'space-between', width:'100%'}}>
+                <View style ={{flexDirection:'column',}}>
+                  <Text style={styles.cardRowItemTextName}>{seller.username}, </Text>
+                  <Text style={styles.cardTitle}>{seller.city} </Text> 
+                </View>
+        
+                <View>
+                <TouchableOpacity
+                  onPress={() => {
+                    // navigation.navigate('AddProduct')
+                  }}>
+                  <View style={styles.catalogue}>
+                    <Text style={styles.catalogueText}>Catalog</Text>
+                    <FeatherIcon color="#1e90ff" name="shopping-bag" size={16} />
+                  </View>
+                </TouchableOpacity>
+                </View>   
             </View>
             
             <View style={styles.cardRow}>
               <View style={styles.cardRowItem}>      
-                <Text style={styles.cardRowItemTextName}>{seller.username}</Text>
+                <Text style={styles.cardAirport}>{seller.brief}</Text>
               </View>
               <View style={styles.cardRowItem}>     
                 <Text style={styles.cardRowItemText}>{seller.title}</Text>
               </View>
             </View>
-            <View style={{}}>
+            <View style={{flexDirection:'row', justifyContent:'space-between', width:'100%'}}>
+              <Stars/>
               <Text style={styles.cardPrice}>
-                <Text>from </Text>
-                <Text style={styles.cardPriceValue}>R{seller.price}</Text>
+                <Text>From </Text>
+                <Text style={styles.cardPriceValue}>R150{seller.price}</Text>
               </Text>
-
-
-                <TouchableOpacity
-                  onPress={() => {
-                
-                  }}
-                >
-                  <View style={styles.btn}>
-                    <Text style={styles.btnText}>message</Text>
-                  </View>
-                </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -115,7 +127,6 @@ const styles = StyleSheet.create({
       paddingHorizontal: 16,
     },
     container: {
-        paddingHorizontal: 8,
         paddingBottom:10,
         paddingTop:10
       },
@@ -171,13 +182,13 @@ const styles = StyleSheet.create({
         color: 'black',
       },
       cardRowItemTextName: {
-        marginLeft: 4,
+
         fontSize: 15,
         fontWeight: "bold",
         color: 'black',
       },
       cardPrice: {
-        fontSize: 13,
+        fontSize: 16,
         fontWeight: '500',
         color: '#5f697d',
       },
@@ -206,5 +217,22 @@ const styles = StyleSheet.create({
         lineHeight: 18,
         fontWeight: '600',
         color: 'white',
+      },
+      catalogue:{
+        paddingVertical: 5,
+        paddingHorizontal: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        borderRadius: 12,
+        borderColor:'#1e90ff',
+        elevation:0.2
+      },
+      catalogueText:{
+        marginRight: 4,
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#1e90ff',
       },
 })

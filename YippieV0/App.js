@@ -19,6 +19,8 @@ import Step4 from "./src/screens/SellerUI/MultiStepForm/Step4";
 import AccountInfo from "./src/screens/SellerUI/AccountInfo";
 import Inbox from "./src/screens/BuyerUI/Inbox";
 import Stars from "./src/componets/Stars";
+import Test from "./src/Navigation/Test";
+import SkeletonHome from "./src/componets/SkeletonHome";
 
 export default function App() {
   return (

@@ -15,6 +15,7 @@ import Swiper from 'react-native-swiper';
 import { useRoute } from '@react-navigation/native';
 import Stars from "../../componets/Stars";
 
+
 export default function AccountInfo({navigation}) {
   const route = useRoute();
   const { seller } = route.params;
@@ -28,45 +29,8 @@ export default function AccountInfo({navigation}) {
   }, [navigation]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>     
+    <View style={{ flex: 1, backgroundColor: 'white' }}>     
       <ScrollView style={styles.container}>
-        <View style={styles.profile}>
-          <View style={styles.profileTop}>
-            <View style={styles.avatar}>
-              <Image
-                alt=""
-                source={{
-                  uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
-                }}
-                style={styles.avatarImg}
-              />
-
-              <View style={styles.avatarNotification} />
-            </View>
-
-            <View style={styles.profileBody}>
-              <Text style={styles.profileTitle}>{seller.username}</Text>
-
-              <Text style={styles.profileSubtitle}>
-                category
-                {' · '}
-                <Text style={{ color: '#266EF1' }}>{seller.email}</Text>
-              </Text>
-            </View>
-          </View>
-
-          <Text style={styles.profileDescription}>
-            {seller.brief}
-          </Text>
-          <View style={styles.about}>
-            <Text style={styles.aboutTitle}>About</Text>
-
-            <Text style={styles.aboutDescription}>
-            {seller.overview}
-            </Text>
-        </View>
-        </View>
-
         <View style={styles.stats}>
           {[
             { label: 'Location', value: seller.city },
@@ -81,37 +45,16 @@ export default function AccountInfo({navigation}) {
               <Text style={styles.statsItemValue}>{value}</Text>
             </View>
           ))}
-        </View>
-
-        <View style={styles.btnGroup}>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-            style={{ flex: 1, paddingHorizontal: 6 }}>
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>Follow</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-            style={{ flex: 1, paddingHorizontal: 6 }}>
-            <View style={styles.btnPrimary}>
-              <Text style={styles.btnPrimaryText}>Message</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        </View>     
         <View style={styles.photos}>
-              <Swiper
+              <Swiper 
                 renderPagination={(index, total) => (
                   <View style={styles.photosPagination}>
                     <Text style={styles.photosPaginationText}>
                       {index + 1} / {total}
                     </Text>
                   </View>
-                )}>
+                )} >
                 {thumbnails.map((thumbnail, index) => (
                   <Image
                     alt=""
@@ -121,9 +64,62 @@ export default function AccountInfo({navigation}) {
                   />
                 ))}
               </Swiper>
+        </View>
+        <View style={styles.profileContainer}>
+          <View style={styles.profileTop}>
+            <View style={styles.avatar}>
+              <Image
+                alt=""
+                source={{
+                  
+                }}
+                style={styles.avatarImg}
+              />
+
+              <View style={styles.avatarNotification} />
             </View>
+
+            <View style={styles.profileBody}>
+              <Text style={styles.profileTitle}>{seller.username}</Text>
+              <Text style={styles.profileSubtitle}>category</Text>
+              <Text style={{ color: '#266EF1' }}>{seller.email}</Text>
+            </View>
+          </View>
+          <View>
+            <Text style={styles.profileDescription}>
+              {seller.brief}
+            </Text>
+            <View style={styles.about}>
+
+              <Text style={styles.aboutDescription}>
+              {seller.overview}
+              </Text>
+            </View>
+          </View>
+        </View>
       </ScrollView >
-    </SafeAreaView>
+      <View style={styles.overlay}>
+        
+        <View style={styles.btnGroup}>
+          <TouchableOpacity
+            onPress={() => {
+              // handle onPress
+            }}
+            style={{ flex: 1, paddingHorizontal: 6 }}>
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Join Seller</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {() => navigation.navigate("inbox");}}
+            style={{ flex: 1, paddingHorizontal: 6 }}>
+            <View style={styles.btnPrimary}>
+              <Text style={styles.btnPrimaryText}>Chat</Text>
+            </View>
+          </TouchableOpacity>
+        </View>         
+      </View>
+    </View>
   );
 }
 
@@ -148,29 +144,41 @@ const styles = StyleSheet.create({
   },
   container: {
     paddingVertical: 5,
-    paddingHorizontal: 24,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+    backgroundColor:'white'
   },
   profileTop: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginVertical: 8,
+  },
+  profileContainer:{
+    margin: 15,
+    backgroundColor:'white',
+    borderRadius:10,
+    padding:10,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 1,
   },
   profileBody: {
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingLeft: 16,
+    paddingLeft: 14,
   },
   profileTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     lineHeight: 32,
     color: '#121a26',
-    marginBottom: 6,
   },
   profileSubtitle: {
     fontSize: 15,
@@ -178,16 +186,16 @@ const styles = StyleSheet.create({
     color: '#778599',
   },
   profileDescription: {
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: 'bold',
     lineHeight: 18,
-    
+    paddingVertical:5
   },
 
   stats: {
     backgroundColor: '#fff',
     flexDirection: 'row',
-    padding: 10,
+
   },
   statsItem: {
     flexDirection: 'column',
@@ -196,14 +204,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-   
-  
     borderColor: '#1e90ff',
   },
   statsItemText: {
     fontSize: 14,
     fontWeight: '400',
-    lineHeight: 18,
     color: '#778599',
  
   },
@@ -213,6 +218,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '600',
     color: '#fff',
+    
   },
   btnPrimary: {
     flexDirection: 'row',
@@ -236,8 +242,8 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   avatarImg: {
-    width: 80,
-    height: 80,
+    width: 60,
+    height: 60,
     borderRadius: 9999,
     borderWidth:2,
     borderColor:'#1e90ff'
@@ -256,9 +262,9 @@ const styles = StyleSheet.create({
   photos: {
     marginTop: 12,
     position: 'relative',
-    height: 240,
+    height: 250,
     overflow: 'hidden',
-    borderRadius: 12,
+    
   },
   photosPagination: {
     position: 'absolute',
@@ -282,23 +288,39 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     width: '100%',
-    height: 240,
+    height: 250,
   },
-  about: {
-    marginHorizontal: 20,
-  },
-  aboutTitle: {
-    fontWeight: '700',
-    fontSize: 20,
-    lineHeight: 32,
-    color: '#242329',
-    marginBottom: 4,
-  },
+
+
   aboutDescription: {
     fontWeight: '500',
     fontSize: 12,
     lineHeight: 20,
     color: '#7b7c7e',
   },
+  overlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#fff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    shadowColor: '#000',
+    borderTopRightRadius:10,
+    borderTopLeftRadius:10,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+    
+  },
+ 
 
 });
