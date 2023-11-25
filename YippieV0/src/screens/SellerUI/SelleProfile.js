@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   StyleSheet,
   ScrollView,
@@ -6,15 +6,12 @@ import {
   Text,
   Image,
   TouchableOpacity,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { StatusBar } from 'expo-status-bar'
-import FeatherIcon from 'react-native-vector-icons/Feather';
-import Styles from './Styles';
-import { useNavigation } from '@react-navigation/native';
-
-
-
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
+import FeatherIcon from "react-native-vector-icons/Feather";
+import Styles from "./Styles";
+import { useNavigation } from "@react-navigation/native";
 
 const SellerProfile = () => {
   const [value, setValue] = React.useState(0);
@@ -22,14 +19,15 @@ const SellerProfile = () => {
 
   const SECTIONS = [
     {
-      header: 'Catalogue',
-      icon: 'shopping-bag',
+      header: "Catalogue",
+      icon: "shopping-bag",
       items: (
         <View style={Styles.customContent}>
           <TouchableOpacity
             onPress={() => {
-              navigation.navigate('AddProduct')
-            }}>
+              navigation.navigate("AddProduct");
+            }}
+          >
             <View style={Styles.addProduct}>
               <Text style={Styles.addText}>Add a product</Text>
               <FeatherIcon color="#fff" name="plus" size={16} />
@@ -39,8 +37,8 @@ const SellerProfile = () => {
       ),
     },
     {
-      header: 'profile',
-      icon: 'help-circle',
+      header: "profile",
+      icon: "help-circle",
       items: (
         <View style={Styles.customContent}>
           <Text>Custom Content Here</Text>
@@ -48,8 +46,8 @@ const SellerProfile = () => {
       ),
     },
     {
-      header: 'Stats',
-      icon: 'align-center',
+      header: "Stats",
+      icon: "align-center",
       items: (
         <View style={Styles.customContent}>
           <Text>Your Custom Content</Text>
@@ -57,8 +55,8 @@ const SellerProfile = () => {
       ),
     },
     {
-      header: 'Preferences',
-      icon: 'settings',
+      header: "Preferences",
+      icon: "settings",
       items: (
         <View style={Styles.customContent}>
           <Text>Your Custom Content</Text>
@@ -77,7 +75,7 @@ const SellerProfile = () => {
   }, []);
 
   return (
-    <SafeAreaView style={{ backgroundColor: '#f8f8f8', flex: 1 }}>
+    <SafeAreaView style={{ backgroundColor: "#f8f8f8", flex: 1 }}>
       <StatusBar backgroundColor="white" barStyle="light-content" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.profile}>
@@ -85,7 +83,7 @@ const SellerProfile = () => {
             <Image
               alt=""
               source={{
-                uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80',
+                uri: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80",
               }}
               style={styles.profileAvatar}
             />
@@ -99,43 +97,46 @@ const SellerProfile = () => {
         </View>
 
         <View style={styles.content}>
-        <View style={styles.tabs}>
-          {tabs.map(({ name, icon }, index) => {
-            const isActive = index === value;
+          <View style={styles.tabs}>
+            {tabs.map(({ name, icon }, index) => {
+              const isActive = index === value;
 
-            return (
-              <View
-                key={name}
-                style={[
-                  styles.tabWrapper,
-                  isActive && { borderBottomColor: '#1e90ff' },
-                ]}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setValue(index);
-                  }}>
-                  <View style={styles.tab}>
-                    <FeatherIcon
-                      color={isActive ? '#1e90ff' : '#eaf5ff'}
-                      name={icon}
-                      size={16}
-                    />
+              return (
+                <View
+                  key={name}
+                  style={[
+                    styles.tabWrapper,
+                    isActive && { borderBottomColor: "#1e90ff" },
+                  ]}
+                >
+                  <TouchableOpacity
+                    onPress={() => {
+                      setValue(index);
+                    }}
+                  >
+                    <View style={styles.tab}>
+                      <FeatherIcon
+                        color={isActive ? "#1e90ff" : "#eaf5ff"}
+                        name={icon}
+                        size={16}
+                      />
 
-                    <Text
-                      style={[
-                        styles.tabText,
-                        isActive && { color: '#1e90ff' },
-                      ]}>
-                      {name}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            );
-          })}
+                      <Text
+                        style={[
+                          styles.tabText,
+                          isActive && { color: "#1e90ff" },
+                        ]}
+                      >
+                        {name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+          </View>
+          {SECTIONS[value].items}
         </View>
-        {SECTIONS[value].items}
-      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -151,78 +152,77 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: '700',
-    color: '#1d1d1d',
+    fontWeight: "700",
+    color: "#1d1d1d",
     marginBottom: 6,
   },
   subtitle: {
     fontSize: 15,
-    fontWeight: '500',
-    color: '#929292',
+    fontWeight: "500",
+    color: "#929292",
   },
   profile: {
     paddingTop: 12,
     paddingHorizontal: 24,
     paddingBottom: 24,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   profileHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
   profileAvatar: {
     width: 60,
     height: 60,
     borderRadius: 9999,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     marginRight: 12,
   },
   profileName: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#3d3d3d',
+    fontWeight: "600",
+    color: "#3d3d3d",
   },
   profileHandle: {
     marginTop: 4,
     fontSize: 15,
-    color: '#989898',
+    color: "#989898",
   },
   tabs: {
     padding: 16,
-    flexDirection: 'row',
-
+    flexDirection: "row",
   },
   tab: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingTop: 10,
     paddingBottom: 10,
-    position: 'relative',
-    overflow: 'hidden',
+    position: "relative",
+    overflow: "hidden",
   },
   tabWrapper: {
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    borderColor: '#e5e7eb',
+    borderColor: "#e5e7eb",
     borderBottomWidth: 2,
   },
   tabText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#6b7280',
+    fontWeight: "600",
+    color: "#6b7280",
     marginLeft: 5,
   },
   container: {
-    flex:1,
+    flex: 1,
   },
   content: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderColor: '#e3e3e3',
-    flex:1
+    borderColor: "#e3e3e3",
+    flex: 1,
   },
 });

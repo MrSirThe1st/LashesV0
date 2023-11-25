@@ -1,17 +1,13 @@
 import React from "react";
-import { StyleSheet, View, Image, Text, Pressable } from 'react-native';
+import { StyleSheet, View, Image, Text, Pressable } from "react-native";
 
 const SelectButton = (props) => {
   const { SignUpText, buttonText, Icon, onPress } = props;
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.square}>
-        <Image
-          style={styles.icon} 
-          source={Icon}
-          resizeMode="contain"
-        />
+        <Image style={styles.icon} source={Icon} resizeMode="contain" />
       </View>
       <View style={styles.textContainer}>
         <Text style={styles.text}>{SignUpText}</Text>
@@ -27,17 +23,17 @@ const SelectButton = (props) => {
       </Pressable>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 10,
     width: 180,
     marginHorizontal: 10,
-    elevation: 5
+    elevation: 5,
   },
   square: {
     width: 120,
@@ -46,20 +42,20 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    margin: 10
+    margin: 10,
   },
   icon: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    resizeMode: 'contain'
+    resizeMode: "contain",
   },
   textContainer: {
     marginVertical: 10,
   },
   text: {
     fontSize: 18,
-    fontWeight: '500'
+    fontWeight: "500",
   },
   button: {
     borderRadius: 5,
@@ -67,12 +63,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     marginTop: 10,
     marginVertical: 5,
-    backgroundColor: '#1e90ff'
+    backgroundColor: "#1e90ff",
   },
   buttonText: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white'
+    fontWeight: "bold",
+    color: "white",
   },
 });
 

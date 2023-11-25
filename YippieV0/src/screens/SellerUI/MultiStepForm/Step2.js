@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, SafeAreaView, StatusBar, TouchableOpacity, TextInput} from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  StatusBar,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
-import { ProgressBar, } from "react-native-paper";
+import { ProgressBar } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 
-
-const Step2 = ({ navigation,route  }) => {
-
-  const [country, setCountry] = useState(""); 
-  const [state, setState] = useState('');
-  const [city, setCity] = useState('');
+const Step2 = ({ navigation, route }) => {
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
   const { role } = route.params;
   const [isFocus, setIsFocus] = useState(false);
 
@@ -27,7 +33,6 @@ const Step2 = ({ navigation,route  }) => {
     control,
     formState: { errors },
   } = useForm({ defaultValues: WizardStore.useState((s) => s) });
-  
 
   useEffect(() => {
     isFocused &&
@@ -44,25 +49,31 @@ const Step2 = ({ navigation,route  }) => {
       s.city = data.city;
       s.state = data.state;
     });
-    navigation.navigate("Step3",{  role: 'seller' });
+    navigation.navigate("Step3", { role: "seller" });
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
       <ProgressBar
-      style={styles.progressBar}
-      progress={WizardStore.useState().progress / 100}
-      color="#1e90ff" // Set the color to your primary color
+        style={styles.progressBar}
+        progress={WizardStore.useState().progress / 100}
+        color="#1e90ff" // Set the color to your primary color
       />
       <View>
-
         <View style={styles.FormContainer}>
           <View style={styles.DropdownContainer}>
-            <View style={{ alignItems: "center", justifyContent: "center", marginBottom:10}}>
-            <Text style={styles.title}>
-              Let's Take Your <Text style={{ color: "#1e90ff" }}> Location </Text>
-            </Text>
+            <View
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: 10,
+              }}
+            >
+              <Text style={styles.title}>
+                Let's Take Your{" "}
+                <Text style={{ color: "#1e90ff" }}> Location </Text>
+              </Text>
             </View>
             <View>
               <View style={styles.formEntry}>
@@ -76,19 +87,22 @@ const Step2 = ({ navigation,route  }) => {
                       <Text style={styles.inputLabel}>Country</Text>
                       <TextInput
                         autoCorrect={false}
-                        onChangeText={(text)=>{setCountry(text); onChange(text);}}
+                        onChangeText={(text) => {
+                          setCountry(text);
+                          onChange(text);
+                        }}
                         placeholder="Enter your country"
                         placeholderTextColor="#6b7280"
                         style={styles.inputControl}
                         value={country}
-                        autoCapitalize = "none"
+                        autoCapitalize="none"
                         onBlur={onBlur}
                       />
                     </View>
                   )}
                   name="country"
                 />
-                  {errors.country && (
+                {errors.country && (
                   <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
                     This is a required field.
                   </Text>
@@ -107,19 +121,22 @@ const Step2 = ({ navigation,route  }) => {
                       <Text style={styles.inputLabel}>State</Text>
                       <TextInput
                         autoCorrect={false}
-                        onChangeText={(text)=>{setState(text); onChange(text);}}
+                        onChangeText={(text) => {
+                          setState(text);
+                          onChange(text);
+                        }}
                         placeholder="Enter your State"
                         placeholderTextColor="#6b7280"
                         style={styles.inputControl}
                         value={state}
-                        autoCapitalize = "none"
+                        autoCapitalize="none"
                         onBlur={onBlur}
                       />
                     </View>
                   )}
                   name="state"
                 />
-                  {errors.state && (
+                {errors.state && (
                   <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
                     This is a required field.
                   </Text>
@@ -138,19 +155,22 @@ const Step2 = ({ navigation,route  }) => {
                       <Text style={styles.inputLabel}>City</Text>
                       <TextInput
                         autoCorrect={false}
-                        onChangeText={(text)=>{setCity(text); onChange(text);}}
+                        onChangeText={(text) => {
+                          setCity(text);
+                          onChange(text);
+                        }}
                         placeholder="Enter your city"
                         placeholderTextColor="#6b7280"
                         style={styles.inputControl}
                         value={city}
-                        autoCapitalize = "none"
+                        autoCapitalize="none"
                         onBlur={onBlur}
                       />
                     </View>
                   )}
                   name="city"
                 />
-                  {errors.city && (
+                {errors.city && (
                   <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
                     This is a required field.
                   </Text>
@@ -159,7 +179,6 @@ const Step2 = ({ navigation,route  }) => {
             </View>
           </View>
 
-          
           {/* Next button */}
           <View style={styles.BottomContainer}>
             <TouchableOpacity
@@ -179,7 +198,6 @@ const Step2 = ({ navigation,route  }) => {
             </TouchableOpacity>
           </View>
         </View>
-
       </View>
     </SafeAreaView>
   );
@@ -193,11 +211,11 @@ const styles = StyleSheet.create({
   },
   formEntry: {
     marginHorizontal: 8,
-    marginVertical:4
+    marginVertical: 4,
   },
   container: {
     flex: 1,
-    backgroundColor:'#eaf5ff'
+    backgroundColor: "#eaf5ff",
   },
   progressBar: {
     marginBottom: 16,
@@ -233,33 +251,33 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
   },
-  FormContainer:{
+  FormContainer: {
     paddingHorizontal: 16,
-    height:"100%",
-    justifyContent:'space-between',
+    height: "100%",
+    justifyContent: "space-between",
   },
-  BottomContainer:{
-    alignItems:'center',
-    marginBottom:50,
-    marginTop:'auto',
-    justifyContent:'center',
+  BottomContainer: {
+    alignItems: "center",
+    marginBottom: 50,
+    marginTop: "auto",
+    justifyContent: "center",
   },
   input: {
     marginBottom: 16,
   },
   inputLabel: {
     fontSize: 17,
-    fontWeight: '600',
-    color: '#222',
+    fontWeight: "600",
+    color: "#222",
     marginBottom: 8,
   },
   inputControl: {
     height: 44,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 15,
-    fontWeight: '500',
-    color: '#222',
+    fontWeight: "500",
+    color: "#222",
   },
 });

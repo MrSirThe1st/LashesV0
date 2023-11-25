@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Onboarding from "../screens/onboarding/Onboarding";
@@ -26,9 +25,8 @@ import { onAuthStateChanged } from "firebase/auth";
 import SellerProfile from "../screens/SellerUI/SelleProfile";
 import { ActivityIndicator } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
-import { doc, getDocs,collection,query, where } from "firebase/firestore";
+import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import SkeletonHome from "../componets/SkeletonHome";
-
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -203,7 +201,6 @@ const HomeTabNavigatorSeller = () => (
   </Tab.Navigator>
 );
 
-
 const Navigation = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -242,12 +239,9 @@ const Navigation = () => {
       setLoading(false);
     }
   }
-  
 
   if (loading) {
-    return (
-        <SkeletonHome/>
-    );
+    return <SkeletonHome />;
   }
   return (
     <NavigationContainer>
@@ -270,7 +264,7 @@ const Navigation = () => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
-                  <Stack.Screen
+                <Stack.Screen
                   name="AddProduct"
                   component={AddProduct}
                   options={{

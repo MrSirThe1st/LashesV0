@@ -76,11 +76,11 @@ const Item = ({ image, name }) => (
   <View style={styles.itemContainer}>
     <Pressable style={styles.pressable}>
       <View style={styles.pressableImage}>
-        <Image source={image} style={styles.image} resizeMode="cover"/>
+        <Image source={image} style={styles.image} resizeMode="cover" />
       </View>
       <View>
-          <Text style={styles.text}>{name}</Text>
-        </View>
+        <Text style={styles.text}>{name}</Text>
+      </View>
     </Pressable>
   </View>
 );
@@ -93,7 +93,7 @@ const CategoriesPage = () => {
       <FlatList
         data={services}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id} 
+        keyExtractor={(item) => item.id}
         numColumns={2}
       />
     </SafeAreaView>
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
-    fontSize:20
+    fontSize: 20,
   },
 });
 

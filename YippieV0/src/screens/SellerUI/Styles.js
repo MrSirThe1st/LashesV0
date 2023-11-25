@@ -1,31 +1,28 @@
-
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 const Styles = StyleSheet.create({
-
-  container:{
-    flex:1
+  container: {
+    flex: 1,
   },
   customContent: {
     padding: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  addProduct:{
+  addProduct: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#1e90ff',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1e90ff",
     borderRadius: 12,
   },
-  addText:{
+  addText: {
     marginRight: 8,
     fontSize: 15,
-    fontWeight: '600',
-    color: '#fff',
+    fontWeight: "600",
+    color: "#fff",
   },
-
 });
 
 export default Styles;

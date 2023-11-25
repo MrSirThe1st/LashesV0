@@ -1,4 +1,4 @@
-import React, { useEffect, useState }from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -16,28 +16,28 @@ import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { Skeleton } from '@rneui/themed';
+import { Skeleton } from "@rneui/themed";
 
 const YourLogoComponent = () => (
   <Image
     source={require("../../assets/icons/lashes-GoodBLue.png")}
-    style={{ width: 100, height: 40,}}
+    style={{ width: 100, height: 40 }}
     resizeMode="contain"
   />
 );
 
-export default function Home({ navigation}) {
-
+export default function Home({ navigation }) {
   const [sellerData, setSellerData] = useState([]);
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
-  const [user, setUser] = useState(null) 
+  const [user, setUser] = useState(null);
 
- 
-
-  useEffect(()=>{
+  useEffect(() => {
     async function fetchData() {
-      const q = query(collection(firestore, "users"), where("role", "==", "seller"));
+      const q = query(
+        collection(firestore, "users"),
+        where("role", "==", "seller")
+      );
       try {
         const querySnapshot = await getDocs(q);
         const sellers = querySnapshot.docs.map((doc) => doc.data());
@@ -45,20 +45,20 @@ export default function Home({ navigation}) {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-    }  
+    }
     fetchData();
-  },[]);
-  
+  }, []);
+
   useEffect(() => {
     if (user) {
       firestore
         .collection("users")
         .doc(auth.currentUser.uid)
         .get()
-        .then(snapshot => {
+        .then((snapshot) => {
           setUser(snapshot.data());
         })
-        .catch(error => {
+        .catch((error) => {
           console.error("Error fetching user data:", error);
         });
     }
@@ -69,14 +69,14 @@ export default function Home({ navigation}) {
       firestore
         .collection("users")
         .where("role", "==", "seller")
-        .onSnapshot(users => {
+        .onSnapshot((users) => {
           if (!users.empty) {
             const USERS = [];
-  
-            users.forEach(user => {
+
+            users.forEach((user) => {
               USERS.push(user.data());
             });
-  
+
             setUser(USERS);
             setSellerData(USERS);
           }
@@ -86,7 +86,7 @@ export default function Home({ navigation}) {
 
   return (
     <SafeAreaView style={styles.container}>
-    {/* <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/> */}
+      {/* <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/> */}
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>
@@ -99,11 +99,11 @@ export default function Home({ navigation}) {
             placeholderTextColor="gray"
           />
         </View>
-          <Services navigation={navigation}/>
-       
-          <View style={styles.Cardlists}>
-              <CardLists sellerData={sellerData} navigation={navigation}/>
-          </View>  
+        <Services navigation={navigation} />
+
+        <View style={styles.Cardlists}>
+          <CardLists sellerData={sellerData} navigation={navigation} />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -112,7 +112,7 @@ export default function Home({ navigation}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'white'
+    backgroundColor: "white",
   },
   stickyHeader: {
     flexDirection: "row",
@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
   icon: {
     marginRight: 10,
   },
-  Cardlists:{
-    backgroundColor:"white",
-    flex:1
-  }
+  Cardlists: {
+    backgroundColor: "white",
+    flex: 1,
+  },
 });

@@ -7,11 +7,11 @@ import {
   StyleSheet,
   Pressable,
   TouchableWithoutFeedback,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const Services = ({navigation}) => {
+const Services = ({ navigation }) => {
   const services = [
     {
       id: "0",
@@ -68,12 +68,11 @@ const Services = ({navigation}) => {
       image: require("../assets/homeAssets/hand.jpg"),
       name: "Handmade ",
     },
-    
   ];
   const windowWidth = Dimensions.get("window").width;
   const itemWidth = windowWidth / 3;
-  const imageWidth = itemWidth - 24; 
-  const imageHeight = imageWidth * 0.8; 
+  const imageWidth = itemWidth - 24;
+  const imageHeight = imageWidth * 0.8;
 
   return (
     <View style={styles.container}>
@@ -105,7 +104,12 @@ const Services = ({navigation}) => {
             style={[styles.pressable, { width: itemWidth }]}
             key={service.id}
           >
-            <View style={[styles.pressableImage, { width: imageWidth, height: imageHeight }]}>
+            <View
+              style={[
+                styles.pressableImage,
+                { width: imageWidth, height: imageHeight },
+              ]}
+            >
               <Image source={service.image} style={styles.image} />
             </View>
             <View>
@@ -121,26 +125,23 @@ const Services = ({navigation}) => {
 export default Services;
 
 const styles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   image: {
     width: "100%",
     height: "100%",
     resizeMode: "contain",
-    borderRadius:5,
-    
+    borderRadius: 5,
   },
   pressable: {
     alignItems: "center",
     justifyContent: "center",
-    marginBottom:30,
+    marginBottom: 30,
   },
   pressableImage: {
     backgroundColor: "#f2f2f2",
     borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
-    
   },
   text: {
     margin: 10,

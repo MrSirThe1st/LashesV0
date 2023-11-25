@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet,View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Navigation from "./src/Navigation/Navigation";
 import Login from "./src/screens/Login&SignUp/Login";
 import SignUp from "./src/screens/Login&SignUp/SignUp";
@@ -10,7 +10,7 @@ import Profile from "./src/screens/BuyerUI/Profile";
 import Onboarding from "./src/screens/onboarding/Onboarding";
 import NavigationForm from "./src/screens/SellerUI/MultiStepForm/NavigationForm";
 import Step2 from "./src/screens/SellerUI/MultiStepForm/Step2";
-import { Provider as PaperProvider } from 'react-native-paper'
+import { Provider as PaperProvider } from "react-native-paper";
 import SellerProfile from "./src/screens/SellerUI/SelleProfile";
 import AddProduct from "./src/screens/SellerUI/AddProduct";
 import Example from "./src/screens/SellerUI/MultiStepForm/test";
@@ -25,9 +25,9 @@ import SkeletonHome from "./src/componets/SkeletonHome";
 export default function App() {
   return (
     <View style={styles.container}>
-        <PaperProvider>
-          <Navigation/>
-        </PaperProvider>
+      <PaperProvider>
+        <Navigation />
+      </PaperProvider>
       <StatusBar style="auto" />
     </View>
   );
