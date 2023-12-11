@@ -21,12 +21,20 @@ import Step3 from "../screens/SellerUI/MultiStepForm/Step3";
 import Step4 from "../screens/SellerUI/MultiStepForm/Step4";
 import AccountInfo from "../screens/SellerUI/AccountInfo";
 import AddProduct from "../screens/SellerUI/AddProduct";
+import AddService from "../screens/SellerUI/AddService";
 import { onAuthStateChanged } from "firebase/auth";
 import SellerProfile from "../screens/SellerUI/SelleProfile";
 import { ActivityIndicator } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import SkeletonHome from "../componets/SkeletonHome";
+import SearchPage from "../screens/BuyerUI/SearchPage";
+import Chat from "../chat/Chat";
+import Catalogue from "../screens/SellerUI/Catalogue";
+import CategoryScreen from "../categories/CategoryScreen";
+import ProductDescription from "../screens/SellerUI/ProductDescription";
+import Search from "../componets/Search";
+import EditAccount from "../screens/SellerUI/settings/EditAccount";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -59,9 +67,9 @@ const HomeTabNavigator = () => (
       options={{
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <MaterialIcons name="list-alt" size={24} color="#1e90ff" />
+            <MaterialIcons name="library-books" size={24} color="#1e90ff" />
           ) : (
-            <MaterialIcons name="list-alt" size={24} color="black" />
+            <MaterialIcons name="library-books" size={24} color="black" />
           ),
       }}
     />
@@ -70,11 +78,12 @@ const HomeTabNavigator = () => (
       name="Categories"
       component={CategoriesPage}
       options={{
+        headerShown: false,
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <MaterialIcons name="category" size={24} color="#1e90ff" />
+            <MaterialIcons name="search" size={24} color="#1e90ff" />
           ) : (
-            <MaterialIcons name="category" size={24} color="black" />
+            <MaterialIcons name="search" size={24} color="black" />
           ),
       }}
     />
@@ -144,9 +153,9 @@ const HomeTabNavigatorSeller = () => (
       options={{
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <MaterialIcons name="list-alt" size={24} color="#1e90ff" />
+            <MaterialIcons name="library-books" size={24} color="#1e90ff" />
           ) : (
-            <MaterialIcons name="list-alt" size={24} color="black" />
+            <MaterialIcons name="library-books" size={24} color="black" />
           ),
       }}
     />
@@ -155,11 +164,12 @@ const HomeTabNavigatorSeller = () => (
       name="Categories"
       component={CategoriesPage}
       options={{
+        headerShown: false,
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <MaterialIcons name="category" size={24} color="#1e90ff" />
+            <MaterialIcons name="search" size={24} color="#1e90ff" />
           ) : (
-            <MaterialIcons name="category" size={24} color="black" />
+            <MaterialIcons name="search" size={24} color="black" />
           ),
       }}
     />
@@ -273,6 +283,78 @@ const Navigation = () => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
+                <Stack.Screen
+                  name="AddService"
+                  component={AddService}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="SearchPage"
+                  component={SearchPage}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Chat"
+                  component={Chat}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Catalogue"
+                  component={Catalogue}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="CategoryScreen"
+                  component={CategoryScreen}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="ProductDescription"
+                  component={ProductDescription}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Search"
+                  component={Search}
+                  options={{
+                    headerShown: false,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="EditAccount"
+                  component={EditAccount}
+                  options={{
+                    headerShown: true,
+                    title: "Account",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
               </>
             ) : (
               <>
@@ -287,6 +369,69 @@ const Navigation = () => {
                   options={{
                     headerShown: true,
                     title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="SearchPage"
+                  component={SearchPage}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Chat"
+                  component={Chat}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Catalogue"
+                  component={Catalogue}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="CategoryScreen"
+                  component={CategoryScreen}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="ProductDescription"
+                  component={ProductDescription}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Search"
+                  component={Search}
+                  options={{
+                    headerShown: false,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="EditAccount"
+                  component={EditAccount}
+                  options={{
+                    headerShown: true,
+                    title: "Account",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />

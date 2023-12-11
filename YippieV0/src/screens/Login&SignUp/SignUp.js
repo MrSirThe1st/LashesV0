@@ -71,7 +71,7 @@ const SignUp = ({ navigation, route }) => {
         <View style={styles.inputContainer}>
           <Icon
             name="account-circle"
-            size={24}
+            size={20}
             color="black"
             style={styles.icon}
           />
@@ -84,11 +84,11 @@ const SignUp = ({ navigation, route }) => {
             autoCapitalize="none"
           />
         </View>
-        <Text>The username will be publicly visible</Text>
+        <Text>The username should be your business name</Text>
         <View style={styles.inputContainer}>
           <Icon
             name="alternate-email"
-            size={24}
+            size={20}
             color="black"
             style={styles.icon}
           />
@@ -102,7 +102,7 @@ const SignUp = ({ navigation, route }) => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Icon name="lock" size={24} color="black" style={styles.icon} />
+          <Icon name="lock" size={20} color="black" style={styles.icon} />
           <TextInput
             style={styles.input}
             value={cellphoneNumber}
@@ -113,7 +113,7 @@ const SignUp = ({ navigation, route }) => {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Icon name="lock" size={24} color="black" style={styles.icon} />
+          <Icon name="lock" size={20} color="black" style={styles.icon} />
           <TextInput
             style={styles.input}
             value={password}
@@ -124,9 +124,9 @@ const SignUp = ({ navigation, route }) => {
             autoCapitalize="none"
           />
         </View>
-        <Text>Combine upper and lower case letters and numbers</Text>
+
         <View style={styles.inputContainer}>
-          <Icon name="lock" size={24} color="black" style={styles.icon} />
+          <Icon name="lock" size={20} color="black" style={styles.icon} />
           <TextInput
             style={styles.input}
             value={confirmPassword}
@@ -261,12 +261,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 1,
     borderColor: "black",
-    borderRadius: 5,
-    paddingHorizontal: 15,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingHorizontal: 16,
     paddingVertical: 10,
     margin: 12,
     width: "90%",
-    height: 45,
+    height: 44,
+    borderWidth: 2,
+    borderColor: "#6fbfff",
   },
   forgotPasswordContainer: {
     position: "absolute",

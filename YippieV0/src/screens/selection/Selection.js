@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import SelectButton from "../../componets/SelectButton";
 import Separator from "../../componets/Separator";
 
+
 const Selection = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -11,7 +12,7 @@ const Selection = ({ navigation }) => {
       <View style={styles.upperContainer}>
         <View style={styles.selectButtonDiv}>
           <SelectButton
-            SignUpText={`I'm a buyer`}
+            // SignUpText={`I'm a buyer`}
             buttonText={"Buyer sign up"}
             Icon={require("../../assets/homeAssets/happy.png")}
             onPress={() => {
@@ -19,7 +20,7 @@ const Selection = ({ navigation }) => {
             }}
           />
           <SelectButton
-            SignUpText={`I'm a Seller`}
+            // SignUpText={`I'm a Seller`}
             buttonText={"Seller sign up"}
             Icon={require("../../assets/homeAssets/money-currency.png")}
             onPress={() => {

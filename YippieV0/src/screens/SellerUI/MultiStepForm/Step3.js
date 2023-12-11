@@ -7,6 +7,8 @@ import {
   StatusBar,
   TouchableOpacity,
   TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
@@ -16,14 +18,54 @@ import { Dropdown } from "react-native-element-dropdown";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
 const data = [
-  { label: "category", value: "1" },
-  { label: "category", value: "2" },
-  { label: "category", value: "3" },
-  { label: "category", value: "4" },
-  { label: "category", value: "5" },
-  { label: "category", value: "6" },
-  { label: "category", value: "7" },
-  { label: "category", value: "8" },
+  {
+    value: "0",
+    label: "Hair Styling",
+  },
+  {
+    value: "1",
+    label: "Makeup",
+  },
+  {
+    value: "2",
+    label: "Tailoring",
+  },
+  {
+    value: "3",
+    label: "Manicures",
+  },
+  {
+    value: "4",
+    label: "Skincare",
+  },
+  {
+    value: "5",
+    label: "Nutrition",
+  },
+  {
+    value: "6",
+    label: "Jewelry",
+  },
+  {
+    value: "7",
+    label: "Event planning",
+  },
+  {
+    value: "8",
+    label: "Baking",
+  },
+  {
+    value: "9",
+    label: "Health & Fitness",
+  },
+  {
+    value: "10",
+    label: "Handmade",
+  },
+  {
+    value: "11",
+    label: "Babies & kids",
+  },
 ];
 
 const Step3 = ({ navigation, route }) => {
@@ -39,26 +81,15 @@ const Step3 = ({ navigation, route }) => {
     });
   }, [navigation]);
 
-  const isFocused = useIsFocused();
-
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({ defaultValues: WizardStore.useState((s) => s) });
 
-  useEffect(() => {
-    isFocused &&
-      WizardStore.update((s) => {
-        s.progress = 66;
-      });
-    console.log("updated state...", WizardStore.getRawState().progress);
-  }, [isFocused]);
-
   const onSubmit = (data) => {
     // Update WizardStore with form data and navigate to the next step
     WizardStore.update((s) => {
-      s.progress = 100;
       s.overview = data.overview;
       s.brief = data.brief;
     });
@@ -68,176 +99,180 @@ const Step3 = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
-      <ProgressBar
-        style={styles.progressBar}
-        progress={WizardStore.useState().progress / 100}
-        color="#1e90ff" // Set the color to your primary color
-      />
-      <View style={styles.FormContainer}>
-        <View>
-          <View
-            style={{
-              alignItems: "center",
-              justifyContent: "center",
-              marginBottom: 10,
-            }}
-          >
-            <Text style={styles.title}>
-              Tell us what you<Text style={{ color: "#1e90ff" }}> do </Text>
-            </Text>
-          </View>
-
-          <View style={styles.DropdownContainer}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.FormContainer}>
             <View>
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Dropdown
-                    style={[
-                      styles.dropdown,
-                      isFocus && { borderColor: "blue" },
-                    ]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={data}
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? "Service provided" : "..."}
-                    searchPlaceholder="Search"
-                    value={value}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={(item) => {
-                      // Handle the selected item from the fourth dropdown if needed
-                      setIsFocus(false);
-                    }}
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={styles.title}>
+                  Tell us what you<Text style={{ color: "#1e90ff" }}> do </Text>
+                </Text>
+              </View>
+
+              <View style={styles.DropdownContainer}>
+                <View>
+                  <Controller
+                    control={control}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <Dropdown
+                        style={[
+                          styles.dropdown,
+                          isFocus && { borderColor: "blue" },
+                        ]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={data}
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isFocus ? "Service provided" : ""}
+                        searchPlaceholder="Search"
+                        value={value}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={(item) => {
+                          // Handle the selected item from the fourth dropdown if needed
+                          setIsFocus(false);
+                        }}
+                      />
+                    )}
+                    name="item"
+                    defaultValue={null} // Set the initial value for the fourth dropdown
                   />
-                )}
-                name="item"
-                defaultValue={null} // Set the initial value for the fourth dropdown
-              />
+                </View>
+              </View>
+              <View style={styles.formEntry}>
+                <Controller
+                  control={control}
+                  rules={{
+                    required: false,
+                  }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View style={styles.input}>
+                      <Text style={styles.inputLabel}>
+                        Not what you are looking for?
+                      </Text>
+                      <TextInput
+                        autoCorrect={false}
+                        onChangeText={(text) => {
+                          setService(text);
+                          onChange(text);
+                        }}
+                        placeholder="create a new service"
+                        placeholderTextColor="#6b7280"
+                        style={styles.inputControl}
+                        value={service}
+                        autoCapitalize="none"
+                        onBlur={onBlur}
+                      />
+                    </View>
+                  )}
+                  name="service"
+                />
+              </View>
+              <View style={styles.formEntry}>
+                <Controller
+                  control={control}
+                  rules={{
+                    required: false,
+                  }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View style={styles.input}>
+                      <Text style={styles.inputLabel}>
+                        write a small brief?
+                      </Text>
+                      <TextInput
+                        autoCorrect={false}
+                        onChangeText={(text) => {
+                          setBrief(text);
+                          onChange(text);
+                        }}
+                        placeholder="eg. I make incredible nails"
+                        placeholderTextColor="#6b7280"
+                        style={styles.inputControl}
+                        value={brief}
+                        autoCapitalize="none"
+                        onBlur={onBlur}
+                      />
+                    </View>
+                  )}
+                  name="brief"
+                />
+              </View>
+
+              <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <Text style={styles.title}>
+                  Give us a small{" "}
+                  <Text style={{ color: "#1e90ff" }}> Overview </Text> about
+                  yourself
+                </Text>
+              </View>
+
+              <View style={styles.formEntry}>
+                <Controller
+                  control={control}
+                  rules={{
+                    required: false,
+                  }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View style={styles.inputOverview}>
+                      <TextInput
+                        autoCorrect={false}
+                        onChangeText={(text) => {
+                          setOverview(text);
+                          onChange(text);
+                        }}
+                        placeholder="Overview"
+                        placeholderTextColor="#6b7280"
+                        style={styles.inputControlOverview}
+                        value={overview}
+                        autoCapitalize="none"
+                        onBlur={onBlur}
+                        editable
+                        multiline
+                        numberOfLines={4}
+                        maxLength={150}
+                      />
+                    </View>
+                  )}
+                  name="overview"
+                />
+              </View>
+            </View>
+
+            {/* Next button */}
+            <View style={styles.BottomContainer}>
+              <TouchableOpacity
+                onPress={handleSubmit(onSubmit)}
+                activeOpacity={1}
+                style={{
+                  backgroundColor: "#1e90ff",
+                  padding: 10,
+                  borderRadius: 5,
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: "white" }}>Next step</Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.formEntry}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>
-                    Not what you are looking for?
-                  </Text>
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setService(text);
-                      onChange(text);
-                    }}
-                    placeholder="create a new service"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    value={service}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="service"
-            />
-          </View>
-          <View style={styles.formEntry}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>write a small brief?</Text>
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setBrief(text);
-                      onChange(text);
-                    }}
-                    placeholder="eg. I make incredible nails"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    value={brief}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="brief"
-            />
-          </View>
-
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
-            <Text style={styles.title}>
-              Give us a small{" "}
-              <Text style={{ color: "#1e90ff" }}> Overview </Text> about
-              yourself
-            </Text>
-          </View>
-
-          <View style={styles.formEntry}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.inputOverview}>
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setOverview(text);
-                      onChange(text);
-                    }}
-                    placeholder="Overview"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControlOverview}
-                    value={overview}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                    editable
-                    multiline
-                    numberOfLines={4}
-                    maxLength={150}
-                  />
-                </View>
-              )}
-              name="overview"
-            />
-          </View>
-        </View>
-
-        {/* Next button */}
-        <View style={styles.BottomContainer}>
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            activeOpacity={1}
-            style={{
-              backgroundColor: "#1e90ff",
-              padding: 10,
-              borderRadius: 5,
-              fontSize: 18,
-              fontWeight: "bold",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white" }}>Next step</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -324,6 +359,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: "#222",
+    borderWidth: 2,
+    borderColor: "#6fbfff",
+  },
+  inputOverview: {
+    borderWidth: 2,
+    borderColor: "#6fbfff",
+    borderRadius: 12,
   },
   inputControlOverview: {
     backgroundColor: "#fff",
@@ -336,5 +378,9 @@ const styles = StyleSheet.create({
   formEntry: {
     marginHorizontal: 8,
     marginVertical: 4,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
 });

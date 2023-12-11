@@ -3,6 +3,7 @@ import React from "react";
 import { SliderBox } from "react-native-image-slider-box";
 import datas from "./PicturesData";
 
+
 const Carousel = () => {
   return (
     <View>

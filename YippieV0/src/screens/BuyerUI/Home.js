@@ -8,6 +8,7 @@ import {
   StatusBar,
   Pressable,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -91,14 +92,14 @@ export default function Home({ navigation }) {
         <YourLogoComponent />
       </View>
       <View style={styles.content}>
-        <View style={styles.SearchContainer}>
-          <Icon name="search" size={28} color="black" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Search for services or sellers"
-            placeholderTextColor="gray"
-          />
-        </View>
+        <TouchableWithoutFeedback
+          onPress={() => navigation.navigate("SearchPage")}
+        >
+          <View style={styles.SearchContainer}>
+            <Icon name="search" size={28} color="grey" style={styles.icon} />
+            <Text style={styles.input}>Search for services</Text>
+          </View>
+        </TouchableWithoutFeedback>
         <Services navigation={navigation} />
 
         <View style={styles.Cardlists}>
@@ -134,9 +135,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    color: "black",
+    color: "grey",
     fontSize: 16,
-    fontWeight: "bold",
   },
   icon: {
     marginRight: 10,

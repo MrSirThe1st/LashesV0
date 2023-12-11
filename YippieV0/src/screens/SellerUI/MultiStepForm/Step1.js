@@ -7,6 +7,8 @@ import {
   SafeAreaView,
   StatusBar,
   TextInput,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
@@ -35,16 +37,11 @@ const Step1 = ({ navigation, route }) => {
   } = useForm({ defaultValues: WizardStore.useState((s) => s) });
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    isFocused &&
-      WizardStore.update((s) => {
-        s.progress = 0;
-      });
-  }, [isFocused]);
+
 
   const onSubmit = (data) => {
     WizardStore.update((s) => {
-      s.progress = 33;
+
       s.UserName = data.UserName;
       s.email = data.email;
       s.cellphoneNumber = data.cellphoneNumber;
@@ -56,220 +53,217 @@ const Step1 = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
-      <ProgressBar
-        style={styles.progressBar}
-        progress={WizardStore.getRawState().progress}
-        color="#1e90ff"
-      />
-      <View style={styles.FormContainer}>
-        <View>
-          <View style={{ alignItems: "center", justifyContent: "center" }}>
-            <Text style={styles.title}>
-              Let's Take In Your{" "}
-              <Text style={{ color: "#1e90ff" }}>Informations</Text>
-            </Text>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.FormContainer}>
+          <View>
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
+              <Text style={styles.title}>
+                Let's Take In Your{" "}
+                <Text style={{ color: "#1e90ff" }}>Informations</Text>
+              </Text>
+            </View>
+
+            {/* username */}
+            <View style={styles.formEntry}>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.input}>
+                    <Text style={styles.inputLabel}>UserName</Text>
+
+                    <TextInput
+                      autoCapitalize="none"
+                      onBlur={onBlur}
+                      autoCorrect={false}
+                      keyboardType="email-address"
+                      onChangeText={(text) => {
+                        setUsername(text);
+                        onChange(text);
+                      }}
+                      placeholder="john"
+                      placeholderTextColor="#6b7280"
+                      style={styles.inputControl}
+                      value={username}
+                    />
+                  </View>
+                )}
+                name="UserName"
+              />
+              {errors.UserName && (
+                <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                  This is a required field.
+                </Text>
+              )}
+            </View>
+
+            {/* email Address */}
+
+            <View style={[styles.formEntry]}>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.input}>
+                    <Text style={styles.inputLabel}>Email address</Text>
+
+                    <TextInput
+                      autoCapitalize="none"
+                      onBlur={onBlur}
+                      autoCorrect={false}
+                      keyboardType="email-address"
+                      onChangeText={(text) => {
+                        setEmail(text);
+                        onChange(text);
+                      }}
+                      placeholder="john@example.com"
+                      placeholderTextColor="#6b7280"
+                      style={styles.inputControl}
+                      value={email}
+                    />
+                  </View>
+                )}
+                name="email"
+              />
+              {errors.email && (
+                <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                  This is a required field.
+                </Text>
+              )}
+            </View>
+
+            {/* cellphoneNumber */}
+
+            <View style={[styles.formEntry]}>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.input}>
+                    <Text style={styles.inputLabel}>cellphone Number</Text>
+
+                    <TextInput
+                      autoCorrect={false}
+                      onChangeText={(text) => {
+                        setCellphoneNumber(text);
+                        onChange(text);
+                      }}
+                      placeholder="cellphone number"
+                      placeholderTextColor="#6b7280"
+                      style={styles.inputControl}
+                      secureTextEntry={true}
+                      value={cellphoneNumber}
+                      onBlur={onBlur}
+                    />
+                  </View>
+                )}
+                name="cellphoneNumber"
+              />
+              {errors.cellphoneNumber && (
+                <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                  This is a required field.
+                </Text>
+              )}
+            </View>
+
+            {/* password */}
+
+            <View style={[styles.formEntry]}>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.input}>
+                    <Text style={styles.inputLabel}>Password</Text>
+
+                    <TextInput
+                      autoCorrect={false}
+                      onChangeText={(text) => {
+                        setPassword(text);
+                        onChange(text);
+                      }}
+                      placeholder="********"
+                      placeholderTextColor="#6b7280"
+                      style={styles.inputControl}
+                      secureTextEntry={true}
+                      value={password}
+                      autoCapitalize="none"
+                      onBlur={onBlur}
+                    />
+                  </View>
+                )}
+                name="password"
+              />
+              {errors.password && (
+                <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                  Create a password before proceeding.
+                </Text>
+              )}
+            </View>
+
+            <View style={[styles.formEntry]}>
+              <Controller
+                control={control}
+                rules={{
+                  required: false,
+                }}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <View style={styles.input}>
+                    <Text style={styles.inputLabel}>Confirm password</Text>
+
+                    <TextInput
+                      autoCorrect={false}
+                      onChangeText={(text) => {
+                        setConfirmPassword(text);
+                        onChange(text);
+                      }}
+                      placeholder="********"
+                      placeholderTextColor="#6b7280"
+                      style={styles.inputControl}
+                      secureTextEntry={true}
+                      value={ConfirmPassword}
+                      autoCapitalize="none"
+                      onBlur={onBlur}
+                    />
+                  </View>
+                )}
+                name="confirmPassword"
+              />
+              {errors.confirmPassword && (
+                <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                  Create a password before proceeding.
+                </Text>
+              )}
+            </View>
           </View>
 
-          {/* username */}
-          <View style={styles.formEntry}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
+          <View style={styles.BottomContainer}>
+            <TouchableOpacity
+              onPress={handleSubmit(onSubmit)}
+              activeOpacity={1}
+              style={{
+                backgroundColor: "#1e90ff",
+                padding: 10,
+                borderRadius: 5,
+                fontSize: 18,
+                fontWeight: "bold",
+                flexDirection: "row",
+                alignItems: "center",
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>UserName</Text>
-
-                  <TextInput
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                    autoCorrect={false}
-                    keyboardType="email-address"
-                    onChangeText={(text) => {
-                      setUsername(text);
-                      onChange(text);
-                    }}
-                    placeholder="john"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    value={username}
-                  />
-                </View>
-              )}
-              name="UserName"
-            />
-            {errors.UserName && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                This is a required field.
-              </Text>
-            )}
-          </View>
-
-          {/* email Address */}
-
-          <View style={[styles.formEntry]}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>Email address</Text>
-
-                  <TextInput
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                    autoCorrect={false}
-                    keyboardType="email-address"
-                    onChangeText={(text) => {
-                      setEmail(text);
-                      onChange(text);
-                    }}
-                    placeholder="john@example.com"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    value={email}
-                  />
-                </View>
-              )}
-              name="email"
-            />
-            {errors.email && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                This is a required field.
-              </Text>
-            )}
-          </View>
-
-          {/* cellphoneNumber */}
-
-          <View style={[styles.formEntry]}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>cellphone Number</Text>
-
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setCellphoneNumber(text);
-                      onChange(text);
-                    }}
-                    placeholder="cellphone number"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    secureTextEntry={true}
-                    value={cellphoneNumber}
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="cellphoneNumber"
-            />
-            {errors.cellphoneNumber && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                This is a required field.
-              </Text>
-            )}
-          </View>
-
-          {/* password */}
-
-          <View style={[styles.formEntry]}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>Password</Text>
-
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setPassword(text);
-                      onChange(text);
-                    }}
-                    placeholder="********"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    secureTextEntry={true}
-                    value={password}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="password"
-            />
-            {errors.password && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                Create a password before proceeding.
-              </Text>
-            )}
-          </View>
-
-          <View style={[styles.formEntry]}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>Confirm password</Text>
-
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setConfirmPassword(text);
-                      onChange(text);
-                    }}
-                    placeholder="********"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    secureTextEntry={true}
-                    value={ConfirmPassword}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="confirmPassword"
-            />
-            {errors.confirmPassword && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                Create a password before proceeding.
-              </Text>
-            )}
+            >
+              <Text style={{ color: "white" }}>Save your information</Text>
+            </TouchableOpacity>
           </View>
         </View>
-
-        <View style={styles.BottomContainer}>
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            activeOpacity={1}
-            style={{
-              backgroundColor: "#1e90ff",
-              padding: 10,
-              borderRadius: 5,
-              fontSize: 18,
-              fontWeight: "bold",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white" }}>Save your information</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -323,5 +317,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: "#222",
+    borderWidth: 2,
+    borderColor: "#6fbfff",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
 });

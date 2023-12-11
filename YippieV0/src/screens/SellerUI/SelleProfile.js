@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import {
   StyleSheet,
   ScrollView,
@@ -6,61 +6,145 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Switch,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import { MaterialIcons } from "@expo/vector-icons";
 import Styles from "./Styles";
 import { useNavigation } from "@react-navigation/native";
+import Product from "../../componets/Product";
+import Service from "../../componets/Service";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Modal1 from "../../componets/modal1";
+import Modal2 from "../../componets/modal2";
+import Modal3 from "../../componets/modal3";
+import Modal4 from "../../componets/modal4";
+import Modal5 from "../../componets/modal5";
+import Modal6 from "../../componets/modal6";
+import Modal7 from "../../componets/modal7";
+import { signOut } from "firebase/auth";
+import { FIREBASE_AUTH } from "../../config/firebase";
 
 const SellerProfile = () => {
   const [value, setValue] = React.useState(0);
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const auth = FIREBASE_AUTH;
 
   const SECTIONS = [
     {
       header: "Catalogue",
       icon: "shopping-bag",
       items: (
-        <View style={Styles.customContent}>
-          <TouchableOpacity
-            onPress={() => {
-              navigation.navigate("AddProduct");
-            }}
-          >
-            <View style={Styles.addProduct}>
-              <Text style={Styles.addText}>Add a product</Text>
-              <FeatherIcon color="#fff" name="plus" size={16} />
+        <ScrollView style={Styles.Content} showsVerticalScrollIndicator={false}>
+          <View style={{ flexDirection: "row" }}>
+            <View style={Styles.customContent}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("AddProduct");
+                }}
+              >
+                <View style={Styles.addProduct}>
+                  <Text style={Styles.addText}>Add a product</Text>
+                  <FeatherIcon color="#fff" name="plus" size={16} />
+                </View>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-        </View>
-      ),
-    },
-    {
-      header: "profile",
-      icon: "help-circle",
-      items: (
-        <View style={Styles.customContent}>
-          <Text>Custom Content Here</Text>
-        </View>
-      ),
-    },
-    {
-      header: "Stats",
-      icon: "align-center",
-      items: (
-        <View style={Styles.customContent}>
-          <Text>Your Custom Content</Text>
-        </View>
+            <View style={Styles.customContent}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate("AddService");
+                }}
+              >
+                <View style={Styles.addProduct}>
+                  <Text style={Styles.addText}>Add a service</Text>
+                  <FeatherIcon color="#fff" name="plus" size={16} />
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View>
+            <Product />
+            <Service />
+          </View>
+        </ScrollView>
       ),
     },
     {
       header: "Preferences",
       icon: "settings",
       items: (
-        <View style={Styles.customContent}>
-          <Text>Your Custom Content</Text>
+        <View style={{ flex: 1 }}>
+          <View contentContainerStyle={Styles.containerSettings}>
+            <View style={Styles.section}>
+              <Modal1 />
+              <TouchableOpacity onPress={() => ""}>
+                <View style={Styles.row}>
+                  <View style={[Styles.rowIcon]}>
+                    <FeatherIcon color="black" name="moon" size={18} />
+                  </View>
+
+                  <Text style={Styles.rowLabel}>Dark Mode</Text>
+
+                  <View style={Styles.rowSpacer} />
+
+                  <Switch value={false} />
+                </View>
+              </TouchableOpacity>
+              <Modal2 />
+              <Modal3 />
+            </View>
+          </View>
         </View>
+      ),
+    },
+    {
+      header: "profile",
+      icon: "user",
+      items: (
+        <View style={{ flex: 1 }}>
+          <View contentContainerStyle={Styles.containerSettings}>
+            <View style={Styles.section}>
+
+              <Modal4 navigation={navigation} />
+
+              <Modal5 />
+
+              <Modal6 />
+
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <View style={Styles.row}>
+                  <View style={[Styles.rowIcon]}>
+                    <MaterialIcons name="logout" size={18} color="#dc143c" />
+                  </View>
+
+                  <Text style={Styles.rowLabel}>Logout</Text>
+
+                  <View style={Styles.rowSpacer} />
+                </View>
+              </TouchableOpacity>
+
+              <Modal7 />
+            </View>
+          </View>
+        </View>
+      ),
+    },
+    {
+      header: "Dates",
+      icon: "calendar",
+      items: (
+        <ScrollView style={Styles.Content}>
+          <View style={Styles.customContent}></View>
+          <View>
+            <Text>calendar and notes here</Text>
+          </View>
+        </ScrollView>
       ),
     },
   ];
@@ -77,9 +161,10 @@ const SellerProfile = () => {
   return (
     <SafeAreaView style={{ backgroundColor: "#f8f8f8", flex: 1 }}>
       <StatusBar backgroundColor="white" barStyle="light-content" />
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.profile}>
-          <View style={styles.profileHeader}>
+
+      <View style={styles.profile}>
+        <View style={styles.profileHeader}>
+          <TouchableWithoutFeedback>
             <Image
               alt=""
               source={{
@@ -87,15 +172,20 @@ const SellerProfile = () => {
               }}
               style={styles.profileAvatar}
             />
-
+          </TouchableWithoutFeedback>
+          <TouchableWithoutFeedback
+            onPress={() => {
+              navigation.navigate("EditAccount");
+            }}
+          >
             <View style={styles.profileBody}>
               <Text style={styles.profileName}>Marc im</Text>
-
-              <Text style={styles.profileHandle}>Marc im</Text>
             </View>
-          </View>
+          </TouchableWithoutFeedback>
         </View>
+      </View>
 
+      <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.content}>
           <View style={styles.tabs}>
             {tabs.map(({ name, icon }, index) => {
@@ -106,7 +196,9 @@ const SellerProfile = () => {
                   key={name}
                   style={[
                     styles.tabWrapper,
-                    isActive && { borderBottomColor: "#1e90ff" },
+                    isActive && {
+                      borderBottomColor: "#1e90ff",
+                    },
                   ]}
                 >
                   <TouchableOpacity
@@ -191,7 +283,6 @@ const styles = StyleSheet.create({
     color: "#989898",
   },
   tabs: {
-    padding: 16,
     flexDirection: "row",
   },
   tab: {

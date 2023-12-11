@@ -156,11 +156,7 @@ const Step4 = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
-      <ProgressBar
-        style={styles.progressBar}
-        progress={WizardStore.useState().progress / 100}
-        color="#1e90ff"
-      />
+
       <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
         <View style={styles.FormContainer}>
           <View>
@@ -204,7 +200,7 @@ const Step4 = ({ navigation, route }) => {
                 >
                   {selectedImages.map((imageUri, index) => (
                     <Image
-                      alt=""
+                      alt=''
                       key={index}
                       source={{ uri: imageUri }}
                       style={styles.photosImg}
@@ -219,40 +215,9 @@ const Step4 = ({ navigation, route }) => {
                 </View>
               </TouchableOpacity>
 
-              <View style={styles.picker}>
-                <View style={styles.pickerDates}>
-                  <Text style={[styles.pickerDatesText, { marginBottom: 2 }]}>
-                    {information.UserName}
-                  </Text>
-                  <Text style={styles.pickerDatesText}>{information.city}</Text>
-                  <View style={styles.innerpicker}>
-                    <Text style={styles.pickerDatesText}>
-                      {information.country}
-                    </Text>
-                    <Text style={styles.pickerDatesText}>
-                      {information.state}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-              <View style={styles.picker}>
-                <View style={styles.pickerDates}>
-                  <Text style={[styles.pickerDatesText, { marginBottom: 2 }]}>
-                    <Text style={{ color: "#1e90ff" }}>email: </Text>
-                    {information.email}
-                  </Text>
-                  <Text style={styles.pickerDatesText}>
-                    {information.cellphoneNumber}
-                  </Text>
-                  <Text style={styles.pickerDatesText}>{information.item}</Text>
-                </View>
-              </View>
-              <View style={styles.info}>
-                <Text style={styles.infoTitle}>{information.brief}</Text>
-                <Text style={styles.infoDescription}>
-                  {information.overview}
-                </Text>
-              </View>
+             
+              
+              
             </View>
           </View>
         </View>
@@ -262,13 +227,13 @@ const Step4 = ({ navigation, route }) => {
         <View style={styles.overlayContent}>
           <View style={styles.overlayContentTop}>
             <Text style={styles.overlayContentPrice}>
-              All <Text style={{ color: "#1e90ff" }}>Good?</Text>
+              <Text style={{ color: "#1e90ff" }}>Ready</Text>
             </Text>
           </View>
         </View>
         <TouchableOpacity onPress={signUp} mode="outlined">
           <View style={styles.btn}>
-            <Text style={styles.btnText}>Submit Profile</Text>
+            <Text style={styles.btnText}>Publish Profile</Text>
 
             <MaterialCommunityIcons
               color="#fff"
@@ -361,6 +326,10 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 240,
     overflow: "hidden",
+    borderWidth: 2,
+    borderRadius: 12,
+    borderColor: "#6fbfff",
+    backgroundColor: "white",
   },
 
   photosPagination: {
@@ -387,73 +356,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 240,
   },
-  picker: {
-    marginTop: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#f5f5f5",
-  },
-  pickerDates: {
-    marginLeft: 12,
-  },
-  pickerDatesText: {
-    fontSize: 13,
-    fontWeight: "500",
-    marginRight: 6,
-  },
-  innerpicker: {
-    flexDirection: "row",
-  },
-  info: {
-    marginTop: 12,
-    backgroundColor: "#fff",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 20,
-  },
-  infoTitle: {
-    fontSize: 20,
-    lineHeight: 25,
-    fontWeight: "600",
-    letterSpacing: 0.38,
-    color: "#000000",
-    marginBottom: 6,
-  },
-  infoRating: {
-    marginBottom: 12,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  infoRatingLabel: {
-    fontSize: 13,
-    fontWeight: "bold",
-    color: "#000",
-    marginRight: 2,
-  },
-  infoRatingText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#8e8e93",
-    marginLeft: 2,
-  },
-  infoDescription: {
-    fontWeight: "400",
-    fontSize: 13,
-    lineHeight: 18,
-    letterSpacing: -0.078,
-    color: "#8e8e93",
-  },
-  statsRow: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderColor: "#fff",
-  },
+
+
   overlayContent: {
     flexDirection: "column",
     alignItems: "flex-start",

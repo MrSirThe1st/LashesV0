@@ -68,33 +68,38 @@ const CardItem = ({ seller, navigation }) => {
           <View style={styles.cardBody}>
             <View
               style={{
-                flexDirection: "row",
+                flexDirection: "column",
                 justifyContent: "space-between",
                 width: "100%",
               }}
             >
+              <View style={styles.catalogueS}>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Catalogue",{seller});
+                  }}
+                >
+                  <View style={styles.catalogue}>
+                    <Text style={styles.catalogueText}>Catalog</Text>
+                    <FeatherIcon color="white" name="shopping-bag" size={16} />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate("Catalogue", { seller });
+                  }}
+                >
+                  <View style={styles.catalogue1}>
+                    <FeatherIcon color="white" name="shopping-bag" size={16} />
+                    <Text style={styles.catalogueText1}>Services</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
               <View style={{ flexDirection: "column" }}>
                 <Text style={styles.cardRowItemTextName}>
                   {seller.username},{" "}
                 </Text>
                 <Text style={styles.cardTitle}>{seller.city} </Text>
-              </View>
-
-              <View>
-                <TouchableOpacity
-                  onPress={() => {
-                    // navigation.navigate('AddProduct')
-                  }}
-                >
-                  <View style={styles.catalogue}>
-                    <Text style={styles.catalogueText}>Catalog</Text>
-                    <FeatherIcon
-                      color="#1e90ff"
-                      name="shopping-bag"
-                      size={16}
-                    />
-                  </View>
-                </TouchableOpacity>
               </View>
             </View>
 
@@ -156,7 +161,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   card: {
-    flexDirection: "row",
+    flexDirection: "row-reverse",
     alignItems: "stretch",
     borderRadius: 12,
     marginBottom: 16,
@@ -164,9 +169,10 @@ const styles = StyleSheet.create({
     // padding:8
   },
   cardImg: {
-    width: 120,
-    height: 154,
-    borderRadius: 12,
+    width: "50%",
+    height: 160,
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12,
   },
   cardBody: {
     flexGrow: 1,
@@ -177,6 +183,12 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingVertical: 8,
     paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    borderColor: "#1e90ff",
   },
   cardTitle: {
     fontSize: 16,
@@ -247,15 +259,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
-    borderRadius: 12,
-    borderColor: "#1e90ff",
-    elevation: 0.2,
+    backgroundColor: "#1e90ff",
+    borderTopLeftRadius: 12,
+    borderBottomLeftRadius: 12,
+    borderColor: "white",
+    marginRight: 1,
   },
   catalogueText: {
     marginRight: 4,
     fontSize: 13,
     fontWeight: "600",
-    color: "#1e90ff",
+    color: "white",
+  },
+  catalogue1: {
+    paddingVertical: 5,
+    paddingHorizontal: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#1e90ff",
+    borderColor: "white",
+    marginLeft: 1,
+  },
+  catalogueText1: {
+    marginLeft: 4,
+    fontSize: 13,
+    fontWeight: "600",
+    color: "white",
+  },
+  catalogueS: {
+    flexDirection: "row",
   },
 });

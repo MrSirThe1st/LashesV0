@@ -1,27 +1,28 @@
 import React from "react";
-import { StyleSheet, View, Image, Text, Pressable } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Image,
+  Text,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 
 const SelectButton = (props) => {
   const { SignUpText, buttonText, Icon, onPress } = props;
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.square}>
         <Image style={styles.icon} source={Icon} resizeMode="contain" />
       </View>
-      <View style={styles.textContainer}>
+      {/* <View style={styles.textContainer}>
         <Text style={styles.text}>{SignUpText}</Text>
-      </View>
-      <Pressable
-        onPress={onPress}
-        style={({ pressed }) => [
-          styles.button,
-          { borderColor: pressed ? "gray" : "black" },
-        ]}
-      >
+      </View> */}
+      <View style={styles.button}>
         <Text style={styles.buttonText}>{buttonText}</Text>
-      </Pressable>
-    </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
@@ -36,8 +37,8 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   square: {
-    width: 120,
-    height: 120,
+    width: 110,
+    height: 25,
     borderRadius: 100,
     backgroundColor: "white",
     justifyContent: "center",
@@ -52,6 +53,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginVertical: 10,
+    paddingTop: 10,
   },
   text: {
     fontSize: 18,
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingHorizontal: 15,
     paddingVertical: 5,
-    marginTop: 10,
+    marginTop: 35,
     marginVertical: 5,
     backgroundColor: "#1e90ff",
   },

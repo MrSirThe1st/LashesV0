@@ -14,12 +14,25 @@ import { StatusBar } from "expo-status-bar";
 import Swiper from "react-native-swiper";
 import { useRoute } from "@react-navigation/native";
 import Stars from "../../componets/Stars";
+import { FIREBASE_AUTH, FIRESTORE_DB } from "../../config/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 export default function AccountInfo({ navigation }) {
+  const db = FIRESTORE_DB;
+  const auth = FIREBASE_AUTH;
   const route = useRoute();
   const { seller } = route.params;
   const { thumbnails } = route.params;
   const [selectedImages, setSelectedImages] = useState([]);
+  const [input, setInput] = useState("@Username");
+
+  const createChat = async () => {
+    await addDoc(collection(db, "chats"), { chatName: input })
+      .then(() => {
+        navigation.navigate("Chat");
+      })
+      .catch((error) => alert(error));
+  };
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -101,9 +114,7 @@ export default function AccountInfo({ navigation }) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {
-              () => navigation.navigate("inbox");
-            }}
+            onPress={createChat}
             style={{ flex: 1, paddingHorizontal: 6 }}
           >
             <View style={styles.btnPrimary}>

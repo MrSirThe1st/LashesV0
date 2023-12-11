@@ -7,6 +7,8 @@ import {
   StatusBar,
   TouchableOpacity,
   TextInput,
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
@@ -18,7 +20,6 @@ const Step2 = ({ navigation, route }) => {
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const { role } = route.params;
-  const [isFocus, setIsFocus] = useState(false);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -34,17 +35,8 @@ const Step2 = ({ navigation, route }) => {
     formState: { errors },
   } = useForm({ defaultValues: WizardStore.useState((s) => s) });
 
-  useEffect(() => {
-    isFocused &&
-      WizardStore.update((s) => {
-        s.progress = 33;
-      });
-    console.log("updated state...", WizardStore.getRawState().progress);
-  }, [isFocused]);
-
   const onSubmit = (data) => {
     WizardStore.update((s) => {
-      s.progress = 66;
       s.country = data.country;
       s.city = data.city;
       s.state = data.state;
@@ -55,150 +47,150 @@ const Step2 = ({ navigation, route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
-      <ProgressBar
-        style={styles.progressBar}
-        progress={WizardStore.useState().progress / 100}
-        color="#1e90ff" // Set the color to your primary color
-      />
-      <View>
-        <View style={styles.FormContainer}>
-          <View style={styles.DropdownContainer}>
-            <View
-              style={{
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 10,
-              }}
-            >
-              <Text style={styles.title}>
-                Let's Take Your{" "}
-                <Text style={{ color: "#1e90ff" }}> Location </Text>
-              </Text>
-            </View>
-            <View>
-              <View style={styles.formEntry}>
-                <Controller
-                  control={control}
-                  rules={{
-                    required: false,
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.input}>
-                      <Text style={styles.inputLabel}>Country</Text>
-                      <TextInput
-                        autoCorrect={false}
-                        onChangeText={(text) => {
-                          setCountry(text);
-                          onChange(text);
-                        }}
-                        placeholder="Enter your country"
-                        placeholderTextColor="#6b7280"
-                        style={styles.inputControl}
-                        value={country}
-                        autoCapitalize="none"
-                        onBlur={onBlur}
-                      />
-                    </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <View style={styles.FormContainer}>
+            <View style={styles.DropdownContainer}>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={styles.title}>
+                  Let's Take Your{" "}
+                  <Text style={{ color: "#1e90ff" }}> Location </Text>
+                </Text>
+              </View>
+              <View>
+                <View style={styles.formEntry}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: false,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <View style={styles.input}>
+                        <Text style={styles.inputLabel}>Country</Text>
+                        <TextInput
+                          autoCorrect={false}
+                          onChangeText={(text) => {
+                            setCountry(text);
+                            onChange(text);
+                          }}
+                          placeholder="Enter your country"
+                          placeholderTextColor="#6b7280"
+                          style={styles.inputControl}
+                          value={country}
+                          autoCapitalize="none"
+                          onBlur={onBlur}
+                        />
+                      </View>
+                    )}
+                    name="country"
+                  />
+                  {errors.country && (
+                    <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                      This is a required field.
+                    </Text>
                   )}
-                  name="country"
-                />
-                {errors.country && (
-                  <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                    This is a required field.
-                  </Text>
-                )}
+                </View>
+              </View>
+              <View>
+                <View style={styles.formEntry}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: false,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <View style={styles.input}>
+                        <Text style={styles.inputLabel}>State</Text>
+                        <TextInput
+                          autoCorrect={false}
+                          onChangeText={(text) => {
+                            setState(text);
+                            onChange(text);
+                          }}
+                          placeholder="Enter your State"
+                          placeholderTextColor="#6b7280"
+                          style={styles.inputControl}
+                          value={state}
+                          autoCapitalize="none"
+                          onBlur={onBlur}
+                        />
+                      </View>
+                    )}
+                    name="state"
+                  />
+                  {errors.state && (
+                    <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                      This is a required field.
+                    </Text>
+                  )}
+                </View>
+              </View>
+              <View>
+                <View style={styles.formEntry}>
+                  <Controller
+                    control={control}
+                    rules={{
+                      required: false,
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <View style={styles.input}>
+                        <Text style={styles.inputLabel}>City</Text>
+                        <TextInput
+                          autoCorrect={false}
+                          onChangeText={(text) => {
+                            setCity(text);
+                            onChange(text);
+                          }}
+                          placeholder="Enter your city"
+                          placeholderTextColor="#6b7280"
+                          style={styles.inputControl}
+                          value={city}
+                          autoCapitalize="none"
+                          onBlur={onBlur}
+                        />
+                      </View>
+                    )}
+                    name="city"
+                  />
+                  {errors.city && (
+                    <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                      This is a required field.
+                    </Text>
+                  )}
+                </View>
               </View>
             </View>
-            <View>
-              <View style={styles.formEntry}>
-                <Controller
-                  control={control}
-                  rules={{
-                    required: false,
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.input}>
-                      <Text style={styles.inputLabel}>State</Text>
-                      <TextInput
-                        autoCorrect={false}
-                        onChangeText={(text) => {
-                          setState(text);
-                          onChange(text);
-                        }}
-                        placeholder="Enter your State"
-                        placeholderTextColor="#6b7280"
-                        style={styles.inputControl}
-                        value={state}
-                        autoCapitalize="none"
-                        onBlur={onBlur}
-                      />
-                    </View>
-                  )}
-                  name="state"
-                />
-                {errors.state && (
-                  <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                    This is a required field.
-                  </Text>
-                )}
-              </View>
-            </View>
-            <View>
-              <View style={styles.formEntry}>
-                <Controller
-                  control={control}
-                  rules={{
-                    required: false,
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.input}>
-                      <Text style={styles.inputLabel}>City</Text>
-                      <TextInput
-                        autoCorrect={false}
-                        onChangeText={(text) => {
-                          setCity(text);
-                          onChange(text);
-                        }}
-                        placeholder="Enter your city"
-                        placeholderTextColor="#6b7280"
-                        style={styles.inputControl}
-                        value={city}
-                        autoCapitalize="none"
-                        onBlur={onBlur}
-                      />
-                    </View>
-                  )}
-                  name="city"
-                />
-                {errors.city && (
-                  <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                    This is a required field.
-                  </Text>
-                )}
-              </View>
-            </View>
-          </View>
 
-          {/* Next button */}
-          <View style={styles.BottomContainer}>
-            <TouchableOpacity
-              onPress={handleSubmit(onSubmit)}
-              activeOpacity={1}
-              style={{
-                backgroundColor: "#1e90ff",
-                padding: 10,
-                borderRadius: 5,
-                fontSize: 18,
-                fontWeight: "bold",
-                flexDirection: "row",
-                alignItems: "center",
-              }}
-            >
-              <Text style={{ color: "white" }}>Next step</Text>
-            </TouchableOpacity>
+            {/* Next button */}
+            <View style={styles.BottomContainer}>
+              <TouchableOpacity
+                onPress={handleSubmit(onSubmit)}
+                activeOpacity={1}
+                style={{
+                  backgroundColor: "#1e90ff",
+                  padding: 10,
+                  borderRadius: 5,
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ color: "white" }}>Next step</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -279,5 +271,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "500",
     color: "#222",
+    borderWidth: 2,
+    borderColor: "#6fbfff",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
 });
