@@ -15,69 +15,22 @@ import Swiper from "react-native-swiper";
 import { useRoute } from "@react-navigation/native";
 
 const ProductDescription = () => {
-  const [products, setProducts] = useState([]);
-
   const route = useRoute();
-  const { seller } = route.params;
+  const { seller, selectedProduct } = route.params;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const user = FIREBASE_AUTH.currentUser;
-        const userId = user.uid;
-
-        const productsCollection = collection(FIRESTORE_DB, "users");
-        const q = query(productsCollection, where("uid", "==", userId));
-        const querySnapshot = await getDocs(q);
-
-        const productsData = [];
-
-        querySnapshot.forEach((doc) => {
-          const userData = doc.data();
-          const userProducts = userData.products || [];
-
-          userProducts.forEach((product) => {
-            productsData.push({
-              img:
-                product.images && product.images.length > 0
-                  ? product.images[0]
-                  : "",
-              label: product.name || "",
-              ordered: 0,
-              likes: 0,
-              price: product.price || 0,
-              description: product.description || "",
-            });
-          });
-        });
-
-        setProducts(productsData);
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const productImages = selectedProduct.img ? [selectedProduct.img] : [];
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={styles.container}>
         <View style={styles.photos}>
           <Swiper
-            renderPagination={(index, total) => (
-              <View style={styles.photosPagination}>
-                <Text style={styles.photosPaginationText}>
-                  {index + 1} / {total}
-                </Text>
-              </View>
-            )}
+            
           >
-            {products.map((product, index) => (
+            {productImages.map((image, index) => (
               <Image
-                alt=""
                 key={index}
-                source={{ uri: product.img }}
+                source={{ uri: image || "placeholder_image_url" }}
                 style={styles.photosImg}
               />
             ))}
@@ -87,7 +40,7 @@ const ProductDescription = () => {
           <View style={styles.profileTop}>
             <View style={styles.avatar}>
               <Image
-                source={{}}
+                source={{ uri: seller.avatar || "placeholder_avatar_url" }}
                 style={styles.avatarImg}
               />
             </View>
@@ -97,11 +50,11 @@ const ProductDescription = () => {
           </View>
           <View>
             <Text style={styles.profileDescription}>
-              {products.length > 0 ? products[0].label : ""}
+              {selectedProduct.label}
             </Text>
             <View style={styles.about}>
               <Text style={styles.aboutDescription}>
-                {products.length > 0 ? products[0].description : ""}
+                {selectedProduct.description}
               </Text>
             </View>
           </View>
@@ -111,7 +64,7 @@ const ProductDescription = () => {
         <View style={styles.btnGroup}>
           <TouchableOpacity
             onPress={() => {
-              // handle onPress
+              // handle Join Seller press
             }}
             style={{ flex: 1, paddingHorizontal: 6 }}
           >
@@ -121,7 +74,7 @@ const ProductDescription = () => {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              // handle onPress
+              // handle Add To Cart press
             }}
             style={{ flex: 1, paddingHorizontal: 6 }}
           >
@@ -269,28 +222,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#22C55E",
   },
   photos: {
-    marginTop: 12,
     position: "relative",
     height: 250,
     overflow: "hidden",
   },
-  photosPagination: {
-    position: "absolute",
-    bottom: 12,
-    right: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: "#1e90ff",
-    borderRadius: 12,
-  },
-  photosPaginationText: {
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#fbfbfb",
-  },
+
   photosImg: {
     flexGrow: 1,
     flexShrink: 1,
@@ -328,7 +264,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   dot: {
-    backgroundColor: "rgba(255,255,255,.3)", 
+    backgroundColor: "rgba(255,255,255,.3)",
     width: 8,
     height: 8,
     borderRadius: 4,

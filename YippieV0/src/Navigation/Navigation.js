@@ -24,7 +24,6 @@ import AddProduct from "../screens/SellerUI/AddProduct";
 import AddService from "../screens/SellerUI/AddService";
 import { onAuthStateChanged } from "firebase/auth";
 import SellerProfile from "../screens/SellerUI/SelleProfile";
-import { ActivityIndicator } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import SkeletonHome from "../componets/SkeletonHome";
@@ -35,6 +34,7 @@ import CategoryScreen from "../categories/CategoryScreen";
 import ProductDescription from "../screens/SellerUI/ProductDescription";
 import Search from "../componets/Search";
 import EditAccount from "../screens/SellerUI/settings/EditAccount";
+import Favorites from "../screens/SellerUI/settings/Favorites";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -310,6 +310,7 @@ const Navigation = () => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
+
                 <Stack.Screen
                   name="Catalogue"
                   component={Catalogue}
@@ -349,6 +350,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="EditAccount"
                   component={EditAccount}
+                  options={{
+                    headerShown: true,
+                    title: "Account",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Favorites"
+                  component={Favorites}
                   options={{
                     headerShown: true,
                     title: "Account",
@@ -429,6 +439,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="EditAccount"
                   component={EditAccount}
+                  options={{
+                    headerShown: true,
+                    title: "Account",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Favorites"
+                  component={Favorites}
                   options={{
                     headerShown: true,
                     title: "Account",

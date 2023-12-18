@@ -7,9 +7,11 @@ import { FIRESTORE_DB } from "../../config/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 
 
+
 const Inbox = ({navigation}) => {
   const db = FIRESTORE_DB;
   const [chats, setChats] = useState([]);
+
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "chats"), (snapshot) =>

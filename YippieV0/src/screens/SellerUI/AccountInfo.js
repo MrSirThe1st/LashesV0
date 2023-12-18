@@ -45,9 +45,9 @@ export default function AccountInfo({ navigation }) {
       <ScrollView style={styles.container}>
         <View style={styles.stats}>
           {[
-            { label: "Location", value: seller.city },
-            { label: "country", value: seller.country },
+            { label: "From", value: seller.city },
             { label: "20 Reviews", value: <Stars /> },
+            { label: "country", value: seller.country },
           ].map(({ label, value }, index) => (
             <View
               key={index}

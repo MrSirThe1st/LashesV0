@@ -59,7 +59,7 @@ export default function Product() {
       <ScrollView contentContainerStyle={styles.container}>
         {products.map(({ img, label, ordered, likes, price }, index) => {
           return (
-            <View
+            <View 
               key={index}
               style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
             >

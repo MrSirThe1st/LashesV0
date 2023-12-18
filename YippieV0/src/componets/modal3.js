@@ -11,11 +11,12 @@ import {
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 
-const Modal3 = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+
+const Modal3 = ({navigation}) => {
+
   return (
     <>
-      <TouchableOpacity onPress={() => setModalVisible(true)}>
+      <TouchableOpacity onPress={() => navigation.navigate("Favorites")}>
         <View style={styles.row}>
           <View style={[styles.rowIcon]}>
             <FeatherIcon color="#dc143c" name="heart" size={18} />
@@ -26,21 +27,6 @@ const Modal3 = () => {
           <View style={styles.rowSpacer} />
         </View>
       </TouchableOpacity>
-      <Modal visible={modalVisible} animationType="fade" transparent={false}>
-        <View style={styles.modal}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(false)}
-            style={styles.closeButton}
-          >
-            <View style={[styles.rowIconClose]}>
-              <FeatherIcon color="#fff" name="x" size={18} />
-            </View>
-          </TouchableOpacity>
-          <View>
-            <Text>modal 1</Text>
-          </View>
-        </View>
-      </Modal>
     </>
   );
 };
@@ -48,26 +34,6 @@ const Modal3 = () => {
 export default Modal3;
 
 const styles = StyleSheet.create({
-  modal: {
-    flex: 0.5,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    margin: 12,
-    elevation: 1,
-  },
-
-  rowIconClose: {
-    width: 32,
-    height: 32,
-    borderRadius: 9999,
-    margin: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1e90ff",
-
-    right: -330,
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",

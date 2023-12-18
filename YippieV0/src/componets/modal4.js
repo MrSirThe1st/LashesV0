@@ -13,7 +13,7 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const Modal4 = ({navigation}) => {
-  const [modalVisible, setModalVisible] = useState(false);
+  
   return (
     <>
       <TouchableOpacity onPress={() => navigation.navigate("EditAccount")}>

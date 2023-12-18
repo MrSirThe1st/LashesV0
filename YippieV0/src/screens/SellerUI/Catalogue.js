@@ -7,16 +7,18 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Pressable,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../config/firebase";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
 
-const Catalogue = ({navigation}) => {
+const Catalogue = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const route = useRoute();
-   const { seller } = route.params;
+  const { seller } = route.params;
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -58,7 +60,14 @@ const Catalogue = ({navigation}) => {
 
   const renderProductItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={() => {navigation.navigate("ProductDescription", { seller,});}}>
+      <Pressable
+        onPress={() =>
+          navigation.navigate("ProductDescription", {
+            seller,
+            selectedProduct: item,
+          })
+        }
+      >
         <View style={styles.card}>
           <Image
             alt=""
@@ -76,7 +85,7 @@ const Catalogue = ({navigation}) => {
             </Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -109,20 +118,23 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "stretch",
     marginBottom: 16,
-    marginHorizontal:10
-
+    marginHorizontal: 10,
+    backgroundColor: "white",
+    borderRadius: 12,
+    elevation: 1,
   },
   cardImg: {
     height: 120,
-    borderRadius: 12,
-    marginBottom: 8,
     width: 100,
     height: 100,
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
   },
   cardBody: {
     flex: 1,
-    alignItems: "center",
     justifyContent: "center",
+    alignItems: "flex-start",
+    padding: 6,
   },
   cardTitle: {
     fontSize: 17,

@@ -24,10 +24,11 @@ import Modal2 from "../../componets/modal2";
 import Modal3 from "../../componets/modal3";
 import Modal4 from "../../componets/modal4";
 import Modal5 from "../../componets/modal5";
-import Modal6 from "../../componets/modal6";
+import DeleteBs from "../../componets/DeleteBs";
 import Modal7 from "../../componets/modal7";
 import { signOut } from "firebase/auth";
 import { FIREBASE_AUTH } from "../../config/firebase";
+
 
 const SellerProfile = () => {
   const [value, setValue] = React.useState(0);
@@ -97,7 +98,7 @@ const SellerProfile = () => {
                 </View>
               </TouchableOpacity>
               <Modal2 />
-              <Modal3 />
+              <Modal3 navigation={navigation} />
             </View>
           </View>
         </View>
@@ -107,15 +108,15 @@ const SellerProfile = () => {
       header: "profile",
       icon: "user",
       items: (
+        
         <View style={{ flex: 1 }}>
           <View contentContainerStyle={Styles.containerSettings}>
             <View style={Styles.section}>
-
               <Modal4 navigation={navigation} />
 
               <Modal5 />
 
-              <Modal6 />
+              <DeleteBs />
 
               <TouchableOpacity onPress={() => setModalVisible(true)}>
                 <View style={Styles.row}>

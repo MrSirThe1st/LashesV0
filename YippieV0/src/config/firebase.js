@@ -1,8 +1,13 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithRedirect } from "firebase/auth";
+import { initializeApp,} from "firebase/app";
+import {
+  getReactNativePersistence,
+  initializeAuth,
+} from "firebase/auth";
+import { enableIndexedDbPersistence } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 import { getStorage, ref } from "firebase/storage";
 import { GoogleAuthProvider } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA1OcQEw7E8Fhfkgj3mPDtVSRVw1sIMGig",
@@ -18,7 +23,9 @@ const firebaseConfig = {
 export const FIREBASE_APP = initializeApp(firebaseConfig);
 
 //authentication
-export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
+export const FIREBASE_AUTH = initializeAuth(FIREBASE_APP, {
+  persistence: getReactNativePersistence(AsyncStorage),
+});
 export const FIRESTORE_DB = getFirestore(FIREBASE_APP);
 export const GoogleAuth = new GoogleAuthProvider();
 
@@ -30,5 +37,3 @@ export const imagesRef = ref(storage, "images");
 export const thumbnailsRef = ref(imagesRef, "thumbnails");
 export const profileRef = ref(imagesRef, "profile");
 export const productsRef = ref(imagesRef, "products");
-
-// ios:832838076245 - ciljmmcbgre2ulget36j00o5hivsqil9.apps.googleusercontent.com;

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useMemo } from "react";
 import {
   StyleSheet,
   ScrollView,
@@ -12,8 +12,10 @@ import {
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-const Modal6 = () => {
-  const [modalVisible, setModalVisible] = useState(false);
+
+const DeleteBs = () => {
+  
+
   return (
     <>
       <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -27,26 +29,12 @@ const Modal6 = () => {
           <View style={styles.rowSpacer} />
         </View>
       </TouchableOpacity>
-      <Modal visible={modalVisible} animationType="fade" transparent={false}>
-        <View style={styles.modal}>
-          <TouchableOpacity
-            onPress={() => setModalVisible(false)}
-            style={styles.closeButton}
-          >
-            <View style={[styles.rowIconClose]}>
-              <FeatherIcon color="#fff" name="x" size={18} />
-            </View>
-          </TouchableOpacity>
-          <View>
-            <Text>modal 1</Text>
-          </View>
-        </View>
-      </Modal>
+     
     </>
   );
 };
 
-export default Modal6;
+export default DeleteBs;
 
 const styles = StyleSheet.create({
   modal: {

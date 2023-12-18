@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import Navigation from "./src/Navigation/Navigation";
 import Login from "./src/screens/Login&SignUp/Login";
 import SignUp from "./src/screens/Login&SignUp/SignUp";
@@ -21,16 +21,17 @@ import Inbox from "./src/screens/BuyerUI/Inbox";
 import Stars from "./src/componets/Stars";
 import SkeletonHome from "./src/componets/SkeletonHome";
 import Product from "./src/componets/Product";
-import Chat from "./src/chat/Chat";
+import Chat from "./src/chat/Chat"
+
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    
       <PaperProvider>
-        <Navigation/>
+        <Navigation />
       </PaperProvider>
-      <StatusBar style="auto" />
-    </View>
+   
   );
 }
 

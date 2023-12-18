@@ -11,7 +11,7 @@ import {
   Platform,
   Dimensions,
   Pressable,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -32,7 +32,7 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
-
+import { Feather } from "@expo/vector-icons";
 
 const AddProduct = () => {
   const [price, setPrice] = useState("");
@@ -46,7 +46,6 @@ const AddProduct = () => {
   const itemWidth = windowWidth / 3;
   const imageWidth = itemWidth - 24;
   const imageHeight = imageWidth * 0.8;
-
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
 
@@ -65,6 +64,11 @@ const AddProduct = () => {
         setSelectedImages([...selectedImages, ...selectedUris]);
       }
     }
+  };
+  const handleRemoveImage = (index) => {
+    const newImages = [...selectedImages];
+    newImages.splice(index, 1);
+    setSelectedImages(newImages);
   };
 
   useEffect(() => {
@@ -159,10 +163,6 @@ const AddProduct = () => {
     }
   };
 
-  
-
-  
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -175,7 +175,7 @@ const AddProduct = () => {
             <View style={styles.AddInput}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {selectedImages.map((imageUri, index) => (
-                  <Pressable
+                  <View
                     style={[styles.pressable, { width: itemWidth }]}
                     key={index}
                   >
@@ -187,14 +187,20 @@ const AddProduct = () => {
                     >
                       <Image source={{ uri: imageUri }} style={styles.image} />
                     </View>
-                  </Pressable>
+                    <Pressable
+                      style={styles.Xbutton}
+                      onPress={() => handleRemoveImage(index)}
+                    >
+                      <Feather name="x-circle" size={24} color="#1e90ff" />
+                    </Pressable>
+                  </View>
                 ))}
               </ScrollView>
             </View>
             <TouchableOpacity style={styles.AddInputInner} onPress={pickImage}>
               <View style={{ flexDirection: "row" }}>
                 <Text style={styles.AddText}>Select pictures</Text>
-                <FeatherIcon color="white" name="file-plus" size={16} />
+                <FeatherIcon color="white" name="plus" size={20} />
               </View>
             </TouchableOpacity>
           </View>
@@ -241,23 +247,9 @@ const AddProduct = () => {
         </View>
 
         <View style={styles.overlay}>
-          <View style={styles.overlayContent}>
-            <View style={styles.overlayContentTop}>
-              <Text style={styles.overlayContentPrice}>
-                All <Text style={{ color: "#1e90ff" }}>Good?</Text>
-              </Text>
-            </View>
-          </View>
           <TouchableOpacity onPress={handleUploadImages} mode="outlined">
             <View style={styles.btn}>
               <Text style={styles.btnText}>Upload</Text>
-
-              <MaterialCommunityIcons
-                color="#fff"
-                name="arrow-right-circle"
-                size={18}
-                style={{ marginLeft: 12 }}
-              />
             </View>
           </TouchableOpacity>
         </View>
@@ -402,7 +394,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
   },
-  
 
   image: {
     width: "100%",
@@ -438,7 +429,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   AddText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "white",
   },
   photos: {
@@ -446,5 +437,8 @@ const styles = StyleSheet.create({
     height: 130,
     overflow: "hidden",
     padding: 8,
+  },
+  Xbutton: {
+    paddingVertical: 5,
   },
 });
