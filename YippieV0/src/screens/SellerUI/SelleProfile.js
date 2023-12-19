@@ -176,7 +176,9 @@ const SellerProfile = () => {
           </TouchableWithoutFeedback>
           <TouchableWithoutFeedback
             onPress={() => {
-              navigation.navigate("EditAccount");
+              navigat
+              
+              ion.navigate("EditAccount");
             }}
           >
             <View style={styles.profileBody}>

@@ -35,6 +35,9 @@ import ProductDescription from "../screens/SellerUI/ProductDescription";
 import Search from "../componets/Search";
 import EditAccount from "../screens/SellerUI/settings/EditAccount";
 import Favorites from "../screens/SellerUI/settings/Favorites";
+import SellerSettings from "../screens/SellerUI/SellerSettings";
+import MyProducts from "../screens/SellerUI/settings/MyProducts";
+import MyServices from "../screens/SellerUI/settings/MyServices";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -187,9 +190,10 @@ const HomeTabNavigatorSeller = () => (
       }}
     />
 
+
     <Tab.Screen
-      name="Account"
-      component={SellerProfile}
+      name="AccountS"
+      component={SellerSettings}
       options={{
         headerShown: false,
         tabBarIcon: ({ focused }) =>
@@ -365,6 +369,24 @@ const Navigation = () => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
+                <Stack.Screen
+                  name="MyProducts"
+                  component={MyProducts}
+                  options={{
+                    headerShown: true,
+                    title: "Products",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="MyServices"
+                  component={MyServices}
+                  options={{
+                    headerShown: true,
+                    title: "Services",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
               </>
             ) : (
               <>
@@ -451,6 +473,24 @@ const Navigation = () => {
                   options={{
                     headerShown: true,
                     title: "Account",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="MyProducts"
+                  component={MyProducts}
+                  options={{
+                    headerShown: true,
+                    title: "Products",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="MyServices"
+                  component={MyServices}
+                  options={{
+                    headerShown: true,
+                    title: "Services",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
