@@ -22,16 +22,16 @@ import Stars from "./src/componets/Stars";
 import SkeletonHome from "./src/componets/SkeletonHome";
 import Product from "./src/componets/Product";
 import Chat from "./src/chat/Chat"
-
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 
 export default function App() {
   return (
-    
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider>
         <Navigation />
       </PaperProvider>
-   
+    </GestureHandlerRootView>
   );
 }
 

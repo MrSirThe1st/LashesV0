@@ -80,7 +80,7 @@ const CardItem = ({ seller, navigation }) => {
                   }}
                 >
                   <View style={styles.catalogue}>
-                    <Text style={styles.catalogueText}>Catalog</Text>
+                    <Text style={styles.catalogueText}>Products</Text>
                     <FeatherIcon color="white" name="shopping-bag" size={16} />
                   </View>
                 </TouchableOpacity>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   cardImg: {
     width: "50%",
-    height: 160,
+    height: 170,
     borderTopRightRadius: 12,
     borderBottomRightRadius: 12,
   },
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   catalogue: {
-    paddingVertical: 5,
+    paddingVertical: 6,
     paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 12,
     borderColor: "white",
     marginRight: 1,
+    left: -10,
   },
   catalogueText: {
     marginRight: 4,
@@ -272,7 +273,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   catalogue1: {
-    paddingVertical: 5,
+    paddingVertical: 6,
     paddingHorizontal: 8,
     flexDirection: "row",
     alignItems: "center",
@@ -280,6 +281,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1e90ff",
     borderColor: "white",
     marginLeft: 1,
+    left: -10,
   },
   catalogueText1: {
     marginLeft: 4,

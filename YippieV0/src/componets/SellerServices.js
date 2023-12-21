@@ -13,7 +13,7 @@ import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { Divider } from "react-native-elements";
 
-export default function Product() {
+export default function SellerServices() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
@@ -36,10 +36,10 @@ export default function Product() {
               img:
                 product.images && product.images.length > 0
                   ? product.images[0]
-                  : "", 
+                  : "",
               label: product.name || "",
-              ordered: 0, 
-              likes: 0, 
+              ordered: 0,
+              likes: 0,
               price: product.price || 0,
             });
           });
@@ -55,49 +55,48 @@ export default function Product() {
   }, []);
 
   return (
-  
-      <ScrollView contentContainerStyle={styles.container}>
-        {products.map(({ img, label, ordered, likes, price }, index) => {
-          return (
-            <View 
+    <ScrollView contentContainerStyle={styles.container}>
+      {products.map(({ img, label, ordered, likes, price }, index) => {
+        return (
+          <View
+            key={index}
+            style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
+          >
+            <TouchableOpacity
               key={index}
-              style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
+              onPress={() => {
+                // handle onPress
+              }}
             >
-              <TouchableOpacity
-                key={index}
-                onPress={() => {
-                  // handle onPress
-                }}
-              >
-                <View style={styles.card}>
-                  <Image
-                    alt=""
-                    resizeMode="cover"
-                    source={{ uri: img }}
-                    style={styles.cardImg}
-                  />
+              <View style={styles.card}>
+                <Image
+                  alt=""
+                  resizeMode="cover"
+                  source={{ uri: img }}
+                  style={styles.cardImg}
+                />
 
-                  <View style={styles.cardBody}>
-                    <Text numberOfLines={1} style={styles.cardTitle}>
-                      {label}
-                    </Text>
-                    <Text style={styles.cardPrice}>
-                      R{price.toLocaleString("en-US")}
-                    </Text>
-                  </View>
+                <View style={styles.cardBody}>
+                  <Text numberOfLines={1} style={styles.cardTitle}>
+                    {label}
+                  </Text>
+                  <Text style={styles.cardPrice}>
+                    R{price.toLocaleString("en-US")}
+                  </Text>
                 </View>
-              </TouchableOpacity>
-            </View>
-          );
-        })}
-      </ScrollView>
+              </View>
+            </TouchableOpacity>
+          </View>
+        );
+      })}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    marginBottom:10
+    marginBottom: 10,
   },
   title: {
     fontSize: 32,

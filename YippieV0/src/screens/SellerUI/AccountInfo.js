@@ -16,6 +16,7 @@ import { useRoute } from "@react-navigation/native";
 import Stars from "../../componets/Stars";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../config/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import FeatherIcon from "react-native-vector-icons/Feather";
 
 export default function AccountInfo({ navigation }) {
   const db = FIRESTORE_DB;
@@ -105,12 +106,13 @@ export default function AccountInfo({ navigation }) {
         <View style={styles.btnGroup}>
           <TouchableOpacity
             onPress={() => {
-              // handle onPress
+              navigation.navigate("Catalogue", { seller });
             }}
             style={{ flex: 1, paddingHorizontal: 6 }}
           >
             <View style={styles.btn}>
-              <Text style={styles.btnText}>Join Seller</Text>
+              <Text style={styles.btnText}>Products</Text>
+              <FeatherIcon color="white" name="shopping-bag" size={16} />
             </View>
           </TouchableOpacity>
           <TouchableOpacity
@@ -218,6 +220,9 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: "600",
     color: "#fff",
+    marginRight: 4,
+    fontSize: 13,
+
   },
   btnPrimary: {
     flexDirection: "row",
