@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -12,15 +12,34 @@ import {
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackButton from "../../componets/BackButton";
-import { FIREBASE_AUTH, GoogleAuth } from "../../config/firebase";
+import { FIREBASE_AUTH, GoogleAuth, FIRESTORE_DB } from "../../config/firebase";
 import { getRedirectResult, signInWithRedirect } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDocs, collection, query, where } from "firebase/firestore";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
+  
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState("");
   const auth = FIREBASE_AUTH;
+  const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      setUser(user);
+      if (user) {
+        fetchDocument(user.uid);
+      } else {
+        setLoading(false);
+      }
+    });
+    return unsubscribe;
+  }, []);
+
+  
 
   const signIn = async () => {
     setLoading(true);
@@ -28,6 +47,7 @@ const Login = ({ navigation }) => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
       alert("Signed in successfully");
+      fetchDocument(response.user.uid);
     } catch (error) {
       console.log(error);
       alert("Sign in failed: " + error.message);
@@ -35,6 +55,39 @@ const Login = ({ navigation }) => {
       setLoading(false);
     }
   };
+
+  async function fetchDocument(userUID) {
+    const usersCollectionRef = collection(FIRESTORE_DB, "users");
+
+    try {
+      const q = query(usersCollectionRef, where("uid", "==", userUID));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.size === 1) {
+        const document = querySnapshot.docs[0];
+        const userData = document.data();
+        const userRole = userData.role;
+
+        // Use navigation.navigate to redirect based on user role
+        if (userRole === "seller" || userRole === "buyer") {
+          // Redirect to the appropriate screen
+          const targetScreen =
+            userRole === "seller" ? "SellerHome" : "BuyerHome";
+
+          navigation.navigate(targetScreen, { screen: "HomeScreen" });
+        } else {
+          console.log("Invalid user role:", userRole);
+        }
+      } else {
+        console.log("No matching document found!");
+      }
+    } catch (error) {
+      console.error("Error fetching document:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
 
   const signInWithGoogle = async () => {
     setLoading(true);
@@ -73,22 +126,7 @@ const Login = ({ navigation }) => {
             keyboardType={"email-address"}
           />
         </View>
-        <View style={styles.inputContainer}>
-          <Icon
-            name="account-circle"
-            size={24}
-            color="black"
-            style={styles.icon}
-          />
-          <TextInput
-            style={styles.input}
-            value={username}
-            onChangeText={setUsername}
-            placeholder={"Userame"}
-            keyboa
-            rdType={"default"}
-          />
-        </View>
+   
         <View style={styles.inputContainer}>
           <Icon name="lock" size={24} color="black" style={styles.icon} />
           <TextInput

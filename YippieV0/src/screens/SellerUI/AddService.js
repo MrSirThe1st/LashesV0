@@ -18,7 +18,6 @@ import { StatusBar } from "expo-status-bar";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import * as ImagePicker from "expo-image-picker";
 import Swiper from "react-native-swiper";
-import { BottomSheet } from "@rneui/themed";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../config/firebase";
@@ -32,6 +31,8 @@ import {
   where,
   getDocs,
 } from "firebase/firestore";
+import { Feather } from "@expo/vector-icons";
+import Toast from "../../componets/Toast";
 
 const AddService = () => {
   const [price, setPrice] = useState("");
@@ -45,9 +46,10 @@ const AddService = () => {
   const itemWidth = windowWidth / 3;
   const imageWidth = itemWidth - 24;
   const imageHeight = imageWidth * 0.8;
-
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -65,13 +67,17 @@ const AddService = () => {
       }
     }
   };
+  const handleRemoveImage = (index) => {
+    const newImages = [...selectedImages];
+    newImages.splice(index, 1);
+    setSelectedImages(newImages);
+  };
 
   useEffect(() => {
     (async () => {
       if (Platform.OS !== "web") {
-        const { status } =
-          await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== "granted") {
+        const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (result.status !== "granted") {
           alert("Sorry, we need camera roll permissions to make this work!");
         }
       }
@@ -109,7 +115,7 @@ const AddService = () => {
   const uploadProductToFirestore = async (userUID, serviceData) => {
     const usersCollectionRef = collection(FIRESTORE_DB, "users");
     let userDocRef;
-    let currentProducts;
+    let currentServices;
 
     const q = query(usersCollectionRef, where("uid", "==", userUID));
     const querySnapshot = await getDocs(q);
@@ -117,7 +123,7 @@ const AddService = () => {
     if (!querySnapshot.empty) {
       const userDoc = querySnapshot.docs[0];
       userDocRef = doc(FIRESTORE_DB, "users", userDoc.id);
-      currentProducts = userDoc.data().services || [];
+      currentServices = userDoc.data().services || [];
     } else {
       console.error("User document not found.");
       return;
@@ -126,14 +132,14 @@ const AddService = () => {
     try {
       await setDoc(
         userDocRef,
-        { services: [...currentProducts, ...serviceData] },
+        { services: [...currentServices, ...serviceData] },
         { merge: true }
       );
 
-      console.log("Product uploaded successfully!");
-      navigation.navigate("Account");
+      console.log("Services uploaded successfully!");
+      setShowSuccessToast(true);
     } catch (error) {
-      console.error("Error uploading service: ", error);
+      console.error("Error uploading services: ", error);
     }
   };
 
@@ -170,7 +176,7 @@ const AddService = () => {
             <View style={styles.AddInput}>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {selectedImages.map((imageUri, index) => (
-                  <Pressable
+                  <View
                     style={[styles.pressable, { width: itemWidth }]}
                     key={index}
                   >
@@ -182,14 +188,20 @@ const AddService = () => {
                     >
                       <Image source={{ uri: imageUri }} style={styles.image} />
                     </View>
-                  </Pressable>
+                    <Pressable
+                      style={styles.Xbutton}
+                      onPress={() => handleRemoveImage(index)}
+                    >
+                      <Feather name="x-circle" size={24} color="#1e90ff" />
+                    </Pressable>
+                  </View>
                 ))}
               </ScrollView>
             </View>
             <TouchableOpacity style={styles.AddInputInner} onPress={pickImage}>
               <View style={{ flexDirection: "row" }}>
                 <Text style={styles.AddText}>Select pictures</Text>
-                <FeatherIcon color="white" name="file-plus" size={16} />
+                <FeatherIcon color="white" name="plus" size={20} />
               </View>
             </TouchableOpacity>
           </View>
@@ -236,31 +248,22 @@ const AddService = () => {
         </View>
 
         <View style={styles.overlay}>
-          <View style={styles.overlayContent}>
-            <View style={styles.overlayContentTop}>
-              <Text style={styles.overlayContentPrice}>
-                All <Text style={{ color: "#1e90ff" }}>Good?</Text>
-              </Text>
-            </View>
-          </View>
           <TouchableOpacity onPress={handleUploadImages} mode="outlined">
             <View style={styles.btn}>
               <Text style={styles.btnText}>Upload</Text>
-
-              <MaterialCommunityIcons
-                color="#fff"
-                name="arrow-right-circle"
-                size={18}
-                style={{ marginLeft: 12 }}
-              />
             </View>
           </TouchableOpacity>
         </View>
+        {showSuccessToast && (
+          <Toast
+            message="Services uploaded successfully!"
+            onDismiss={() => setShowSuccessToast(false)}
+          />
+        )}
       </View>
     </KeyboardAvoidingView>
   );
 };
-
 
 export default AddService;
 
@@ -433,7 +436,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   AddText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "white",
   },
   photos: {
@@ -441,5 +444,8 @@ const styles = StyleSheet.create({
     height: 130,
     overflow: "hidden",
     padding: 8,
+  },
+  Xbutton: {
+    paddingVertical: 5,
   },
 });

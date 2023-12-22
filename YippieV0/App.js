@@ -11,7 +11,6 @@ import Onboarding from "./src/screens/onboarding/Onboarding";
 import NavigationForm from "./src/screens/SellerUI/MultiStepForm/NavigationForm";
 import Step2 from "./src/screens/SellerUI/MultiStepForm/Step2";
 import { Provider as PaperProvider } from "react-native-paper";
-import SellerProfile from "./src/screens/SellerUI/SelleProfile";
 import AddProduct from "./src/screens/SellerUI/AddProduct";
 import Example from "./src/screens/SellerUI/MultiStepForm/test";
 import Step1 from "./src/screens/SellerUI/MultiStepForm/Step1";
@@ -23,7 +22,7 @@ import SkeletonHome from "./src/componets/SkeletonHome";
 import Product from "./src/componets/Product";
 import Chat from "./src/chat/Chat"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-
+import Template from "./src/screens/SellerUI/MultiStepForm/Template";
 
 export default function App() {
   return (

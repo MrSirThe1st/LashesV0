@@ -14,41 +14,40 @@ import { FIRESTORE_DB, FIREBASE_AUTH } from "../../config/firebase";
 import { collection, getDocs, where, query } from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
 
-const Catalogue = ({ navigation }) => {
-  const [products, setProducts] = useState([]);
+const Catalogue1 = ({ navigation }) => {
+  const [services, setServices] = useState([]);
   const route = useRoute();
   const { seller } = route.params;
-
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const sellerId = route.params.seller.uid;
 
-        const productsCollection = collection(FIRESTORE_DB, "users");
-        const q = query(productsCollection, where("uid", "==", sellerId));
+        const servicesCollection = collection(FIRESTORE_DB, "users");
+        const q = query(servicesCollection, where("uid", "==", sellerId));
         const querySnapshot = await getDocs(q);
 
-        const productsData = [];
+        const servicesData = [];
         querySnapshot.forEach((doc) => {
           const userData = doc.data();
-          const userProducts = userData.products || [];
+          const userProducts = userData.services || [];
 
-          userProducts.forEach((product) => {
-            productsData.push({
+          userProducts.forEach((service) => {
+            servicesData.push({
               img:
-                product.images && product.images.length > 0
-                  ? product.images[0]
+                service.images && service.images.length > 0
+                  ? service.images[0]
                   : "",
-              label: product.name || "",
+              label: service.name || "",
               ordered: 0,
               likes: 0,
-              price: product.price || 0,
+              price: service.price || 0,
             });
           });
         });
 
-        setProducts(productsData);
+        setServices(servicesData);
       } catch (error) {
         console.error("Error fetching products: ", error);
       }
@@ -79,12 +78,13 @@ const Catalogue = ({ navigation }) => {
           <View style={styles.cardBody}>
             <Text
               numberOfLines={1}
-              ellipsizeMode="tail"
+             
               style={styles.cardTitle}
+              ellipsizeMode="tail"
             >
               {item.label}
             </Text>
-            <Text style={styles.cardPrice}>
+            <Text style={styles.cardPrice} >
               R{item.price.toLocaleString("en-US")}
             </Text>
           </View>
@@ -96,7 +96,7 @@ const Catalogue = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={products}
+        data={services}
         renderItem={renderProductItem}
         keyExtractor={(item, index) => index.toString()}
         numColumns={3}
@@ -107,7 +107,7 @@ const Catalogue = ({ navigation }) => {
   );
 };
 
-export default Catalogue;
+export default Catalogue1;
 
 const styles = StyleSheet.create({
   container: {

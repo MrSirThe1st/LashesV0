@@ -5,43 +5,38 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
-import React, { useCallback, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Product from "../../../componets/Product";
+import Service from "../../../componets/Service";
 
 
 const MyServices = ({ navigation }) => {
-  const bottomSheetRef = useRef(null);
-
-  const pressHandler = useCallback(() => {
-    bottomSheetRef.current?.expand();
-  }, []);
-
+  
   return (
- 
-      <ScrollView style={styles.Content} showsVerticalScrollIndicator={false}>
-        <View style={styles.RowContainer}>
-          <View style={styles.customContent}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate("AddService");
-              }}
-            >
-              <View style={styles.addProduct}>
-                <Text style={styles.addText}>Add a service</Text>
-                <FeatherIcon color="#fff" name="plus" size={16} />
-              </View>
-            </TouchableOpacity>
-          </View>
+    <ScrollView style={styles.Content} showsVerticalScrollIndicator={false}>
+      <View style={styles.RowContainer}>
+        <View style={styles.customContent}>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("AddService");
+            }}
+          >
+            <View style={styles.addProduct}>
+              <Text style={styles.addText}>Add a service</Text>
+              <FeatherIcon color="#fff" name="plus" size={16} />
+            </View>
+          </TouchableOpacity>
         </View>
+      </View>
 
-        <View>
-          <Product />
-        </View>
+      <View>
+        <Service />
+      </View>
 
-        <TouchableOpacity onPress={() => pressHandler()}></TouchableOpacity>
-      </ScrollView>
-
+      <TouchableOpacity onPress={() => pressHandler()}></TouchableOpacity>
+    
+    </ScrollView>
   );
 };
 
@@ -65,6 +60,7 @@ const styles = StyleSheet.create({
   },
   Content: {
     flex: 1,
+    backgroundColor:'#fff'
   },
   customContent: {
     padding: 20,

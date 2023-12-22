@@ -7,51 +7,53 @@ import {
   TouchableOpacity,
   View,
   Image,
+  Pressable,
 } from "react-native";
-import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { collection, getDocs, where, query } from "firebase/firestore";
+import FeatherIcon from "react-native-vector-icons/Feather";
+
 
 const Service = () => {
-    const [services, setServices] = useState([]);
+  const [services, setServices] = useState([]);
 
-    useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const user = FIREBASE_AUTH.currentUser;
-          const userId = user.uid;
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const user = FIREBASE_AUTH.currentUser;
+        const userId = user.uid;
 
-          const servicesCollection = collection(FIRESTORE_DB, "users");
-          const q = query(servicesCollection, where("uid", "==", userId));
-          const querySnapshot = await getDocs(q);
+        const servicesCollection = collection(FIRESTORE_DB, "users");
+        const q = query(servicesCollection, where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
 
-          const servicesData = [];
-          querySnapshot.forEach((doc) => {
-            const userData = doc.data();
-            const userProducts = userData.services || [];
+        const servicesData = [];
+        querySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          const userServices = userData.services || [];
 
-            userProducts.forEach((product) => {
-              servicesData.push({
-                img:
-                  product.images && product.images.length > 0
-                    ? product.images[0]
-                    : "",
-                label: product.name || "",
-                ordered: 0,
-                likes: 0,
-                price: product.price || 0,
-              });
+          userServices.forEach((service) => {
+            servicesData.push({
+              img:
+                service.images && service.images.length > 0
+                  ? service.images[0]
+                  : "",
+              label: service.name || "",
+              ordered: 0,
+              likes: 0,
+              price: service.price || 0,
             });
           });
+        });
 
-          setServices(servicesData);
-        } catch (error) {
-          console.error("Error fetching services: ", error);
-        }
-      };
+        setServices(servicesData);
+      } catch (error) {
+        console.error("Error fetching services: ", error);
+      }
+    };
 
-      fetchProducts();
-    }, []);
+    fetchProducts();
+  }, []);
   return (
     <ScrollView contentContainerStyle={styles.container}>
       {services.map(({ img, label, ordered, likes, price }, index) => {
@@ -60,7 +62,7 @@ const Service = () => {
             key={index}
             style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
           >
-            <TouchableOpacity
+            <View
               key={index}
               onPress={() => {
                 // handle onPress
@@ -100,8 +102,25 @@ const Service = () => {
                     R{price.toLocaleString("en-US")}
                   </Text>
                 </View>
+
+                <View style={styles.menu}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Pressable onPress={() => openMenu(index)}>
+                      <FeatherIcon
+                        color="#6A6D70"
+                        name="more-vertical"
+                        size={20}
+                      />
+                    </Pressable>
+                  </View>
+                </View>
               </View>
-            </TouchableOpacity>
+            </View>
           </View>
         );
       })}
@@ -171,5 +190,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: "700",
     color: "#173153",
+  },
+  menu: {
+    justifyContent: "center",
+  },
+  menuContainer: {
+    backgroundColor: "white",
   },
 });

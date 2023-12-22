@@ -86,7 +86,7 @@ const CardItem = ({ seller, navigation }) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate("Catalogue", { seller });
+                    navigation.navigate("Catalogue1", { seller });
                   }}
                 >
                   <View style={styles.catalogue1}>

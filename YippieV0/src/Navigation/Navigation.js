@@ -23,7 +23,7 @@ import AccountInfo from "../screens/SellerUI/AccountInfo";
 import AddProduct from "../screens/SellerUI/AddProduct";
 import AddService from "../screens/SellerUI/AddService";
 import { onAuthStateChanged } from "firebase/auth";
-import SellerProfile from "../screens/SellerUI/SelleProfile";
+
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import SkeletonHome from "../componets/SkeletonHome";
@@ -38,6 +38,10 @@ import Favorites from "../screens/SellerUI/settings/Favorites";
 import SellerSettings from "../screens/SellerUI/SellerSettings";
 import MyProducts from "../screens/SellerUI/settings/MyProducts";
 import MyServices from "../screens/SellerUI/settings/MyServices";
+import Catalogue1 from "../screens/SellerUI/Catalogue1";
+import SellerServices from "../componets/SellerServices";
+import Service from "../componets/Service";
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -192,7 +196,7 @@ const HomeTabNavigatorSeller = () => (
 
 
     <Tab.Screen
-      name="AccountS"
+      name="Profile"
       component={SellerSettings}
       options={{
         headerShown: false,
@@ -320,7 +324,16 @@ const Navigation = () => {
                   component={Catalogue}
                   options={{
                     headerShown: true,
-                    title: "",
+                    title: "Products",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Catalogue1"
+                  component={Catalogue1}
+                  options={{
+                    headerShown: true,
+                    title: "Services",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -384,6 +397,24 @@ const Navigation = () => {
                   options={{
                     headerShown: true,
                     title: "Services",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Service"
+                  component={Service}
+                  options={{
+                    headerShown: true,
+                    title: "Services",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={Login}
+                  options={{
+                    headerShown: false,
+                    title: "",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -432,6 +463,15 @@ const Navigation = () => {
                   }}
                 />
                 <Stack.Screen
+                  name="Catalogue1"
+                  component={Catalogue1}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
                   name="CategoryScreen"
                   component={CategoryScreen}
                   options={{
@@ -491,6 +531,24 @@ const Navigation = () => {
                   options={{
                     headerShown: true,
                     title: "Services",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Service"
+                  component={Service}
+                  options={{
+                    headerShown: true,
+                    title: "Services",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={Login}
+                  options={{
+                    headerShown: false,
+                    title: "",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />

@@ -9,6 +9,7 @@ import React from "react";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Product from "../../../componets/Product";
 
+
 const MyProducts = ({navigation}) => {
   return (
     <ScrollView style={styles.Content} showsVerticalScrollIndicator={false}>
@@ -24,6 +25,7 @@ const MyProducts = ({navigation}) => {
               <FeatherIcon color="#fff" name="plus" size={16} />
             </View>
           </TouchableOpacity>
+          
         </View>
       </View>
 
@@ -54,14 +56,15 @@ const styles = StyleSheet.create({
   },
   Content: {
     flex: 1,
+    backgroundColor: "#fff",
   },
   customContent: {
     padding: 20,
   },
-  RowContainer:{
-    flexDirection:'row',
-    width:"100%",
-    backgroundColor:'#fff',
-    justifyContent:'center'
-  }
+  RowContainer: {
+    flexDirection: "row",
+    width: "100%",
+    backgroundColor: "#fff",
+    justifyContent: "center",
+  },
 });

@@ -33,6 +33,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import { Feather } from "@expo/vector-icons";
+import Toast from "../../componets/Toast";
 
 const AddProduct = () => {
   const [price, setPrice] = useState("");
@@ -48,6 +49,7 @@ const AddProduct = () => {
   const imageHeight = imageWidth * 0.8;
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
+   const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -136,7 +138,7 @@ const AddProduct = () => {
       );
 
       console.log("Product uploaded successfully!");
-      navigation.navigate("Account");
+      setShowSuccessToast(true);
     } catch (error) {
       console.error("Error uploading product: ", error);
     }
@@ -253,6 +255,12 @@ const AddProduct = () => {
             </View>
           </TouchableOpacity>
         </View>
+        {showSuccessToast && (
+          <Toast
+            message="Services uploaded successfully!"
+            onDismiss={() => setShowSuccessToast(false)}
+          />
+        )}
       </View>
     </KeyboardAvoidingView>
   );
