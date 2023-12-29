@@ -38,15 +38,6 @@ const ProductDescription = () => {
         </View>
         <View style={styles.profileContainer}>
           <View style={styles.profileTop}>
-            <View style={styles.avatar}>
-              <Image
-                source={{ uri: seller.avatar || "placeholder_avatar_url" }}
-                style={styles.avatarImg}
-              />
-            </View>
-            <View style={styles.profileBody}>
-              <Text style={styles.profileTitle}>{seller.username}</Text>
-            </View>
           </View>
           <View>
             <Text style={styles.profileDescription}>
@@ -62,16 +53,6 @@ const ProductDescription = () => {
       </ScrollView>
       <View style={styles.overlay}>
         <View style={styles.btnGroup}>
-          <TouchableOpacity
-            onPress={() => {
-              // handle Join Seller press
-            }}
-            style={{ flex: 1, paddingHorizontal: 6 }}
-          >
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>Join Seller</Text>
-            </View>
-          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               // handle Add To Cart press

@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useRef, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useMemo,
+  useRef,
+  useEffect,
+  useState,
+} from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,6 +13,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Pressable,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Edit from "../../componets/SettingsComponents.js/Edit";
@@ -16,72 +23,52 @@ import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
-import {  FIRESTORE_DB } from "../../config/firebase";
+import { FIRESTORE_DB } from "../../config/firebase";
 import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../../config/firebase";
-
+import {
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
+import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheetComponent from "../../componets/BottomSheets/BottomSheetComponent";
+import { MyButton } from "../../componets/BottomSheets/MyButton";
 
 const SellerSettings = () => {
-  const [selectedProfile, setSelectedProfile] = useState([]);
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: false,
-      aspect: [4, 3],
-      quality: 1,
-      allowsMultipleSelection: true,
-    });
+  const [uploading, setUploading] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+  const [username, setUsername] = useState("");
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const user = FIREBASE_AUTH.currentUser;
+        const userId = user.uid;
 
-    if (!result.canceled) {
-      if (result.assets && result.assets.length > 0) {
-        const selectedUris = result.assets.map((asset) => asset.uri);
-        setSelectedImages([...selectedProfile, ...selectedUris]);
+        const profileCollection = collection(FIRESTORE_DB, "users");
+        const q = query(profileCollection, where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
+
+        const profileData = [];
+        querySnapshot.forEach((doc) => {
+          console.log("Fetched Document Data: ", doc.data());
+          const userData = doc.data();
+          setUsername(userData.username); // Set the username state
+          setProfileImage(userData.profile[0]);
+        });
+      } catch (error) {
+        console.error("Error fetching profile: ", error);
       }
-    }
-  };
-   useEffect(() => {
-     (async () => {
-       if (Platform.OS !== "web") {
-         const { status } =
-           await ImagePicker.requestMediaLibraryPermissionsAsync();
-         if (status !== "granted") {
-           alert("Sorry, we need camera roll permissions to make this work!");
-         }
-       }
-     })();
-   }, []);
-   const uploadProfile = async (selectedProfile, setUploading) => {
-     setUploading(true);
+    };
 
-     try {
-       const uploadPromises = selectedProfile.map(async (imageUri, index) => {
-         const imageName = `profilePicture_${Date.now()}_${index}`;
-         const storageReference = ref(storage, `profile/${imageName}`);
-         const response = await fetch(imageUri);
-         const blob = await response.blob();
-         await uploadBytes(storageReference, blob);
-         const downloadURL = await getDownloadURL(storageReference);
-         return downloadURL;
-       });
-
-       const imageUrl = await Promise.all(uploadPromises);
-
-       return imageUrl;
-     } catch (error) {
-       console.error("Error is: ", error);
-       alert("Error uploading profile: " + error.message);
-       return [];
-     } finally {
-       setUploading(false);
-     }
-   };
-const handleProfileUpdate = async () => {
-  if (selectedProfile.length > 0) {
-    const uploadedUrls = await uploadProfile(selectedProfile);
-    console.log("Uploaded URLs:", uploadedUrls);
-    // You may want to update user data with the new profile picture URLs
-  }
-};
+    fetchProfile();
+  }, []);
 
   const navigation = useNavigation();
   const handleLogout = async () => {
@@ -100,17 +87,11 @@ const handleProfileUpdate = async () => {
         <View>
           <View style={styles.profileAvatarWrapper}>
             <Image
-              alt="https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80"
-              source={{
-                uri:
-                  selectedProfile.length > 0
-                    ? selectedProfile[0]
-                    : "https://example.com/placeholder.jpg",
-              }}
+              source={{ uri: profileImage }}
               style={styles.profileAvatar}
             />
 
-            <TouchableOpacity onPress={pickImage}>
+            <TouchableOpacity>
               <View style={styles.profileAction}>
                 <FeatherIcon color="#fff" name="edit-3" size={15} />
               </View>
@@ -119,7 +100,7 @@ const handleProfileUpdate = async () => {
         </View>
 
         <View style={styles.profileBody}>
-          <Text style={styles.profileName}>John Doe</Text>
+          <Text style={styles.profileName}>{username}</Text>
 
           <Text style={styles.profileAddress}>
             123 Maple Street. Anytown, PA 17101
@@ -132,7 +113,7 @@ const handleProfileUpdate = async () => {
       >
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Products & Services</Text>
-          <TouchableOpacity onPress={() => navigation.navigate("MyProducts")}>
+          <Pressable onPress={() => navigation.navigate("MyProducts")}>
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
                 <FeatherIcon color="#1e90ff" name="shopping-bag" size={18} />
@@ -142,8 +123,8 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate("MyServices")}>
+          </Pressable>
+          <Pressable onPress={() => navigation.navigate("MyServices")}>
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
                 <FeatherIcon color="#1e90ff" name="shopping-bag" size={18} />
@@ -152,14 +133,13 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         </View>
-
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Profile</Text>
 
           <Edit navigation={navigation} />
-          <TouchableOpacity onPress={handleLogout}>
+          <Pressable onPress={handleLogout}>
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
                 <MaterialIcons name="logout" size={20} color="#dc143c" />
@@ -169,9 +149,9 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
           <Text style={styles.sectionHeader}>Delete Account</Text>
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               // handle onPress
             }}
@@ -187,12 +167,11 @@ const handleProfileUpdate = async () => {
               <Text style={styles.rowLabel}>Delete Account</Text>
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         </View>
-
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <Text style={styles.sectionHeader}>Preferences</Text>
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               // handle onPress
             }}
@@ -206,8 +185,8 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             onPress={() => {
               // handle onPress
             }}
@@ -221,15 +200,11 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
-        </View>
+          </Pressable>
+        </View> */}
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Help</Text>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-          >
+          <Pressable onPress={() => setShowBottomSheet(!showBottomSheet)}>
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
                 <FeatherIcon color="#8e8d91" name="flag" size={18} />
@@ -239,12 +214,8 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-          >
+          </Pressable>
+          <Pressable onPress={() => setShowBottomSheet(!showBottomSheet)}>
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
                 <FeatherIcon color="#007afe" name="mail" size={18} />
@@ -254,14 +225,13 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         </View>
-
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Content</Text>
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
-              // handle onPress
+              navigation.navigate("Favorites");
             }}
           >
             <View style={styles.row}>
@@ -273,9 +243,13 @@ const handleProfileUpdate = async () => {
 
               <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </ScrollView>
+      <BottomSheetComponent
+        showBottomSheet={showBottomSheet}
+        setShowBottomSheet={setShowBottomSheet}
+      />
     </SafeAreaView>
   );
 };
@@ -310,6 +284,12 @@ const styles = StyleSheet.create({
     height: 72,
     borderRadius: 9999,
   },
+  profileAvatarEmpty: {
+    width: 72,
+    height: 72,
+    borderRadius: 9999,
+    backgroundColor: "#eaf5ff",
+  },
   profileAvatarWrapper: {
     position: "relative",
   },
@@ -342,11 +322,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     height: 50,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#fafdff",
     borderRadius: 8,
     marginBottom: 12,
     paddingLeft: 12,
     paddingRight: 12,
+    elevation: 1,
   },
   rowIcon: {
     width: 32,

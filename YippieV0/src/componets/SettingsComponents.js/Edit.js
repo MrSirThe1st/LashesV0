@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Switch,
   Modal,
+  Pressable
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -15,7 +16,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 const Edit = ({navigation}) => {
   return (
     <>
-      <TouchableOpacity onPress={() => navigation.navigate("EditAccount")}>
+      <Pressable onPress={() => navigation.navigate("EditAccount")}>
         <View style={styles.row}>
           <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
             <MaterialCommunityIcons
@@ -30,7 +31,7 @@ const Edit = ({navigation}) => {
           <View style={styles.rowSpacer} />
           {/* Additional elements based on type */}
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </>
   );
 };
@@ -43,11 +44,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
     height: 50,
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#fafdff",
     borderRadius: 8,
     marginBottom: 12,
     paddingLeft: 12,
     paddingRight: 12,
+    elevation: 1,
   },
   rowIcon: {
     width: 32,

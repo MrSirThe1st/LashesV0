@@ -11,13 +11,21 @@ import {
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../config/firebase";
-import { collection, getDocs, where, query } from "firebase/firestore";
+import { collection, getDocs, where, query, addDoc } from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
+import { onAuthStateChanged } from "firebase/auth";
+import Toast from "../../componets/Toast";
 
 const Catalogue1 = ({ navigation }) => {
   const [services, setServices] = useState([]);
+  const [cart, setCart] = useState({});
+  const [orders, setOrders] = useState([]);
   const route = useRoute();
   const { seller } = route.params;
+  const auth = FIREBASE_AUTH;
+  const db = FIRESTORE_DB;
+  const [currentUserUID, setCurrentUserUID] = useState(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -33,8 +41,9 @@ const Catalogue1 = ({ navigation }) => {
           const userData = doc.data();
           const userProducts = userData.services || [];
 
-          userProducts.forEach((service) => {
+          userProducts.forEach((service, index) => {
             servicesData.push({
+              index,
               img:
                 service.images && service.images.length > 0
                   ? service.images[0]
@@ -56,42 +65,162 @@ const Catalogue1 = ({ navigation }) => {
     fetchProducts();
   }, [route.params.seller]);
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
+      if (user) {
+        setCurrentUserUID(user.uid);
+      } else {
+        setCurrentUserUID(null);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const handleIncrement = (productIndex) => {
+    setCart((prevCart) => ({
+      ...prevCart,
+      [productIndex]: (prevCart[productIndex] || 0) + 1,
+    }));
+  };
+
+  const handleDecrement = (productIndex) => {
+    setCart((prevCart) => {
+      const newQuantity = (prevCart[productIndex] || 0) - 1;
+      return {
+        ...prevCart,
+        [productIndex]: newQuantity > 0 ? newQuantity : undefined,
+      };
+    });
+  };
+
+  const addOrder = async () => {
+    try {
+      const orderedServices = services
+        .filter((item, index) => cart[index] > 0)
+        .map((item, index) => ({
+          ...item,
+          quantity: cart[index] || 0,
+          totalPrice: (cart[index] || 0) * item.price,
+        }));
+      const order = {
+        orderNumber: Math.floor(Math.random() * 100000),
+        products: orderedServices,
+        totalQuantity: totalQuantity,
+        totalPrice: totalPrice,
+        customerID: currentUserUID,
+        sellerID: seller.uid,
+      };
+
+      await addDoc(collection(FIRESTORE_DB, "Orders"), order);
+      setShowSuccessToast(true);
+      setCart({});
+    } catch (error) {
+      console.error("Error adding order: ", error);
+      // Handle error
+    }
+  };
 
   const renderProductItem = ({ item }) => {
     return (
-      <Pressable
-        onPress={() =>
-          navigation.navigate("ProductDescription", {
-            seller,
-            selectedProduct: item,
-          })
-        }
-      >
-        <View style={styles.card}>
-          <Image
-            alt=""
-            resizeMode="cover"
-            source={{ uri: item.img }}
-            style={styles.cardImg}
-          />
+      <View>
+        <Pressable
+          onPress={() =>
+            navigation.navigate("ProductDescription", {
+              seller,
+              selectedProduct: item,
+            })
+          }
+        >
+          <View style={styles.card}>
+            <Image
+              alt=""
+              resizeMode="cover"
+              source={{ uri: item.img }}
+              style={styles.cardImg}
+            />
 
-          <View style={styles.cardBody}>
-            <Text
-              numberOfLines={1}
-             
-              style={styles.cardTitle}
-              ellipsizeMode="tail"
-            >
-              {item.label}
-            </Text>
-            <Text style={styles.cardPrice} >
-              R{item.price.toLocaleString("en-US")}
-            </Text>
+            <View style={styles.cardBody}>
+              <Text
+                numberOfLines={1}
+                style={styles.cardTitle}
+                ellipsizeMode="tail"
+              >
+                {item.label}
+              </Text>
+              <Text style={styles.cardPrice}>
+                R{item.price.toLocaleString("en-US")}
+              </Text>
+            </View>
           </View>
+        </Pressable>
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "#fff",
+            elevation: 1,
+            width: 100,
+            marginBottom: 10,
+            borderBottomLeftRadius: 12,
+            borderBottomRightRadius: 12,
+            marginHorizontal: 10,
+            justifyContent: "center",
+          }}
+        >
+          <Pressable
+            onPress={() => handleDecrement(item.index)}
+            disabled={!cart[item.index]}
+          >
+            <Text
+              style={{
+                fontSize: 25,
+                color: cart[item.index] ? "#1e90ff" : "white",
+                paddingHorizontal: 10,
+              }}
+            >
+              -
+            </Text>
+          </Pressable>
+
+          <Text
+            style={{
+              fontSize: 17,
+              color: cart[item.index] ? "#1e90ff" : "white",
+              paddingHorizontal: 10,
+            }}
+          >
+            {cart[item.index] || 0}
+          </Text>
+
+          <Pressable onPress={() => handleIncrement(item.index)}>
+            <Text
+              style={{
+                fontSize: 20,
+                color: "#1e90ff",
+                paddingHorizontal: 10,
+              }}
+            >
+              +
+            </Text>
+          </Pressable>
         </View>
-      </Pressable>
+      </View>
     );
   };
+
+  const totalQuantity = Object.values(cart).reduce(
+    (total, quantity) => total + (quantity || 0),
+    0
+  );
+
+  const totalPrice = services.reduce(
+    (total, item, index) => total + (cart[index] || 0) * (item.price || 0),
+    0
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -103,6 +232,45 @@ const Catalogue1 = ({ navigation }) => {
         contentContainerStyle={styles.flatListContainer}
         showsVerticalScrollIndicator={false}
       />
+      <View style={styles.overlay}>
+        <View style={styles.OverlayTotal}>
+          <Text
+            style={{
+              fontSize: 17,
+              color: totalQuantity !== 0 ? "#1e90ff" : "white",
+            }}
+          >
+            {totalQuantity}
+          </Text>
+          {/* <Text
+            style={{
+              fontSize: 17,
+              color: totalPrice !== 0 ? "#1e90ff" : "white",
+              paddingHorizontal: 10,
+            }}
+          >
+            R{totalPrice.toLocaleString("en-US")}
+          </Text> */}
+        </View>
+        <View style={styles.btnGroup}>
+          <TouchableOpacity
+            onPress={() => {
+              addOrder();
+            }}
+            style={{ flex: 1, paddingHorizontal: 6 }}
+          >
+            <View style={styles.btnPrimary}>
+              <Text style={styles.btnPrimaryText}>Send order request</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+      {showSuccessToast && (
+        <Toast
+          message="Your order Request has been sent"
+          onDismiss={() => setShowSuccessToast(false)}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -113,7 +281,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
-    marginBottom: 10,
   },
   flatListContainer: {
     justifyContent: "space-between",
@@ -122,12 +289,13 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     alignItems: "stretch",
-    marginBottom: 16,
+    marginTop: 10,
     marginHorizontal: 10,
     backgroundColor: "white",
-    borderRadius: 12,
     elevation: 1,
     width: 100,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
   cardImg: {
     height: 120,
@@ -154,5 +322,54 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#173153",
     textAlign: "center",
+  },
+  overlay: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#fff",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    shadowColor: "#000",
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
+  },
+  btnGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: -6,
+    marginTop: 10,
+  },
+  btnPrimary: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: "#1e90ff",
+    borderColor: "#1e90ff",
+  },
+  btnPrimaryText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  OverlayTotal: {
+    marginTop: 5,
   },
 });

@@ -5,6 +5,7 @@ import {
   View,
   Image,
   FlatList,
+  Pressable,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { getDownloadURL } from "firebase/storage";
@@ -36,7 +37,7 @@ const CardItem = ({ seller, navigation }) => {
 
   const renderCardItem = () => {
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={() =>
           navigation.navigate("AccountInfo", {
             seller,
@@ -57,7 +58,7 @@ const CardItem = ({ seller, navigation }) => {
               skeletonStyle={{ backgroundColor: "#eaf5ff" }}
               animation="pulse"
               width={120}
-              height={154}
+              height={134}
               isLoading={!imageUrl}
               style={styles.cardImg}
             >
@@ -73,10 +74,10 @@ const CardItem = ({ seller, navigation }) => {
                 width: "100%",
               }}
             >
-              <View style={styles.catalogueS}>
+              {/* <View style={styles.catalogueS}>
                 <TouchableOpacity
                   onPress={() => {
-                    navigation.navigate("Catalogue",{seller});
+                    navigation.navigate("Catalogue", { seller });
                   }}
                 >
                   <View style={styles.catalogue}>
@@ -94,7 +95,7 @@ const CardItem = ({ seller, navigation }) => {
                     <Text style={styles.catalogueText1}>Services</Text>
                   </View>
                 </TouchableOpacity>
-              </View>
+              </View> */}
               <View style={{ flexDirection: "column" }}>
                 <Text style={styles.cardRowItemTextName}>
                   {seller.username},{" "}
@@ -107,9 +108,6 @@ const CardItem = ({ seller, navigation }) => {
               <View style={styles.cardRowItem}>
                 <Text style={styles.cardAirport}>{seller.brief}</Text>
               </View>
-              <View style={styles.cardRowItem}>
-                <Text style={styles.cardRowItemText}>{seller.title}</Text>
-              </View>
             </View>
             <View
               style={{
@@ -118,15 +116,21 @@ const CardItem = ({ seller, navigation }) => {
                 width: "100%",
               }}
             >
-              <Stars />
-              <Text style={styles.cardPrice}>
+              <View style={styles.cardPrice}>
                 <Text>From </Text>
-                <Text style={styles.cardPriceValue}>R150{seller.price}</Text>
-              </Text>
+                <Text
+                  style={styles.cardPriceValue}
+                  ellipsizeMode="tail"
+                  numberOfLines={1}
+                >
+                  R{seller.price}
+                </Text>
+              </View>
+              <Stars />
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     );
   };
 
@@ -140,6 +144,7 @@ const CardItem = ({ seller, navigation }) => {
 const CardLists = ({ sellerData, navigation }) => {
   return (
     <FlatList
+      showsVerticalScrollIndicator={false}
       data={sellerData}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item }) => (
@@ -164,13 +169,13 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "stretch",
     borderRadius: 12,
-    marginBottom: 16,
     backgroundColor: "#fafdff",
+    elevation: 1,
     // padding:8
   },
   cardImg: {
     width: "50%",
-    height: 170,
+    height: 150,
     borderTopRightRadius: 12,
     borderBottomRightRadius: 12,
   },
@@ -183,12 +188,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
     borderTopLeftRadius: 12,
     borderBottomLeftRadius: 12,
-    borderColor: "#1e90ff",
   },
   cardTitle: {
     fontSize: 16,
@@ -227,6 +228,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#5f697d",
+    flexDirection:'row',
+    alignItems:'center',
   },
   cardPriceValue: {
     fontSize: 18,

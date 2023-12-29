@@ -155,7 +155,7 @@ const EditAccount = () => {
           </TouchableOpacity> */}
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
             {userData ? userData.username : ""}{" "}
-            {userData ? userData.username : ""}
+            {/* {userData ? userData.username : ""} */}
           </Text>
           {/* <Text>{user.uid}</Text> */}
         </View>

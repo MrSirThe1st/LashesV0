@@ -23,7 +23,6 @@ import AccountInfo from "../screens/SellerUI/AccountInfo";
 import AddProduct from "../screens/SellerUI/AddProduct";
 import AddService from "../screens/SellerUI/AddService";
 import { onAuthStateChanged } from "firebase/auth";
-
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import SkeletonHome from "../componets/SkeletonHome";
@@ -41,7 +40,9 @@ import MyServices from "../screens/SellerUI/settings/MyServices";
 import Catalogue1 from "../screens/SellerUI/Catalogue1";
 import SellerServices from "../componets/SellerServices";
 import Service from "../componets/Service";
-
+import EditProduct from "../screens/SellerUI/settings/EditProduct";
+import EditService from "../screens/SellerUI/settings/EditService";
+import OrderSeller from "../screens/SellerUI/OrderSeller";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -50,7 +51,7 @@ const HomeTabNavigator = () => (
   <Tab.Navigator
     screenOptions={{
       tabBarLabelStyle: { fontWeight: "bold" },
-      tabBarStyle: { display: "flex", paddingBottom: 5 },
+      tabBarStyle: { display: "flex", paddingBottom: 5},
     }}
   >
     <Tab.Screen
@@ -136,7 +137,7 @@ const HomeTabNavigatorSeller = () => (
   <Tab.Navigator
     screenOptions={{
       tabBarLabelStyle: { fontWeight: "bold" },
-      tabBarStyle: { display: "flex", paddingBottom: 5 },
+      tabBarStyle: { display: "flex", paddingVertical:10},
     }}
   >
     <Tab.Screen
@@ -144,7 +145,7 @@ const HomeTabNavigatorSeller = () => (
       component={Home}
       options={{
         headerShown: false,
-        tabBarLabel: "Home",
+        tabBarLabel: "",
         tabBarIcon: ({ focused }) =>
           focused ? (
             <AntDesign name="home" size={24} color="#1e90ff" />
@@ -156,8 +157,9 @@ const HomeTabNavigatorSeller = () => (
 
     <Tab.Screen
       name="Orders"
-      component={Orders}
+      component={OrderSeller}
       options={{
+        tabBarLabel: "",
         tabBarIcon: ({ focused }) =>
           focused ? (
             <MaterialIcons name="library-books" size={24} color="#1e90ff" />
@@ -171,6 +173,7 @@ const HomeTabNavigatorSeller = () => (
       name="Categories"
       component={CategoriesPage}
       options={{
+        tabBarLabel: "",
         headerShown: false,
         tabBarIcon: ({ focused }) =>
           focused ? (
@@ -185,6 +188,7 @@ const HomeTabNavigatorSeller = () => (
       name="Inbox"
       component={Inbox}
       options={{
+        tabBarLabel: "",
         tabBarIcon: ({ focused }) =>
           focused ? (
             <FontAwesome5 name="envelope" size={24} color="#1e90ff" />
@@ -194,11 +198,11 @@ const HomeTabNavigatorSeller = () => (
       }}
     />
 
-
     <Tab.Screen
       name="Profile"
       component={SellerSettings}
       options={{
+        tabBarLabel: "",
         headerShown: false,
         tabBarIcon: ({ focused }) =>
           focused ? (
@@ -415,6 +419,33 @@ const Navigation = () => {
                   options={{
                     headerShown: false,
                     title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="EditProduct"
+                  component={EditProduct}
+                  options={{
+                    headerShown: true,
+                    title: "Edit Product",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="EditService"
+                  component={EditService}
+                  options={{
+                    headerShown: true,
+                    title: "Edit Service",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="OrderSeller"
+                  component={OrderSeller}
+                  options={{
+                    headerShown: true,
+                    title: "View Your order ",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />

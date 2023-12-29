@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { WizardStore } from "../../../Store";
 import FeatherIcon from "react-native-vector-icons/Feather";
@@ -21,6 +22,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../../../config/firebase";
 import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
 
 const Step4 = ({ navigation, route }) => {
   React.useLayoutEffect(() => {
@@ -38,7 +40,7 @@ const Step4 = ({ navigation, route }) => {
   const showDialog = () => setVisible(true);
   const hideDialog = () => setVisible(false);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState("");
   const email = WizardStore.getRawState().email;
   const password = WizardStore.getRawState().password;
   const confirmPassword = WizardStore.getRawState().confirmPassword;
@@ -52,6 +54,7 @@ const Step4 = ({ navigation, route }) => {
   const state = WizardStore.getRawState().state;
 
   const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedProfile, setSelectedProfile] = useState([]);
   const [uploading, setUploading] = useState(false);
 
   const pickImage = async () => {
@@ -70,6 +73,25 @@ const Step4 = ({ navigation, route }) => {
       }
     }
   };
+
+  //profile
+  const pickProfile = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      aspect: [4, 3],
+      quality: 1,
+      allowsMultipleSelection: false,
+    });
+
+    if (!result.canceled) {
+      if (result.assets && result.assets.length > 0) {
+        const selectedUris = result.assets.map((asset) => asset.uri);
+        setSelectedProfile([...selectedProfile, ...selectedUris]);
+      }
+    }
+  };
+  //profile
 
   useEffect(() => {
     (async () => {
@@ -93,15 +115,41 @@ const Step4 = ({ navigation, route }) => {
         const response = await fetch(imageUri);
         const blob = await response.blob();
         await uploadBytes(storageReference, blob);
+        const downloadURL = await getDownloadURL(storageReference);
+        return downloadURL;
+      });
+      const imageUrls = await Promise.all(uploadPromises);
+
+      return imageUrls;
+    } catch (error) {
+      console.error("Error uploading images: ", error);
+      alert("Error uploading images: " + error.message);
+      return [];
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  //profile upload
+  const uploadProfileToFirebase = async () => {
+    setUploading(true);
+
+    try {
+      const uploadPromises = selectedProfile.map(async (profileUri, index) => {
+        const imageName = `profile_${Date.now()}_${index}`;
+        const storageReference = ref(storage, `profile/${imageName}`);
+        const response = await fetch(profileUri);
+        const blob = await response.blob();
+        await uploadBytes(storageReference, blob);
         // Get the download URL for the uploaded image
         const downloadURL = await getDownloadURL(storageReference);
         return downloadURL;
       });
 
       // Wait for all uploadPromises to complete
-      const imageUrls = await Promise.all(uploadPromises);
+      const profileUrls = await Promise.all(uploadPromises);
 
-      return imageUrls;
+      return profileUrls;
     } catch (error) {
       console.error("Error uploading images: ", error);
       alert("Error uploading images: " + error.message);
@@ -110,11 +158,19 @@ const Step4 = ({ navigation, route }) => {
       setUploading(false);
     }
   };
+  //profile upload
 
   const signUp = async () => {
     if (password === confirmPassword) {
       setLoading(true);
+
       try {
+        const [uploadedImageUrls, uploadedProfileUrls] = await Promise.all([
+          uploadImagesToFirebase(),
+          uploadProfileToFirebase(),
+        ]);
+
+        // Create user in Firebase Authentication
         const response = await createUserWithEmailAndPassword(
           auth,
           email,
@@ -123,27 +179,29 @@ const Step4 = ({ navigation, route }) => {
         console.log(response);
         alert("Signed up successfully");
 
-        const uploadedImageUrls = await uploadImagesToFirebase();
-        const UserUID = response.user.uid;
+        // Get the UID of the newly created user
+        const userUID = response.user.uid;
 
+        // Create a user document in Firestore
         await addDoc(collection(db, "users"), {
-          username: username,
-          role: role,
-          email: email,
-          cellphoneNumber: cellphoneNumber,
-          overview: overview,
-          item: item,
-          brief: brief,
+          role,
+          uid: userUID,
+          username,
+          email,
+          cellphoneNumber,
+          overview,
+          item,
+          brief,
           thumbnails: uploadedImageUrls,
-          city: city,
-          country: country,
-          state: state,
-          uid: UserUID,
-        }).then(() => {
-          console.log("data submitted");
+          profile: uploadedProfileUrls,
+          city,
+          country,
+          state,
         });
+
+        console.log("User document created successfully");
       } catch (error) {
-        console.log(error);
+        console.error(error);
         alert("Sign up failed: " + error.message);
       } finally {
         setLoading(false);
@@ -172,20 +230,6 @@ const Step4 = ({ navigation, route }) => {
                 <Text style={{ color: "#1e90ff" }}>Profile</Text>
               </Text>
             </View>
-            <Portal>
-              <Dialog visible={visible} onDismiss={hideDialog}>
-                <Dialog.Title>Looking Good</Dialog.Title>
-                <Dialog.Content>
-                  <Text variant="bodyMedium">
-                    Ready to publish your profile
-                  </Text>
-                </Dialog.Content>
-                <Dialog.Actions>
-                  <Button onPress={hideDialog}>Cancel</Button>
-                  {/* <Button onPress={clearAndReset}>Yes</Button> */}
-                </Dialog.Actions>
-              </Dialog>
-            </Portal>
 
             <View style={styles.summaryEntriesContainer}>
               <View style={styles.photos}>
@@ -200,7 +244,7 @@ const Step4 = ({ navigation, route }) => {
                 >
                   {selectedImages.map((imageUri, index) => (
                     <Image
-                      alt=''
+                      alt=""
                       key={index}
                       source={{ uri: imageUri }}
                       style={styles.photosImg}
@@ -214,50 +258,54 @@ const Step4 = ({ navigation, route }) => {
                   <FeatherIcon color="#fff" name="plus" size={16} />
                 </View>
               </TouchableOpacity>
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={styles.title}>
+                  Select Your
+                  <Text style={{ color: "#1e90ff" }}> Logo</Text>
+                </Text>
+              </View>
+              <View style={styles.profile}>
+                <View style={styles.profileAvatarWrapper}>
+                  <Image
+                    source={{ uri: selectedProfile[0] }}
+                    style={styles.profileAvatar}
+                  />
+                </View>
+              </View>
 
-             
-              
-              
+              <TouchableOpacity onPress={pickProfile}>
+                <View style={styles.addProduct}>
+                  <Text style={styles.addText}>Add Logo</Text>
+                  <FeatherIcon color="#fff" name="plus" size={16} />
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </ScrollView>
 
       <View style={styles.overlay}>
-        <View style={styles.overlayContent}>
-          <View style={styles.overlayContentTop}>
-            <Text style={styles.overlayContentPrice}>
-              <Text style={{ color: "#1e90ff" }}>Ready</Text>
-            </Text>
-          </View>
-        </View>
-        <TouchableOpacity onPress={signUp} mode="outlined">
-          <View style={styles.btn}>
-            <Text style={styles.btnText}>Publish Profile</Text>
-
-            <MaterialCommunityIcons
-              color="#fff"
-              name="arrow-right-circle"
-              size={18}
-              style={{ marginLeft: 12 }}
-            />
-          </View>
-        </TouchableOpacity>
+        {loading ? (
+          <ActivityIndicator size="large" color="#1e90ff" />
+        ) : (
+          <TouchableOpacity onPress={signUp} mode="outlined">
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Finish</Text>
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
     </SafeAreaView>
   );
 };
 
 export default Step4;
-
-export const SummaryEntry = ({ name, label }) => {
-  return (
-    <View style={styles.SummaryEntry}>
-      <Text style={{ marginBottom: 4, fontWeight: "700" }}>{label}</Text>
-      <Text style={{ marginBottom: 4 }}>{name}</Text>
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -357,7 +405,6 @@ const styles = StyleSheet.create({
     height: 240,
   },
 
-
   overlayContent: {
     flexDirection: "column",
     alignItems: "flex-start",
@@ -388,5 +435,20 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: "600",
     color: "#fff",
+  },
+  profileAvatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 9999,
+    backgroundColor: "white",
+  },
+  profileAvatarWrapper: {
+    position: "relative",
+  },
+  profile: {
+    padding: 24,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

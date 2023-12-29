@@ -8,6 +8,7 @@ import {
   Text,
   ScrollView,
   Image,
+  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -23,6 +24,7 @@ export default function AccountInfo({ navigation }) {
   const auth = FIREBASE_AUTH;
   const route = useRoute();
   const { seller } = route.params;
+  const profileImageUrl = seller.profile[0];
   const { thumbnails } = route.params;
   const [selectedImages, setSelectedImages] = useState([]);
   const [input, setInput] = useState("@Username");
@@ -43,7 +45,7 @@ export default function AccountInfo({ navigation }) {
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <ScrollView style={styles.container}>
+      <View style={styles.container}>
         <View style={styles.stats}>
           {[
             { label: "From", value: seller.city },
@@ -83,7 +85,15 @@ export default function AccountInfo({ navigation }) {
         <View style={styles.profileContainer}>
           <View style={styles.profileTop}>
             <View style={styles.avatar}>
-              <Image alt="" source={{}} style={styles.avatarImg} />
+              {profileImageUrl ? (
+                <Image
+                  alt=""
+                  source={{ uri: profileImageUrl }}
+                  style={styles.avatarImg}
+                />
+              ) : (
+                <Image style={styles.avatarImgEmpty} />
+              )}
 
               <View style={styles.avatarNotification} />
             </View>
@@ -101,7 +111,15 @@ export default function AccountInfo({ navigation }) {
             </View>
           </View>
         </View>
-      </ScrollView>
+        <View style={styles.ChatContainer}>
+          <Pressable style={styles.Chat}>
+            <View style={styles.Chatbtn}>
+              <Text style={styles.ChatbtnText}>message seller</Text>
+              <FeatherIcon color="#1e90ff" name="send" size={16} />
+            </View>
+          </Pressable>
+        </View>
+      </View>
       <View style={styles.overlay}>
         <View style={styles.btnGroup}>
           <TouchableOpacity
@@ -116,11 +134,14 @@ export default function AccountInfo({ navigation }) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={createChat}
+            onPress={() => {
+              navigation.navigate("Catalogue1", { seller });
+            }}
             style={{ flex: 1, paddingHorizontal: 6 }}
           >
-            <View style={styles.btnPrimary}>
-              <Text style={styles.btnPrimaryText}>Chat</Text>
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Services</Text>
+              <FeatherIcon color="white" name="shopping-bag" size={16} />
             </View>
           </TouchableOpacity>
         </View>
@@ -222,7 +243,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     marginRight: 4,
     fontSize: 13,
-
   },
   btnPrimary: {
     flexDirection: "row",
@@ -249,8 +269,12 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 9999,
-    borderWidth: 2,
-    borderColor: "#1e90ff",
+  },
+  avatarImgEmpty: {
+    width: 60,
+    height: 60,
+    borderRadius: 9999,
+    backgroundColor: "#fafdff",
   },
   avatarNotification: {
     position: "absolute",
@@ -321,5 +345,27 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
+  },
+  Chatbtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    elevation: 1,
+    backgroundColor: "white",
+  },
+  ChatbtnText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "600",
+    marginRight: 4,
+    fontSize: 13,
+    color: "#1e90ff",
+  },
+  ChatContainer: {
+    alignSelf: "flex-end",
+    margin: 15,
   },
 });

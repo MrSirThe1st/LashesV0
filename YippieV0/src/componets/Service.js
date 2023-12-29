@@ -8,15 +8,18 @@ import {
   View,
   Image,
   Pressable,
+  Animated
 } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { collection, getDocs, where, query } from "firebase/firestore";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FeatherIcon from "react-native-vector-icons/Feather";
-
+import BottomSheetEdit from "./BottomSheets/BottomSheetEdit";
+import { useNavigation } from "@react-navigation/native";
 
 const Service = () => {
   const [services, setServices] = useState([]);
-
+  const navigation = useNavigation();
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -55,76 +58,90 @@ const Service = () => {
     fetchProducts();
   }, []);
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {services.map(({ img, label, ordered, likes, price }, index) => {
-        return (
-          <View
-            key={index}
-            style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
-          >
+    <View style={{ flex: 1 }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {services.map(({ img, label, ordered, likes, price }, index) => {
+          return (
             <View
               key={index}
-              onPress={() => {
-                // handle onPress
-              }}
+              style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
             >
-              <View style={styles.card}>
-                <Image
-                  alt=""
-                  resizeMode="cover"
-                  source={{ uri: img }}
-                  style={styles.cardImg}
-                />
+              <Pressable key={index}>
+                <View style={styles.card}>
+                  <Image
+                    alt=""
+                    resizeMode="cover"
+                    source={{ uri: img }}
+                    style={styles.cardImg}
+                  />
 
-                <View style={styles.cardBody}>
-                  <Text numberOfLines={1} style={styles.cardTitle}>
-                    {label}
-                  </Text>
+                  <View style={styles.cardBody}>
+                    <Text numberOfLines={1} style={styles.cardTitle}>
+                      {label}
+                    </Text>
 
-                  <View style={styles.cardRow}>
-                    <View style={styles.cardRowItem}>
-                      {/* <FontAwesome color="#173153" name="bed" size={13} /> */}
+                    <View style={styles.cardRow}>
+                      <View style={styles.cardRowItem}>
+                        {/* <FontAwesome color="#173153" name="bed" size={13} /> */}
 
-                      <Text style={styles.cardRowItemText}>{ordered}</Text>
-                    </View>
+                        <Text style={styles.cardRowItemText}>{ordered}</Text>
+                      </View>
 
-                    <View style={styles.cardRowItem}>
-                      {/* <FontAwesome
+                      <View style={styles.cardRowItem}>
+                        {/* <FontAwesome
                           color="#173153"
                           name="plus-square"
                           solid={true}
                           size={13}
                         /> */}
+                      </View>
+                    </View>
+
+                    <Text style={styles.cardPrice}>
+                      R{price.toLocaleString("en-US")}
+                    </Text>
+                  </View>
+
+                  <View style={styles.menu}>
+                    <View style={styles.contentContainer}>
+                      <Pressable
+                        onPress={() =>
+                          navigation.navigate("EditService", {
+                            img: services[index].img,
+                            label: services[index].label,
+                            ordered: services[index].ordered,
+                            likes: services[index].likes,
+                            price: services[index].price,
+                          })
+                        }
+                        style={styles.row}
+                      >
+                        <View style={[styles.rowIcon]}>
+                          <FeatherIcon
+                            color="#1e90ff"
+                            name="edit-3"
+                            size={22}
+                          />
+                        </View>
+                      </Pressable>
+                      <Pressable style={styles.row}>
+                        <View style={[styles.rowIcon]}>
+                          <MaterialCommunityIcons
+                            name="delete-forever"
+                            size={22}
+                            color="#1e90ff"
+                          />
+                        </View>
+                      </Pressable>
                     </View>
                   </View>
-
-                  <Text style={styles.cardPrice}>
-                    R{price.toLocaleString("en-US")}
-                  </Text>
                 </View>
-
-                <View style={styles.menu}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Pressable onPress={() => openMenu(index)}>
-                      <FeatherIcon
-                        color="#6A6D70"
-                        name="more-vertical"
-                        size={20}
-                      />
-                    </Pressable>
-                  </View>
-                </View>
-              </View>
+              </Pressable>
             </View>
-          </View>
-        );
-      })}
-    </ScrollView>
+          );
+        })}
+      </ScrollView>
+    </View>
   );
 };
 
@@ -196,5 +213,23 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     backgroundColor: "white",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    marginBottom: 10,
+    elevation:1,
+    backgroundColor:'white',
+    padding:2
+  },
+  rowIcon: {
+    height: 32,
+    borderRadius: 9999,
+
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

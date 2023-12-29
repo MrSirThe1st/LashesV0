@@ -155,7 +155,6 @@ const AddProduct = () => {
         name,
         price,
         description,
-        category,
         images: imageUrls,
       };
 
@@ -232,7 +231,7 @@ const AddProduct = () => {
               value={description}
               autoCapitalize="none"
               onChangeText={(text) => setDescription(text)}
-              placeholder={"description"}
+              placeholder={"description(Optianal)"}
               keyboardType={"default"}
             />
           </View>
@@ -242,7 +241,7 @@ const AddProduct = () => {
               value={category}
               autoCapitalize="none"
               onChangeText={(text) => setCategory(text)}
-              placeholder={"category"}
+              placeholder={"About the product(Optianal)"}
               keyboardType={"default"}
             />
           </View>

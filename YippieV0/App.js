@@ -22,14 +22,12 @@ import SkeletonHome from "./src/componets/SkeletonHome";
 import Product from "./src/componets/Product";
 import Chat from "./src/chat/Chat"
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import Template from "./src/screens/SellerUI/MultiStepForm/Template";
+
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider>
         <Navigation />
-      </PaperProvider>
     </GestureHandlerRootView>
   );
 }

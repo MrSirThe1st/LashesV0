@@ -38,7 +38,6 @@ const AddService = () => {
   const [price, setPrice] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const navigation = useNavigation();
@@ -57,7 +56,7 @@ const AddService = () => {
       allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: false,
     });
 
     if (!result.canceled) {
@@ -154,7 +153,6 @@ const AddService = () => {
         name,
         price,
         description,
-        category,
         images: imageUrls,
       };
 
@@ -231,17 +229,7 @@ const AddService = () => {
               value={description}
               autoCapitalize="none"
               onChangeText={(text) => setDescription(text)}
-              placeholder={"description"}
-              keyboardType={"default"}
-            />
-          </View>
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              value={category}
-              autoCapitalize="none"
-              onChangeText={(text) => setCategory(text)}
-              placeholder={"category"}
+              placeholder={"description(Optianal)"}
               keyboardType={"default"}
             />
           </View>
