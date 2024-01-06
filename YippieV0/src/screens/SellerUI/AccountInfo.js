@@ -9,6 +9,7 @@ import {
   ScrollView,
   Image,
   Pressable,
+  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -16,23 +17,34 @@ import Swiper from "react-native-swiper";
 import { useRoute } from "@react-navigation/native";
 import Stars from "../../componets/Stars";
 import { FIREBASE_AUTH, FIRESTORE_DB } from "../../config/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import BottomSheetReview from "../../componets/BottomSheets/BottomSheetReview";
+import { MaterialIcons } from "@expo/vector-icons";
+import Review from "./Review";
+import StarRatingDisplay from "../../componets/StarRatingDisplay";
+import { useNavigation } from "@react-navigation/native";
 
-export default function AccountInfo({ navigation }) {
+export default function AccountInfo() {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const route = useRoute();
   const { seller } = route.params;
-  const profileImageUrl = seller.profile[0];
+  const profileImageUrl = seller?.profile?.[0] || "";
+  const [showBottomSheet, setShowBottomSheet] = useState(false);
   const { thumbnails } = route.params;
   const [selectedImages, setSelectedImages] = useState([]);
-  const [input, setInput] = useState("@Username");
+  const [input, setInput] = useState(seller?.username || "");
+  const [reviews, setReviews] = useState([]);
+  const navigation = useNavigation();
+  const [reviewsCount, setReviewsCount] = useState(0);
+
 
   const createChat = async () => {
-    await addDoc(collection(db, "chats"), { chatName: input })
+    const chatName = seller.username;
+    await addDoc(collection(db, "chats"), { chatName })
       .then(() => {
-        navigation.navigate("Chat");
+        navigation.navigate("Chat", { recipient: seller, chatName });
       })
       .catch((error) => alert(error));
   };
@@ -43,14 +55,69 @@ export default function AccountInfo({ navigation }) {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const reviewsCollection = collection(FIRESTORE_DB, "reviews");
+        const querySnapshot = await getDocs(reviewsCollection);
+
+        const reviewsData = [];
+        let totalRating = 0;
+
+        querySnapshot.forEach((doc) => {
+          const review = {
+            id: doc.id,
+            ...doc.data(),
+          };
+
+          // Check if the review belongs to the current seller
+          if (review.sellerId === seller.uid) {
+            reviewsData.push(review);
+           
+          }
+        });
+
+        setReviews(reviewsData);
+        setReviewsCount(reviewsData.length);
+
+        // Calculate the average rating
+        const averageRating =
+          reviewsData.length > 0 ? totalRating / reviewsData.length : 0;
+        setAverageRating(averageRating.toFixed(1)); 
+      } catch (error) {
+        console.error("Error fetching reviews: ", error);
+      }
+    };
+
+    fetchReviews();
+  }, [seller.uid]);
+
+  // Add a new state variable for average rating
+  const [averageRating, setAverageRating] = useState(0);
+
+
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.stats}>
           {[
-            { label: "From", value: seller.city },
-            { label: "20 Reviews", value: <Stars /> },
-            { label: "country", value: seller.country },
+            {
+              label: (
+                <MaterialIcons name="location-city" size={20} color="#48496c" />
+              ),
+              value: seller.city,
+            },
+            
+            {
+              label: (
+                <FeatherIcon
+                  name="map-pin"
+                  size={15}
+                  color="#48496c" // Adjust the color as needed
+                />
+              ),
+              value: seller.country,
+            },
           ].map(({ label, value }, index) => (
             <View
               key={index}
@@ -100,8 +167,10 @@ export default function AccountInfo({ navigation }) {
 
             <View style={styles.profileBody}>
               <Text style={styles.profileTitle}>{seller.username}</Text>
-              <Text style={styles.profileSubtitle}>category</Text>
-              <Text style={{ color: "#266EF1" }}>{seller.email}</Text>
+              <Text style={styles.profileSubtitle}>
+                {seller.category.label}
+              </Text>
+              <Text style={{ color: "#48496c" }}>{seller.address}</Text>
             </View>
           </View>
           <View>
@@ -110,23 +179,82 @@ export default function AccountInfo({ navigation }) {
               <Text style={styles.aboutDescription}>{seller.overview}</Text>
             </View>
           </View>
+          <View style={styles.ChatContainer}>
+            <Pressable style={styles.Chat} onPress={createChat}>
+              <View style={styles.Chatbtn}>
+                <Text style={styles.ChatbtnText}>Chat</Text>
+                <FeatherIcon color="white" name="send" size={16} />
+              </View>
+            </Pressable>
+          </View>
         </View>
-        <View style={styles.ChatContainer}>
-          <Pressable style={styles.Chat}>
-            <View style={styles.Chatbtn}>
-              <Text style={styles.ChatbtnText}>message seller</Text>
-              <FeatherIcon color="#1e90ff" name="send" size={16} />
-            </View>
+        <View style={styles.SeeAll}>
+          <View>
+            <Text style={styles.arrowTextR}>{reviewsCount} Reviews</Text>
+          </View>
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Review", { reviews });
+            }}
+          >
+            <Text style={styles.arrowText}>See All</Text>
           </Pressable>
         </View>
-      </View>
+        <View>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={reviews.slice(0, 3)}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <View>
+                <View style={styles.profileContainerR}>
+                  <View style={styles.profileTop}>
+                    <View style={styles.avatar}>
+                      <Image
+                        alt=""
+                        style={styles.avatarImgR}
+                        source={require("../../assets/homeAssets/happy.png")}
+                      />
+                    </View>
+
+                    <View style={styles.profileBody}>
+                      <Text style={styles.profileTitle}>{item.username}</Text>
+                      <StarRatingDisplay rating={item.rating} starSize={20} />
+                      <Text style={{ color: "#48496c" }}>
+                        {item.timestamp.toDate().toLocaleString()}
+                      </Text>
+                    </View>
+                  </View>
+                  <View>
+                    <View style={styles.about}>
+                      <Text
+                        style={styles.aboutDescription}
+                        numberOfLines={3}
+                        ellipsizeMode="tail"
+                      >
+                        {item.reviewText}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+          />
+        </View>
+      </ScrollView>
       <View style={styles.overlay}>
+        <TouchableOpacity onPress={() => setShowBottomSheet(!showBottomSheet)}>
+          <View style={styles.btnR}>
+            <Text style={styles.btnText}>write a Review</Text>
+          </View>
+        </TouchableOpacity>
         <View style={styles.btnGroup}>
           <TouchableOpacity
             onPress={() => {
               navigation.navigate("Catalogue", { seller });
             }}
-            style={{ flex: 1, paddingHorizontal: 6 }}
+            style={{ marginRight: 4 }}
           >
             <View style={styles.btn}>
               <Text style={styles.btnText}>Products</Text>
@@ -137,7 +265,7 @@ export default function AccountInfo({ navigation }) {
             onPress={() => {
               navigation.navigate("Catalogue1", { seller });
             }}
-            style={{ flex: 1, paddingHorizontal: 6 }}
+            style={{ marginLeft: 4 }}
           >
             <View style={styles.btn}>
               <Text style={styles.btnText}>Services</Text>
@@ -146,6 +274,11 @@ export default function AccountInfo({ navigation }) {
           </TouchableOpacity>
         </View>
       </View>
+      <BottomSheetReview
+        showBottomSheet={showBottomSheet}
+        setShowBottomSheet={setShowBottomSheet}
+        seller={seller}
+      />
     </View>
   );
 }
@@ -155,16 +288,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginHorizontal: -6,
-    marginTop: 18,
   },
   btn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    backgroundColor: "#1e90ff",
+  },
+  btnR: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
     backgroundColor: "#1e90ff",
   },
   container: {
@@ -172,7 +312,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    backgroundColor: "white",
+    backgroundColor: "#fff",
+    flex: 1,
   },
   profileTop: {
     flexDirection: "row",
@@ -192,6 +333,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 1,
+  },
+  profileContainerR: {
+    marginHorizontal: 15,
+    marginBottom: 80,
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 10,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 5,
+    width: 300,
+    height: 200,
   },
   profileBody: {
     flexGrow: 1,
@@ -220,6 +377,11 @@ const styles = StyleSheet.create({
   stats: {
     backgroundColor: "#fff",
     flexDirection: "row",
+    backgroundColor: "white",
+    elevation: 1,
+    borderRadius: 12,
+    margin: 10,
+    padding: 3,
   },
   statsItem: {
     flexDirection: "column",
@@ -270,6 +432,11 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 9999,
   },
+  avatarImgR: {
+    width: 50,
+    height: 50,
+    borderRadius: 9999,
+  },
   avatarImgEmpty: {
     width: 60,
     height: 60,
@@ -288,7 +455,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#22C55E",
   },
   photos: {
-    marginTop: 12,
     position: "relative",
     height: 250,
     overflow: "hidden",
@@ -332,9 +498,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    justifyContent: "space-evenly",
     shadowColor: "#000",
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
@@ -345,16 +509,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
     elevation: 3,
+    padding: 10,
+    flex: 1,
   },
   Chatbtn: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
     elevation: 1,
-    backgroundColor: "white",
+    backgroundColor: "#b3d9ff",
   },
   ChatbtnText: {
     fontSize: 14,
@@ -362,10 +528,26 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginRight: 4,
     fontSize: 13,
-    color: "#1e90ff",
+    color: "white",
   },
   ChatContainer: {
     alignSelf: "flex-end",
-    margin: 15,
+    marginVertical: 15,
+  },
+  SeeAll: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    margin: 20,
+  },
+  arrowText: {
+    fontWeight: "bold",
+    color: "#1e90ff",
+    fontSize: 15,
+  },
+  arrowTextR: {
+    fontWeight: "bold",
+    color: "black",
+    fontSize: 20,
   },
 });

@@ -59,7 +59,6 @@ const EditAccount = () => {
     const userUID = auth.currentUser.uid;
 
     try {
-      // Gettinh the reference to the document with the specified userUID
       const usersCollectionRef = collection(FIRESTORE_DB, "users");
       const q = query(usersCollectionRef, where("uid", "==", userUID));
       const querySnapshot = await getDocs(q);

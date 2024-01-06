@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Product from "../../../componets/Product";
 import Service from "../../../componets/Service";
-
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const MyServices = ({ navigation }) => {
   
@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
   },
   Content: {
     flex: 1,
-    backgroundColor:'#fff'
+    backgroundColor:'#fff',
+    paddingVertical:5
   },
   customContent: {
     padding: 20,

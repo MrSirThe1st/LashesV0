@@ -15,11 +15,14 @@ import { useForm, Controller } from "react-hook-form";
 import { WizardStore } from "../../../Store";
 import { ProgressBar } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 
 const Step1 = ({ navigation, route }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [ConfirmPassword, setConfirmPassword] = useState("");
   const [cellphoneNumber, setCellphoneNumber] = useState("");
   const { role } = route.params;
@@ -37,11 +40,8 @@ const Step1 = ({ navigation, route }) => {
   } = useForm({ defaultValues: WizardStore.useState((s) => s) });
   const isFocused = useIsFocused();
 
-
-
   const onSubmit = (data) => {
     WizardStore.update((s) => {
-
       s.UserName = data.UserName;
       s.email = data.email;
       s.cellphoneNumber = data.cellphoneNumber;
@@ -157,9 +157,9 @@ const Step1 = ({ navigation, route }) => {
                       placeholder="cellphone number"
                       placeholderTextColor="#6b7280"
                       style={styles.inputControl}
-                      secureTextEntry={true}
                       value={cellphoneNumber}
                       onBlur={onBlur}
+                      keyboardType="numeric"
                     />
                   </View>
                 )}
@@ -184,20 +184,35 @@ const Step1 = ({ navigation, route }) => {
                   <View style={styles.input}>
                     <Text style={styles.inputLabel}>Password</Text>
 
-                    <TextInput
-                      autoCorrect={false}
-                      onChangeText={(text) => {
-                        setPassword(text);
-                        onChange(text);
-                      }}
-                      placeholder="********"
-                      placeholderTextColor="#6b7280"
-                      style={styles.inputControl}
-                      secureTextEntry={true}
-                      value={password}
-                      autoCapitalize="none"
-                      onBlur={onBlur}
-                    />
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <TextInput
+                        autoCorrect={false}
+                        onChangeText={(text) => {
+                          setPassword(text);
+                          onChange(text);
+                        }}
+                        placeholder="********"
+                        placeholderTextColor="#6b7280"
+                        style={styles.inputControlP}
+                        secureTextEntry={!showPassword}
+                        value={password}
+                        autoCapitalize="none"
+                        onBlur={onBlur}
+                      />
+
+                      <TouchableOpacity
+                        onPress={() => setShowPassword(!showPassword)}
+                        style={{ padding: 10 }}
+                      >
+                        <Ionicons
+                          name={showPassword ? "eye-off" : "eye"}
+                          size={20}
+                          color="#6b7280"
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 )}
                 name="password"
@@ -218,21 +233,36 @@ const Step1 = ({ navigation, route }) => {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>
                     <Text style={styles.inputLabel}>Confirm password</Text>
-
-                    <TextInput
-                      autoCorrect={false}
-                      onChangeText={(text) => {
-                        setConfirmPassword(text);
-                        onChange(text);
-                      }}
-                      placeholder="********"
-                      placeholderTextColor="#6b7280"
-                      style={styles.inputControl}
-                      secureTextEntry={true}
-                      value={ConfirmPassword}
-                      autoCapitalize="none"
-                      onBlur={onBlur}
-                    />
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    >
+                      <TextInput
+                        autoCorrect={false}
+                        onChangeText={(text) => {
+                          setConfirmPassword(text);
+                          onChange(text);
+                        }}
+                        placeholder="********"
+                        placeholderTextColor="#6b7280"
+                        style={styles.inputControlP}
+                        secureTextEntry={!showConfirmPassword}
+                        value={ConfirmPassword}
+                        autoCapitalize="none"
+                        onBlur={onBlur}
+                      />
+                      <TouchableOpacity
+                        onPress={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        style={{ padding: 10 }}
+                      >
+                        <Ionicons
+                          name={showConfirmPassword ? "eye-off" : "eye"}
+                          size={20}
+                          color="#6b7280"
+                        />
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 )}
                 name="confirmPassword"
@@ -288,7 +318,7 @@ const styles = StyleSheet.create({
   },
   BottomContainer: {
     alignItems: "center",
-    marginBottom: 50,
+    marginBottom: 20,
     marginTop: "auto",
   },
   title: {
@@ -319,6 +349,18 @@ const styles = StyleSheet.create({
     color: "#222",
     borderWidth: 2,
     borderColor: "#6fbfff",
+  },
+  inputControlP: {
+    height: 44,
+    backgroundColor: "#fff",
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#222",
+    borderWidth: 2,
+    borderColor: "#6fbfff",
+    width: "50%",
   },
   scrollContainer: {
     flexGrow: 1,

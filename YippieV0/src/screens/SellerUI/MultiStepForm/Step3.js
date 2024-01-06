@@ -19,51 +19,51 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 
 const data = [
   {
-    value: "0",
+    value: "Hair Styling",
     label: "Hair Styling",
   },
   {
-    value: "1",
+    value: "Makeup",
     label: "Makeup",
   },
   {
-    value: "2",
+    value: "Tailoring",
     label: "Tailoring",
   },
   {
-    value: "3",
+    value: "Manicures",
     label: "Manicures",
   },
   {
-    value: "4",
+    value: "Skincare",
     label: "Skincare",
   },
   {
-    value: "5",
+    value: "Nutrition",
     label: "Nutrition",
   },
   {
-    value: "6",
+    value: "Jewelry",
     label: "Jewelry",
   },
   {
-    value: "7",
+    value: "Event planning",
     label: "Event planning",
   },
   {
-    value: "8",
+    value: "Baking",
     label: "Baking",
   },
   {
-    value: "9",
+    value: "Health & Fitness",
     label: "Health & Fitness",
   },
   {
-    value: "10",
+    value: "Handmade",
     label: "Handmade",
   },
   {
-    value: "11",
+    value: "Babies & kids",
     label: "Babies & kids",
   },
 ];
@@ -74,6 +74,7 @@ const Step3 = ({ navigation, route }) => {
   const [service, setService] = useState("");
   const [brief, setBrief] = useState("");
   const [overview, setOverview] = useState("");
+  const [category, setCategory] = useState("");
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,9 +93,14 @@ const Step3 = ({ navigation, route }) => {
     WizardStore.update((s) => {
       s.overview = data.overview;
       s.brief = data.brief;
+      s.category = data.category;
     });
+    console.log("overview:", overview);
+    console.log("brief:", brief);
+    console.log("category:", category);
     navigation.navigate("Step4", { role: "seller" });
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -142,17 +148,18 @@ const Step3 = ({ navigation, route }) => {
                         value={value}
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
-                        onChange={(item) => {
-                          // Handle the selected item from the fourth dropdown if needed
+                        onChange={(category) => {
+                          onChange(category);
                           setIsFocus(false);
+                          setCategory(category.value); // Set the selected category here
                         }}
                       />
                     )}
-                    name="item"
-                    defaultValue={null} // Set the initial value for the fourth dropdown
+                    name="category"
                   />
                 </View>
               </View>
+
               <View style={styles.formEntry}>
                 <Controller
                   control={control}
@@ -161,38 +168,7 @@ const Step3 = ({ navigation, route }) => {
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.input}>
-                      <Text style={styles.inputLabel}>
-                        Not what you are looking for?
-                      </Text>
-                      <TextInput
-                        autoCorrect={false}
-                        onChangeText={(text) => {
-                          setService(text);
-                          onChange(text);
-                        }}
-                        placeholder="create a new service"
-                        placeholderTextColor="#6b7280"
-                        style={styles.inputControl}
-                        value={service}
-                        autoCapitalize="none"
-                        onBlur={onBlur}
-                      />
-                    </View>
-                  )}
-                  name="service"
-                />
-              </View>
-              <View style={styles.formEntry}>
-                <Controller
-                  control={control}
-                  rules={{
-                    required: false,
-                  }}
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <View style={styles.input}>
-                      <Text style={styles.inputLabel}>
-                        write a small brief?
-                      </Text>
+                      <Text style={styles.inputLabel}>write a small brief</Text>
                       <TextInput
                         autoCorrect={false}
                         onChangeText={(text) => {
@@ -216,7 +192,7 @@ const Step3 = ({ navigation, route }) => {
                 <Text style={styles.title}>
                   Give us a small{" "}
                   <Text style={{ color: "#1e90ff" }}> Overview </Text> about
-                  yourself
+                  your business
                 </Text>
               </View>
 
@@ -338,7 +314,7 @@ const styles = StyleSheet.create({
   },
   BottomContainer: {
     alignItems: "center",
-    marginBottom: 50,
+    marginBottom: 20,
     marginTop: "auto",
     justifyContent: "center",
   },

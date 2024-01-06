@@ -46,8 +46,8 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   icon: {
-    width: 100,
-    height: 100,
+    width: 140,
+    height: 110,
     borderRadius: 50,
     resizeMode: "contain",
   },

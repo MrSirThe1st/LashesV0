@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, TextInput } from "react-native";
 import { MyButton } from "./MyButton";
 import BottomSheet from "@gorhom/bottom-sheet";
 
@@ -32,6 +32,7 @@ export function BottomSheetComponent({ showBottomSheet, setShowBottomSheet }) {
     >
       <View style={styles.contentContainer}>
         <Text style={styles.popupText}>Awesome! 🎉</Text>
+
         {/* <View style={styles.btnWrap}>
           <MyButton
             onPress={() => {

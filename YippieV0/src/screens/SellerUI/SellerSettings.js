@@ -45,6 +45,7 @@ const SellerSettings = () => {
   const [profileImage, setProfileImage] = useState(null);
   const [username, setUsername] = useState("");
   const [showBottomSheet, setShowBottomSheet] = useState(false);
+  
   useEffect(() => {
     const fetchProfile = async () => {
       try {

@@ -8,10 +8,18 @@ import {
   View,
   Image,
   Pressable,
-  Animated
+  Animated,
 } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
-import { collection, getDocs, where, query } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  where,
+  query,
+  doc,
+  deleteField,
+  getDoc,
+} from "firebase/firestore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import BottomSheetEdit from "./BottomSheets/BottomSheetEdit";
@@ -20,6 +28,7 @@ import { useNavigation } from "@react-navigation/native";
 const Service = () => {
   const [services, setServices] = useState([]);
   const navigation = useNavigation();
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -57,6 +66,42 @@ const Service = () => {
 
     fetchProducts();
   }, []);
+
+  const deleteService = async (serviceIndex) => {
+    try {
+      if (serviceIndex >= 0 && serviceIndex < services.length) {
+        const user = FIREBASE_AUTH.currentUser;
+        const userId = user.uid;
+
+        const userDocRef = doc(FIRESTORE_DB, "users", userId);
+        const querySnapshot = await getDocs(userDocRef);
+
+        if (querySnapshot.exists()) {
+          const userData = querySnapshot.data();
+          const userServices = userData.services || [];
+
+          // Delete the service from the array in Firestore
+          userServices.splice(serviceIndex, 1);
+          await updateDoc(userDocRef, { services: userServices });
+
+          // Remove the deleted service from the local state
+          setServices((prevServices) =>
+            prevServices.filter((service, index) => index !== serviceIndex)
+          );
+        } else {
+          console.error("User document not found");
+        }
+      } else {
+        console.error("Invalid service index");
+      }
+    } catch (error) {
+      console.error("Error deleting service: ", error);
+    }
+  };
+
+
+
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -124,7 +169,10 @@ const Service = () => {
                           />
                         </View>
                       </Pressable>
-                      <Pressable style={styles.row}>
+                      <Pressable
+                        style={styles.row}
+                        onPress={() => deleteService(index)}
+                      >
                         <View style={[styles.rowIcon]}>
                           <MaterialCommunityIcons
                             name="delete-forever"
@@ -220,9 +268,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 8,
     marginBottom: 10,
-    elevation:1,
-    backgroundColor:'white',
-    padding:2
+    elevation: 1,
+    backgroundColor: "white",
+    padding: 2,
   },
   rowIcon: {
     height: 32,

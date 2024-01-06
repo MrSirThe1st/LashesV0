@@ -2,25 +2,19 @@ import { View, Text, StyleSheet } from "react-native";
 import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
 
-const Stars = () => {
+const Stars = ({ averageRating }) => {
   return (
     <View style={styles.headerRow}>
       <View style={styles.headerStars}>
-        <FontAwesome color="#1e90ff" name="star" solid={true} size={14} />
-
-        <FontAwesome color="#1e90ff" name="star" solid={true} size={14} />
-
-        <FontAwesome color="#1e90ff" name="star" solid={true} size={14} />
-
-        <FontAwesome color="#1e90ff" name="star" solid={true} size={14} />
-
-        <FontAwesome color="#1e90ff" name="star" size={14} />
+        <FontAwesome color="#FFC107" name="star" solid={true} size={20} />
+        <Text style={styles.headerStarsText}>{averageRating}</Text>
       </View>
     </View>
   );
 };
 
 export default Stars;
+
 const styles = StyleSheet.create({
   headerRow: {
     flexDirection: "row",

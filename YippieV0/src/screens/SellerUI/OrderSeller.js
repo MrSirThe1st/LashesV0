@@ -4,65 +4,165 @@ import {
   Text,
   View,
   ImageBackground,
+  Image,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB } from "../../config/firebase";
-import { doc, getDocs, collection, query, where } from "firebase/firestore";
-import { FIREBASE_APP } from "../../config/firebase"; 
+import {
+  doc,
+  getDocs,
+  collection,
+  query,
+  where,
+  deleteDoc,
+} from "firebase/firestore";
+import { FIREBASE_APP } from "../../config/firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const OrderSeller = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const auth = FIREBASE_APP;
+  const auth = getAuth(FIREBASE_APP);
+
+ const fetchSellerOrders = async () => {
+   try {
+     const user = auth.currentUser;
+
+     if (user) {
+       const sellerOrdersCollection = collection(FIRESTORE_DB, "Orders");
+       const q = query(
+         sellerOrdersCollection,
+         where("sellerID", "==", user.uid)
+       );
+       const querySnapshot = await getDocs(q);
+
+       const ordersData = [];
+       querySnapshot.forEach((doc) => {
+         const orderData = { id: doc.id, ...doc.data() }; 
+         ordersData.push(orderData);
+       });
+
+       setSellerOrders(ordersData);
+     }
+   } catch (error) {
+     console.error("Error fetching seller orders: ", error);
+   } finally {
+     setLoading(false);
+   }
+ };
+
 
   useEffect(() => {
-    const fetchSellerOrders = async () => {
-      try {
-        const user = auth.currentUser;
-        if (user) {
-          const sellerOrdersCollection = collection(FIRESTORE_DB, "Orders");
-          const q = query(
-            sellerOrdersCollection,
-            where("sellerID", "==", user.uid)
-          );
-          const querySnapshot = await getDocs(q);
-
-          const sellerOrders = [];
-          querySnapshot.forEach((doc) => {
-            const orderData = doc.data();
-            sellerOrders.push(orderData);
-          });
-          setSellerOrders(sellerOrders);
-        }
-      } catch (error) {
-        console.error("Error fetching seller orders: ", error);
-      } finally {
-        setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        fetchSellerOrders(user);
+      } else {
+        console.error("User not authenticated");
       }
-    };
-    fetchSellerOrders();
-  }, []); 
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const deleteDocument = async (orderIndex) => {
+    try {
+      const orderToDelete = sellerOrders[orderIndex];
+
+      if (orderToDelete) {
+        const orderId = orderToDelete.id; 
+        if (orderId) {
+          await deleteDoc(doc(FIRESTORE_DB, "Orders", orderId));
+          // Remove the deleted order from the local state
+          setSellerOrders((prevOrders) =>
+            prevOrders.filter((order, index) => index !== orderIndex)
+          );
+        } else {
+          console.error("Document ID not found in the order data");
+        }
+      } else {
+        console.error("Invalid order");
+      }
+    } catch (error) {
+      console.log("Error deleting the document:", error);
+    }
+  };
+
+
+
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {loading ? (
         <Text>Loading...</Text>
       ) : sellerOrders.length > 0 ? (
         <View>
-          {/* Render sellerOrders content here */}
           {sellerOrders.map((order, index) => (
-            <Text key={index}>{/* Render order details */}</Text>
+            <View key={index} style={styles.orderContainer}>
+              <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <Text style={styles.orderTitle}>
+                  Order Number #{order.orderNumber}
+                </Text>
+              </View>
+
+              {order.products.map((product, productIndex) => (
+                <View key={productIndex} style={styles.productContainer}>
+                  <Image
+                    resizeMode="cover"
+                    source={{ uri: product.img }}
+                    style={styles.cardImg}
+                  />
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      flex: 1,
+                    }}
+                  >
+                    <View style={{ flexDirection: "column" }}>
+                      <Text>{product.label}</Text>
+                      <Text>{product.price}</Text>
+                      <Text>Quantity {product.quantity}</Text>
+                    </View>
+
+                    <View>
+                      <Text>{product.totalPrice}</Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+              <View
+                style={{
+                  alignItems: "flex-end",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Text style={styles.orderTotal}>Total</Text>
+                <Pressable
+                  style={styles.row}
+                  onPress={() => deleteDocument(index)}
+                >
+                  <View style={[styles.rowIcon]}>
+                    <MaterialCommunityIcons
+                      name="delete-forever"
+                      size={24}
+                      color="#1e90ff"
+                    />
+                  </View>
+                </Pressable>
+                <Text style={styles.orderTotal}>{order.totalPrice}</Text>
+              </View>
+            </View>
           ))}
         </View>
       ) : (
-        // Render empty state when there are no orders
         <View style={styles.empty}>
           <FeatherIcon color="#1e90ff" name="box" size={36} />
-
-          <Text style={styles.emptyTitle}>You have no orders</Text>
-
+          <Text style={styles.emptyTitle}>No orders</Text>
           <Text style={styles.emptyDescription}>
             Your orders will appear here
           </Text>
@@ -96,6 +196,50 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#878787",
     marginBottom: 24,
+  },
+  orderContainer: {
+    padding: 16,
+    borderBottomWidth: 2,
+    borderBottomColor: "#ddd",
+  },
+  orderTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  productContainer: {
+    alignItems: "center",
+    marginVertical: 8,
+    flexDirection: "row",
+  },
+  productImage: {
+    width: 50,
+    height: 50,
+    resizeMode: "cover",
+    marginRight: 8,
+  },
+  productLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  productPrice: {
+    fontSize: 14,
+    color: "#888",
+  },
+  productQuantity: {
+    fontSize: 14,
+    color: "#888",
+  },
+  orderTotal: {
+    fontSize: 16,
+    fontWeight: "600",
+    paddingVertical: 5,
+  },
+  cardImg: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    marginRight: 10,
   },
 });
 

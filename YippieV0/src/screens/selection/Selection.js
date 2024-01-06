@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, SafeAreaView, Pressable } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, Pressable, Image } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import SelectButton from "../../componets/SelectButton";
 import Separator from "../../componets/Separator";
@@ -14,7 +14,7 @@ const Selection = ({ navigation }) => {
           <SelectButton
             // SignUpText={`I'm a buyer`}
             buttonText={"Buyer sign up"}
-            Icon={require("../../assets/homeAssets/happy.png")}
+            Icon={require("../../assets/svg/all-good-4.png")}
             onPress={() => {
               navigation.navigate("SignUp", { role: "buyer" });
             }}
@@ -22,7 +22,7 @@ const Selection = ({ navigation }) => {
           <SelectButton
             // SignUpText={`I'm a Seller`}
             buttonText={"Seller sign up"}
-            Icon={require("../../assets/homeAssets/money-currency.png")}
+            Icon={require("../../assets/svg/shop-open-3.png")}
             onPress={() => {
               navigation.navigate("Step1", { role: "seller" });
             }}
@@ -47,13 +47,13 @@ const Selection = ({ navigation }) => {
           >
             <Text style={styles.textSkip}>Login</Text>
           </Pressable>
-          <Pressable
+          {/* <Pressable
             onPress={() => {
-              navigation.navigate("Home");
+              navigation.navigate("BuyerHome");
             }}
           >
             <Text style={styles.textSkip}>Skip</Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       </View>
     </SafeAreaView>

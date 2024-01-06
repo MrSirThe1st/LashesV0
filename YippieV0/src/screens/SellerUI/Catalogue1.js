@@ -80,31 +80,40 @@ const Catalogue1 = ({ navigation }) => {
   }, []);
 
   const handleIncrement = (productIndex) => {
-    setCart((prevCart) => ({
-      ...prevCart,
-      [productIndex]: (prevCart[productIndex] || 0) + 1,
-    }));
+    setCart((prevCart) => {
+      const newCart = {
+        ...prevCart,
+        [productIndex]: (prevCart[productIndex] || 0) + 1,
+      };
+      console.log("Updated Cart:", newCart);
+      return newCart;
+    });
   };
 
   const handleDecrement = (productIndex) => {
     setCart((prevCart) => {
-      const newQuantity = (prevCart[productIndex] || 0) - 1;
-      return {
+      const newCart = {
         ...prevCart,
-        [productIndex]: newQuantity > 0 ? newQuantity : undefined,
+        [productIndex]: Math.max((prevCart[productIndex] || 0) - 1, 0),
       };
+      console.log("Updated Cart:", newCart);
+      return newCart;
     });
   };
 
   const addOrder = async () => {
     try {
+      console.log("Cart Before Order:", cart);
       const orderedServices = services
-        .filter((item, index) => cart[index] > 0)
         .map((item, index) => ({
           ...item,
           quantity: cart[index] || 0,
           totalPrice: (cart[index] || 0) * item.price,
-        }));
+        }))
+        .filter((item) => item.quantity > 0);
+
+
+
       const order = {
         orderNumber: Math.floor(Math.random() * 100000),
         products: orderedServices,
@@ -114,14 +123,26 @@ const Catalogue1 = ({ navigation }) => {
         sellerID: seller.uid,
       };
 
+      // Wait for the order to be added
       await addDoc(collection(FIRESTORE_DB, "Orders"), order);
-      setShowSuccessToast(true);
+
+      // Order added successfully, now reset the cart
       setCart({});
+      console.log("Cart:", cart);
+      console.log("Services:", services);
+      console.log("Ordered Services:", orderedServices);
+
+      setShowSuccessToast(true);
     } catch (error) {
       console.error("Error adding order: ", error);
       // Handle error
     }
   };
+
+  // Add this useEffect to log the cart after it has been updated
+  useEffect(() => {
+    console.log("Cart After Order:", cart);
+  }, [cart]);
 
   const renderProductItem = ({ item }) => {
     return (
@@ -190,10 +211,9 @@ const Catalogue1 = ({ navigation }) => {
             style={{
               fontSize: 17,
               color: cart[item.index] ? "#1e90ff" : "white",
-              paddingHorizontal: 10,
             }}
           >
-            {cart[item.index] || 0}
+            {cart[item.index]}
           </Text>
 
           <Pressable onPress={() => handleIncrement(item.index)}>

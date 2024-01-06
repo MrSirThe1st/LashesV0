@@ -1,85 +1,89 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect, useState } from "react";
 import ListItemComponent from "../../componets/ListItemComponent";
-import { ListItem, Avatar } from "react-native-elements";
 import { FIRESTORE_DB } from "../../config/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  collectionGroup,
+} from "firebase/firestore";
 
-
-
-const Inbox = ({navigation}) => {
+const Inbox = ({ navigation }) => {
   const db = FIRESTORE_DB;
   const [chats, setChats] = useState([]);
 
-
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "chats"), (snapshot) =>
-      setChats(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    );
+    const q = query(collectionGroup(db, "chats"), orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const uniqueChats = {};
+
+      snapshot.forEach((doc) => {
+        const chatId = doc.id;
+        const chatData = doc.data();
+
+        // Use the chatName as a key to group messages by conversation
+        const chatName = chatData.chatName;
+        if (
+          !uniqueChats[chatName] ||
+          chatData.createdAt.toDate() > uniqueChats[chatName].createdAt.toDate()
+        ) {
+          uniqueChats[chatName] = { id: chatId, data: chatData };
+        }
+      });
+
+      // Convert the object back to an array
+      const sortedChats = Object.values(uniqueChats);
+      setChats(sortedChats);
+    });
 
     return unsubscribe;
   }, []);
 
-  const enterChat = (id, chatName) => {
-    navigation.navigate("Chat", {
-      id,
-      chatName,
-    });
-  };
+   const enterChat = (id, chatName, recipient) => {
+     navigation.navigate("Chat", {
+       id,
+       chatName,
+       recipient,
+     });
+   };
+
   return (
-    <View>
-      <ScrollView style={styles.container}>
+    <View style={styles.container}>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {chats.length === 0 ? (
-          // Render custom content when the inbox is empty
-          <View style={styles.container1}>
-            <View style={styles.empty}>
-              <View style={styles.fake}>
-                <View style={styles.fakeCircle} />
-
-                <View style={styles.fakeBlock}>
-                  <View style={[styles.fakeLine, { width: 120 }]} />
-
-                  <View style={styles.fakeLine} />
-
-                  <View
-                    style={[styles.fakeLine, { width: 70, marginBottom: 0 }]}
-                  />
-                </View>
+          <View style={styles.empty}>
+            <View style={styles.fake}>
+              <View style={styles.fakeCircle} />
+              <View style={styles.fakeBlock}>
+                <View style={[styles.fakeLine, { width: 120 }]} />
+                <View style={styles.fakeLine} />
+                <View
+                  style={[styles.fakeLine, { width: 70, marginBottom: 0 }]}
+                />
               </View>
-
-              <View style={[styles.fake, { opacity: 0.5 }]}>
-                <View style={styles.fakeCircle} />
-
-                <View style={styles.fakeBlock}>
-                  <View style={[styles.fakeLine, { width: 120 }]} />
-
-                  <View style={styles.fakeLine} />
-
-                  <View
-                    style={[styles.fakeLine, { width: 70, marginBottom: 0 }]}
-                  />
-                </View>
-              </View>
-
-              <Text style={styles.emptyTitle}>Your inbox is empty</Text>
-              <Text style={styles.emptyDescription}>
-                Once you start a new conversation, you'll see new messages here
-              </Text>
             </View>
+            <View style={[styles.fake, { opacity: 0.5 }]}>
+              <View style={styles.fakeCircle} />
+              <View style={styles.fakeBlock}>
+                <View style={[styles.fakeLine, { width: 120 }]} />
+                <View style={styles.fakeLine} />
+                <View
+                  style={[styles.fakeLine, { width: 70, marginBottom: 0 }]}
+                />
+              </View>
+            </View>
+            <Text style={styles.emptyDescription}>Your inbox is empty</Text>
           </View>
         ) : (
-          // Render chat list when there are messages
-          chats.map(({ id, data: { chatName } }) => (
+          chats.map(({ id, data: { chatName, recipient } }) => (
             <ListItemComponent
               key={id}
               id={id}
               chatName={chatName}
+              recipient={recipient}
               enterChat={enterChat}
             />
           ))
@@ -89,12 +93,10 @@ const Inbox = ({navigation}) => {
   );
 };
 
-export default Inbox;
-
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    backgroundColor:'white'
+    flex: 1,
+    backgroundColor: "white",
   },
   fake: {
     flexDirection: "row",
@@ -116,34 +118,22 @@ const styles = StyleSheet.create({
     backgroundColor: "#1e90ff",
     marginBottom: 8,
   },
+  fakeBlock: {
+    flexDirection: "column",
+  },
   empty: {
     flex: 1,
-    flexBasis: 0,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 24,
   },
-  emptyTitle: {
-    fontSize: 19,
-    fontWeight: "700",
-    color: "#222",
-    marginBottom: 8,
-    marginTop: 12,
-  },
   emptyDescription: {
-    fontSize: 15,
+    fontSize: 19,
     lineHeight: 22,
     fontWeight: "500",
     color: "#8c9197",
     textAlign: "center",
   },
-  container1: {
-    flex: 1,
-    flexShrink: 1,
-    flexBasis: 0,
-    padding: 24,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor:'white'
-  },
 });
+
+export default Inbox;

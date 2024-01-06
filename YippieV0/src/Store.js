@@ -4,9 +4,6 @@ import { registerInDevtools, Store } from "pullstate";
 
 export const WizardStore = new Store({
   UserName: "",
-  termsAccepted: "",
-  privacyAccepted: "",
-  progress: 0,
   email: "",
   cellphoneNumber: "",
   password: "",
@@ -14,9 +11,9 @@ export const WizardStore = new Store({
   overview:"",
   country: null,
   city: null,
-  state: null,
-  item:null,
+  category:null,
   brief:"",
+  address:""
 });
 
 registerInDevtools({

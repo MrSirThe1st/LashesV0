@@ -20,14 +20,18 @@ import Inbox from "./src/screens/BuyerUI/Inbox";
 import Stars from "./src/componets/Stars";
 import SkeletonHome from "./src/componets/SkeletonHome";
 import Product from "./src/componets/Product";
-import Chat from "./src/chat/Chat"
+import Chat from "./src/chat/Chat";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { LogBox } from "react-native";
 
+LogBox.ignoreLogs([
+  "VirtualizedLists should never be nested inside plain ScrollViews",
+]);
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-        <Navigation />
+      <Navigation />
     </GestureHandlerRootView>
   );
 }

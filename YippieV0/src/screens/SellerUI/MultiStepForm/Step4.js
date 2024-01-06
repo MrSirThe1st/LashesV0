@@ -46,12 +46,12 @@ const Step4 = ({ navigation, route }) => {
   const confirmPassword = WizardStore.getRawState().confirmPassword;
   const username = WizardStore.getRawState().UserName;
   const cellphoneNumber = WizardStore.getRawState().cellphoneNumber;
-  const item = WizardStore.getRawState().item;
   const overview = WizardStore.getRawState().overview;
   const brief = WizardStore.getRawState().brief;
   const city = WizardStore.getRawState().city;
   const country = WizardStore.getRawState().country;
-  const state = WizardStore.getRawState().state;
+  const category = WizardStore.getRawState().category;
+  const address = WizardStore.getRawState().address;
 
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState([]);
@@ -165,6 +165,14 @@ const Step4 = ({ navigation, route }) => {
       setLoading(true);
 
       try {
+        console.log("Username:", username);
+        console.log("Cellphone Number:", cellphoneNumber);
+        console.log("Overview:", overview);
+        console.log("category:", category);
+        console.log("Brief:", brief);
+        console.log("City:", city);
+        console.log("Country:", country);
+        console.log("address:", address);
         const [uploadedImageUrls, uploadedProfileUrls] = await Promise.all([
           uploadImagesToFirebase(),
           uploadProfileToFirebase(),
@@ -190,13 +198,13 @@ const Step4 = ({ navigation, route }) => {
           email,
           cellphoneNumber,
           overview,
-          item,
+          category,
           brief,
           thumbnails: uploadedImageUrls,
           profile: uploadedProfileUrls,
           city,
           country,
-          state,
+          address,
         });
 
         console.log("User document created successfully");

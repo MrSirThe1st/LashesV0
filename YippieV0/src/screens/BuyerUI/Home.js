@@ -9,6 +9,8 @@ import {
   Pressable,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ScrollView,
+  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -16,8 +18,9 @@ import Services from "../../componets/Services";
 import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import { collection, query, where, getDocs, onSnapshot, doc } from "firebase/firestore";
 import { Skeleton } from "@rneui/themed";
+
 
 const YourLogoComponent = () => (
   <Image
@@ -48,22 +51,34 @@ export default function Home({ navigation }) {
       }
     }
     fetchData();
+
+    const unsubscribe = onSnapshot(
+      query(collection(firestore, "users"), where("role", "==", "seller")),
+      (snapshot) => {
+        const updatedSellers = snapshot.docs.map((doc) => doc.data());
+        setSellerData(updatedSellers);
+      }
+    );
+
+    return () => unsubscribe();
   }, []);
 
+
   useEffect(() => {
-    if (user) {
-      firestore
-        .collection("users")
-        .doc(auth.currentUser.uid)
-        .get()
-        .then((snapshot) => {
+    if (auth.currentUser) {
+      const userDocRef = doc(firestore, "users", auth.currentUser.uid);
+
+      const unsubscribe = onSnapshot(userDocRef, (snapshot) => {
+        if (snapshot.exists()) {
           setUser(snapshot.data());
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
+        } else {
+          console.log("No such document!");
+        }
+      });
+
+      return () => unsubscribe();
     }
-  }, [user]);
+  }, [auth.currentUser, firestore]);
 
   useEffect(() => {
     if (user && user.role === "buyer") {
@@ -86,22 +101,16 @@ export default function Home({ navigation }) {
   }, [user]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* <StatusBar backgroundColor="#1e90ff"barStyle="light-content"/> */}
+    <SafeAreaView
+      style={styles.container}
+
+    >
+      <StatusBar backgroundColor="white" />
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>
-      <View style={styles.content}>
-        <TouchableWithoutFeedback
-          onPress={() => navigation.navigate("SearchPage")}
-        >
-          <View style={styles.SearchContainer}>
-            <Icon name="search" size={28} color="grey" style={styles.icon} />
-            <Text style={styles.input}>Search for services</Text>
-          </View>
-        </TouchableWithoutFeedback>
-        <Services navigation={navigation} />
 
+      <View style={styles.content}>
         <View style={styles.Cardlists}>
           <CardLists sellerData={sellerData} navigation={navigation} />
         </View>
@@ -113,13 +122,14 @@ export default function Home({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
   },
   stickyHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 8,
+    paddingVertical: 10,
+    backgroundColor: "white",
+    elevation: 2,
   },
   content: {
     flex: 1,
@@ -142,7 +152,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   Cardlists: {
-    backgroundColor: "white",
     flex: 1,
   },
 });

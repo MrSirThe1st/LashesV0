@@ -16,63 +16,63 @@ const Services = ({ navigation }) => {
   const services = [
     {
       id: "0",
-      image: require("../assets/homeAssets/hairstlye-salon-1.png"),
+      image: require("../assets/homeAssets/hair1.jpg"),
       name: "Hair Styling",
     },
     {
       id: "1",
-      image: require("../assets/homeAssets/makeup-3.png"),
+      image: require("../assets/homeAssets/makeup.jpg"),
       name: "Makeup",
     },
     {
       id: "2",
-      image: require("../assets/homeAssets/dress-1.png"),
+      image: require("../assets/homeAssets/tailor.jpg"),
       name: "Tailoring",
     },
     {
       id: "3",
-      image: require("../assets/homeAssets/nail-polish-1.png"),
+      image: require("../assets/homeAssets/manicure.jpg"),
       name: "Manicures",
     },
     {
       id: "4",
-      image: require("../assets/homeAssets/skincare-cream-4.png"),
+      image: require("../assets/homeAssets/skincare1.jpg"),
       name: "Skincare",
     },
     {
       id: "5",
-      image: require("../assets/homeAssets/tableware.png"),
+      image: require("../assets/homeAssets/food.jpg"),
       name: "Nutrition",
     },
     {
       id: "6",
-      image: require("../assets/homeAssets/diamon-hands-1.png"),
+      image: require("../assets/homeAssets/jewel.jpg"),
       name: "Jewelry",
     },
     {
       id: "7",
-      image: require("../assets/homeAssets/work-calendar.png"),
+      image: require("../assets/homeAssets/event.jpg"),
       name: "Event planning",
     },
     {
       id: "8",
-      image: require("../assets/homeAssets/celebration-cake-4.png"),
+      image: require("../assets/homeAssets/cake.jpg"),
       name: "Baking",
     },
     {
       id: "9",
-      image: require("../assets/homeAssets/drumbell-fitness-1.png"),
+      image: require("../assets/homeAssets/fitness.jpg"),
       name: "Health & Fitness",
     },
     {
       id: "10",
-      image: require("../assets/homeAssets/scissors-2.png"),
-      name: "Handmade ",
+      image: require("../assets/homeAssets/hand.jpg"),
+      name: "Handmade",
     },
     {
       id: "11",
       image: require("../assets/homeAssets/trolley.png"),
-      name: "Babies ",
+      name: "Babies",
     },
   ];
   const windowWidth = Dimensions.get("window").width;
@@ -111,15 +111,17 @@ const Services = ({ navigation }) => {
             key={service.id}
             onPress={() => navigation.navigate("CategoryScreen", { service })}
           >
-            <View
-              style={[
-                styles.pressableImage,
-                { width: imageWidth, height: imageHeight },
-              ]}
-            >
-              <Image source={service.image} style={styles.image} />
+            <View style={styles.carroussel}>
+              <View
+                style={[
+                  styles.pressableImage,
+                  { width: imageWidth, height: imageHeight },
+                ]}
+              >
+                <Image source={service.image} style={styles.image} />
+              </View>
+              <Text style={styles.carrousselText}>{service.name}</Text>
             </View>
-            <Text>{service.name}</Text>
           </Pressable>
         ))}
       </ScrollView>
@@ -135,7 +137,8 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     resizeMode: "contain",
-    borderRadius: 5,
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
   },
   pressable: {
     alignItems: "center",
@@ -144,9 +147,10 @@ const styles = StyleSheet.create({
   },
   pressableImage: {
     backgroundColor: "#f2f2f2",
-    borderRadius: 5,
     alignItems: "center",
     justifyContent: "center",
+    borderTopRightRadius: 12,
+    borderTopLeftRadius: 12,
   },
   text: {
     margin: 10,
@@ -165,5 +169,18 @@ const styles = StyleSheet.create({
   arrowText: {
     margin: 12,
     fontWeight: "bold",
+    color:"#1e90ff",
+    fontSize:15
   },
+  carroussel: {
+    backgroundColor: "white",
+    elevation: 3,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 12,
+  },
+  carrousselText:{
+    padding:5,
+    fontWeight:'600'
+  }
 });

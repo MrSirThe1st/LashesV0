@@ -4,23 +4,28 @@ import { ListItem, Avatar, Badge } from "react-native-elements";
 import { FIRESTORE_DB } from "../config/firebase";
 import {
   collection,
-  addDoc,
-  serverTimestamp,
   onSnapshot,
   orderBy,
+  query,
+  limit,
 } from "firebase/firestore";
 
 const ListItemComponent = ({ id, chatName, enterChat }) => {
-  const [chatMessages, setChatMessages] = useState([]);
+  const [latestMessage, setLatestMessage] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(
+    const q = query(
       collection(FIRESTORE_DB, "chats", id, "messages"),
-      orderBy("timestamp", "desc"),
-      (snapshot) => {
-        setChatMessages(snapshot.docs.map((doc) => doc.data()));
-      }
+      orderBy("createdAt", "desc"),
+      limit(1)
     );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const latestMessageData = snapshot.docs.map((doc) => doc.data().text)[0];
+      console.log("Latest message:", latestMessageData);
+      setLatestMessage(latestMessageData);
+    });
+
     return () => unsubscribe();
   }, [id]);
 
@@ -41,9 +46,7 @@ const ListItemComponent = ({ id, chatName, enterChat }) => {
       <ListItem.Content>
         <ListItem.Title>{chatName}</ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          {chatMessages.length > 0
-            ? chatMessages[chatMessages.length - 1].message
-            : ""}
+          {latestMessage || ""}
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

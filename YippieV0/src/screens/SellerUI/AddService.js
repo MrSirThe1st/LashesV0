@@ -168,7 +168,7 @@ const AddService = () => {
       style={styles.container}
     >
       <View style={styles.container}>
-        <StatusBar backgroundColor="white" barStyle="light-content" />
+        
         <View style={styles.Wrapper}>
           <View>
             <View style={styles.AddInput}>
@@ -259,7 +259,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingVertical: 5,
   },
   Wrapper: {
     flex: 1,
@@ -268,8 +267,6 @@ const styles = StyleSheet.create({
   AddInput: {
     alignItems: "center",
     width: "95%",
-    borderColor: "#1e90ff",
-    borderWidth: 1,
     marginBottom: 10,
     borderRadius: 10,
   },
@@ -282,6 +279,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginVertical: 10,
   },
+
+
   AddText: {
     fontSize: 13,
     color: "white",
@@ -408,21 +407,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  AddInput: {
-    alignItems: "center",
-    width: "95%",
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  AddInputInner: {
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1e90ff",
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    marginBottom: 10,
-  },
+
   AddText: {
     fontSize: 14,
     color: "white",

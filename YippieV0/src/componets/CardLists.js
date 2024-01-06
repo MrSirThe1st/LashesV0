@@ -6,6 +6,7 @@ import {
   Image,
   FlatList,
   Pressable,
+  TouchableWithoutFeedback,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { getDownloadURL } from "firebase/storage";
@@ -14,13 +15,21 @@ import { ref } from "firebase/storage";
 import { Skeleton } from "@rneui/themed";
 import Stars from "./Stars";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import Services from "./Services";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { Feather } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
+import { collection } from "firebase/firestore";
+import { FIRESTORE_DB, getDocs, query, where } from "../config/firebase";
 
 const CardItem = ({ seller, navigation }) => {
   const [imageUrl, setImageUrl] = useState("");
+  const [isFavourite, toggleFavourite] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
     const fetchImage = async () => {
-      console.log("Fetching image for:", seller.thumbnails[0]);
+
       const imageRef = ref(storage, seller.thumbnails[0]);
       try {
         const url = await getDownloadURL(imageRef);
@@ -33,11 +42,12 @@ const CardItem = ({ seller, navigation }) => {
     if (seller.thumbnails[0]) {
       fetchImage();
     }
-  }, [seller.thumbnails]);
+  }, [seller.thumbnails, seller.uid]);
 
   const renderCardItem = () => {
     return (
       <Pressable
+        style={{ paddingHorizontal: 16 }}
         onPress={() =>
           navigation.navigate("AccountInfo", {
             seller,
@@ -74,39 +84,33 @@ const CardItem = ({ seller, navigation }) => {
                 width: "100%",
               }}
             >
-              {/* <View style={styles.catalogueS}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("Catalogue", { seller });
-                  }}
-                >
-                  <View style={styles.catalogue}>
-                    <Text style={styles.catalogueText}>Products</Text>
-                    <FeatherIcon color="white" name="shopping-bag" size={16} />
-                  </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate("Catalogue1", { seller });
-                  }}
-                >
-                  <View style={styles.catalogue1}>
-                    <FeatherIcon color="white" name="shopping-bag" size={16} />
-                    <Text style={styles.catalogueText1}>Services</Text>
-                  </View>
-                </TouchableOpacity>
-              </View> */}
               <View style={{ flexDirection: "column" }}>
                 <Text style={styles.cardRowItemTextName}>
                   {seller.username},{" "}
                 </Text>
-                <Text style={styles.cardTitle}>{seller.city} </Text>
+                <TouchableOpacity
+                  onPress={() => toggleFavourite(!isFavourite)}
+                  style={{
+                    backgroundColor: "#b3d9ff",
+                    position: "absolute",
+                    right: -5,
+                    borderRadius: 10,
+                    padding: 5,
+                  }}
+                >
+                  <FontAwesome
+                    name="heart"
+                    size={24}
+                    color={isFavourite ? "#FA8072" : "white"}
+                  />
+                </TouchableOpacity>
+                <Text style={styles.cardTitle}>{seller.category.label}</Text>
               </View>
             </View>
 
             <View style={styles.cardRow}>
               <View style={styles.cardRowItem}>
-                <Text style={styles.cardAirport}>{seller.brief}</Text>
+                <Text style={styles.cardAirport}>{seller.address}</Text>
               </View>
             </View>
             <View
@@ -127,6 +131,7 @@ const CardItem = ({ seller, navigation }) => {
                 </Text>
               </View>
               <Stars />
+              <Text>{averageRating.toFixed(1)}</Text>
             </View>
           </View>
         </View>
@@ -142,36 +147,52 @@ const CardItem = ({ seller, navigation }) => {
 };
 
 const CardLists = ({ sellerData, navigation }) => {
+  const renderHeader = () => (
+    <View>
+      <TouchableWithoutFeedback
+        onPress={() => navigation.navigate("SearchPage")}
+      >
+        <View style={styles.SearchContainer}>
+          <Icon name="search" size={28} color="grey" style={styles.icon} />
+          <Text style={styles.input}>Search for services</Text>
+        </View>
+      </TouchableWithoutFeedback>
+      <Services navigation={navigation} />
+    </View>
+  );
+
   return (
-    <FlatList
-      showsVerticalScrollIndicator={false}
-      data={sellerData}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <CardItem seller={item} navigation={navigation} />
-      )}
-      contentContainerStyle={styles.cardListContainer}
-    />
+    <View style={styles.container}>
+      <FlatList
+        ListHeaderComponent={renderHeader}
+        showsVerticalScrollIndicator={false}
+        data={sellerData}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <CardItem seller={item} navigation={navigation} />
+        )}
+        contentContainerStyle={styles.cardListContainer}
+      />
+    </View>
   );
 };
 
 export default CardLists;
 
 const styles = StyleSheet.create({
-  cardListContainer: {
-    paddingHorizontal: 16,
-  },
+  cardListContainer: {},
   container: {
     paddingBottom: 10,
     paddingTop: 10,
+    backgroundColor: "white",
+    flex: 1,
   },
   card: {
     flexDirection: "row-reverse",
     alignItems: "stretch",
     borderRadius: 12,
     backgroundColor: "#fafdff",
-    elevation: 1,
-    // padding:8
+    elevation: 1.5,
   },
   cardImg: {
     width: "50%",
@@ -228,8 +249,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#5f697d",
-    flexDirection:'row',
-    alignItems:'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   cardPriceValue: {
     fontSize: 18,
@@ -294,5 +315,23 @@ const styles = StyleSheet.create({
   },
   catalogueS: {
     flexDirection: "row",
+  },
+  SearchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
+    borderRadius: 5,
+    padding: 8,
+    margin: 12,
+    justifyContent: "space-between",
+    elevation: 2,
+  },
+  input: {
+    flex: 1,
+    color: "grey",
+    fontSize: 16,
+  },
+  icon: {
+    marginRight: 10,
   },
 });

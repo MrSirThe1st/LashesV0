@@ -43,6 +43,7 @@ import Service from "../componets/Service";
 import EditProduct from "../screens/SellerUI/settings/EditProduct";
 import EditService from "../screens/SellerUI/settings/EditService";
 import OrderSeller from "../screens/SellerUI/OrderSeller";
+import Review from "../screens/SellerUI/Review";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -51,7 +52,7 @@ const HomeTabNavigator = () => (
   <Tab.Navigator
     screenOptions={{
       tabBarLabelStyle: { fontWeight: "bold" },
-      tabBarStyle: { display: "flex", paddingBottom: 5},
+      tabBarStyle: { display: "flex", paddingBottom: 5 },
     }}
   >
     <Tab.Screen
@@ -70,7 +71,7 @@ const HomeTabNavigator = () => (
     />
 
     <Tab.Screen
-      name="Orders"
+      name="Order details"
       component={Orders}
       options={{
         tabBarIcon: ({ focused }) =>
@@ -137,7 +138,12 @@ const HomeTabNavigatorSeller = () => (
   <Tab.Navigator
     screenOptions={{
       tabBarLabelStyle: { fontWeight: "bold" },
-      tabBarStyle: { display: "flex", paddingVertical:10},
+      tabBarStyle: {
+        display: "flex",
+        paddingVertical: 10,
+        elevation: -1,
+        backgroundColor:'white'
+      },
     }}
   >
     <Tab.Screen
@@ -156,15 +162,23 @@ const HomeTabNavigatorSeller = () => (
     />
 
     <Tab.Screen
-      name="Orders"
+      name="Order details"
       component={OrderSeller}
       options={{
         tabBarLabel: "",
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <MaterialIcons name="library-books" size={24} color="#1e90ff" />
+            <MaterialIcons
+              name="format-list-bulleted"
+              size={24}
+              color="#1e90ff"
+            />
           ) : (
-            <MaterialIcons name="library-books" size={24} color="black" />
+            <MaterialIcons
+              name="format-list-bulleted"
+              size={24}
+              color="black"
+            />
           ),
       }}
     />
@@ -295,15 +309,7 @@ const Navigation = () => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
-                <Stack.Screen
-                  name="AddService"
-                  component={AddService}
-                  options={{
-                    headerShown: true,
-                    title: "",
-                    headerStyle: { backgroundColor: "white" },
-                  }}
-                />
+
                 <Stack.Screen
                   name="SearchPage"
                   component={SearchPage}
@@ -405,6 +411,15 @@ const Navigation = () => {
                   }}
                 />
                 <Stack.Screen
+                  name="AddService"
+                  component={AddService}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
                   name="Service"
                   component={Service}
                   options={{
@@ -446,6 +461,15 @@ const Navigation = () => {
                   options={{
                     headerShown: true,
                     title: "View Your order ",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Review"
+                  component={Review}
+                  options={{
+                    headerShown: true,
+                    title: "Reviews ",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -580,6 +604,15 @@ const Navigation = () => {
                   options={{
                     headerShown: false,
                     title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Review"
+                  component={Review}
+                  options={{
+                    headerShown: true,
+                    title: "Reviews ",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
