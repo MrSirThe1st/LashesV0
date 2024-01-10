@@ -48,6 +48,7 @@ const AddService = () => {
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  
 
 
   const pickImage = async () => {
@@ -168,7 +169,6 @@ const AddService = () => {
       style={styles.container}
     >
       <View style={styles.container}>
-        
         <View style={styles.Wrapper}>
           <View>
             <View style={styles.AddInput}>
@@ -236,11 +236,17 @@ const AddService = () => {
         </View>
 
         <View style={styles.overlay}>
-          <TouchableOpacity onPress={handleUploadImages} mode="outlined">
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>Upload</Text>
+          {uploading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#1e90ff" />
             </View>
-          </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={handleUploadImages} mode="outlined">
+              <View style={styles.btn}>
+                <Text style={styles.btnText}>Upload</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
         {showSuccessToast && (
           <Toast
@@ -279,7 +285,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginVertical: 10,
   },
-
 
   AddText: {
     fontSize: 13,
@@ -420,5 +425,10 @@ const styles = StyleSheet.create({
   },
   Xbutton: {
     paddingVertical: 5,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

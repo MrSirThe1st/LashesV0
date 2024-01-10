@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   inputControlOverview: {
-    backgroundColor: "#fff",
+  
     paddingHorizontal: 16,
     borderRadius: 12,
     fontSize: 15,

@@ -1,7 +1,4 @@
 import React, {
-  useCallback,
-  useMemo,
-  useRef,
   useEffect,
   useState,
 } from "react";
@@ -22,30 +19,36 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../config/firebase";
 import { signOut } from "firebase/auth";
-import * as ImagePicker from "expo-image-picker";
 import { FIRESTORE_DB } from "../../config/firebase";
-import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
-import { storage } from "../../config/firebase";
+
+
 import {
   doc,
-  setDoc,
+  deleteDoc,
   collection,
   query,
   where,
   getDocs,
-  getDoc,
 } from "firebase/firestore";
-import BottomSheet from "@gorhom/bottom-sheet";
-import BottomSheetComponent from "../../componets/BottomSheets/BottomSheetComponent";
-import { MyButton } from "../../componets/BottomSheets/MyButton";
+
+import BottomSheetLink from "../../componets/BottomSheets/BottomSheetLink";
+import BottomSheetReport from "../../componets/BottomSheets/BottomSheetReport";
+import Alert2 from "../../componets/Alerts/Alert2";
+
 
 const SellerSettings = () => {
-  const [uploading, setUploading] = useState(false);
-  const [imageUrl, setImageUrl] = useState("");
-  const [profileImage, setProfileImage] = useState(null);
+  const [profile, setProfile] = useState({
+    username: "",
+    profileImage: "",
+  });
   const [username, setUsername] = useState("");
-  const [showBottomSheet, setShowBottomSheet] = useState(false);
-  
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showBottomSheetLink, setShowBottomSheetLink] = useState(false);
+  const [showBottomSheetReport, setShowBottomSheetReport] = useState(false);
+  const user = FIREBASE_AUTH.currentUser;
+  const userId = user.uid;
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -56,12 +59,12 @@ const SellerSettings = () => {
         const q = query(profileCollection, where("uid", "==", userId));
         const querySnapshot = await getDocs(q);
 
-        const profileData = [];
         querySnapshot.forEach((doc) => {
-          console.log("Fetched Document Data: ", doc.data());
           const userData = doc.data();
-          setUsername(userData.username); // Set the username state
-          setProfileImage(userData.profile[0]);
+          setProfile({
+            username: userData.username,
+            profileImage: userData.profile[0],
+          });
         });
       } catch (error) {
         console.error("Error fetching profile: ", error);
@@ -72,39 +75,26 @@ const SellerSettings = () => {
   }, []);
 
   const navigation = useNavigation();
-  const handleLogout = async () => {
-    try {
-      await signOut(FIREBASE_AUTH);
-      navigation.navigate("Login");
-    } catch (error) {
-      console.log(error);
-      alert("An error happened: " + error.message);
-    }
+
+  const handleLogout = () => {
+    setShowLogoutAlert(true);
   };
+  const handleDelete = () => {
+    setShowDeleteAlert(true)
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.profile}>
-        <View>
-          <View style={styles.profileAvatarWrapper}>
-            <Image
-              source={{ uri: profileImage }}
-              style={styles.profileAvatar}
-            />
-
-            <TouchableOpacity>
-              <View style={styles.profileAction}>
-                <FeatherIcon color="#fff" name="edit-3" size={15} />
-              </View>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.profileAvatarWrapper}>
+          <Image
+            source={{ uri: profile.profileImage }}
+            style={styles.profileAvatar}
+          />
         </View>
-
         <View style={styles.profileBody}>
-          <Text style={styles.profileName}>{username}</Text>
-
+          <Text style={styles.profileName}>{profile.username}</Text>
           <Text style={styles.profileAddress}>
-            123 Maple Street. Anytown, PA 17101
           </Text>
         </View>
       </View>
@@ -140,21 +130,24 @@ const SellerSettings = () => {
           <Text style={styles.sectionHeader}>Profile</Text>
 
           <Edit navigation={navigation} />
-          <Pressable onPress={handleLogout}>
+          <Pressable
+            onPress={() => {
+              handleLogout();
+            }}
+          >
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
                 <MaterialIcons name="logout" size={20} color="#dc143c" />
               </View>
-
               <Text style={styles.rowLabel}>Logout</Text>
-
               <View style={styles.rowSpacer} />
             </View>
           </Pressable>
+
           <Text style={styles.sectionHeader}>Delete Account</Text>
           <Pressable
             onPress={() => {
-              // handle onPress
+              handleDelete();
             }}
           >
             <View style={styles.row}>
@@ -170,42 +163,12 @@ const SellerSettings = () => {
             </View>
           </Pressable>
         </View>
-        {/* <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Preferences</Text>
-          <Pressable
-            onPress={() => {
-              // handle onPress
-            }}
-          >
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
-                <FeatherIcon color="#fe9400" name="globe" size={18} />
-              </View>
 
-              <Text style={styles.rowLabel}>Language</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </Pressable>
-          <Pressable
-            onPress={() => {
-              // handle onPress
-            }}
-          >
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
-                <FeatherIcon color="black" name="moon" size={18} />
-              </View>
-
-              <Text style={styles.rowLabel}>Dark Mode</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </Pressable>
-        </View> */}
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Help</Text>
-          <Pressable onPress={() => setShowBottomSheet(!showBottomSheet)}>
+          <Pressable
+            onPress={() => setShowBottomSheetReport(!showBottomSheetReport)}
+          >
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
                 <FeatherIcon color="#8e8d91" name="flag" size={18} />
@@ -216,7 +179,9 @@ const SellerSettings = () => {
               <View style={styles.rowSpacer} />
             </View>
           </Pressable>
-          <Pressable onPress={() => setShowBottomSheet(!showBottomSheet)}>
+          <Pressable
+            onPress={() => setShowBottomSheetLink(!showBottomSheetLink)}
+          >
             <View style={styles.row}>
               <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
                 <FeatherIcon color="#007afe" name="mail" size={18} />
@@ -247,10 +212,75 @@ const SellerSettings = () => {
           </Pressable>
         </View>
       </ScrollView>
-      <BottomSheetComponent
-        showBottomSheet={showBottomSheet}
-        setShowBottomSheet={setShowBottomSheet}
+
+      <BottomSheetLink
+        showBottomSheetLink={showBottomSheetLink}
+        setShowBottomSheetLink={setShowBottomSheetLink}
       />
+      <BottomSheetReport
+        showBottomSheetReport={showBottomSheetReport}
+        setShowBottomSheetReport={setShowBottomSheetReport}
+      />
+      {showLogoutAlert && (
+        <Alert2
+          text="Are you sure you want to log out?"
+          option="Logout"
+          option1="Cancel"
+          onOptionPress={async () => {
+            try {
+              await signOut(FIREBASE_AUTH);
+              navigation.navigate("Login");
+            } catch (error) {
+              console.log(error);
+              alert("An error happened: " + error.message);
+            } finally {
+              setShowLogoutAlert(false);
+            }
+          }}
+          onOption1Press={() => setShowLogoutAlert(false)}
+          profileImage={profile.profileImage}
+          username={profile.username}
+        />
+      )}
+      {showDeleteAlert && (
+        <Alert2
+          text="Are you sure you want to Delete your account?"
+          option="Delete"
+          option1="Cancel"
+          onOptionPress={async () => {
+            try {
+              const password = "userCurrentPassword"; // Replace with your actual implementation
+              const credential = EmailAuthProvider.credential(
+                user.email,
+                password
+              );
+              await reauthenticateWithCredential(user, credential);
+              const user = FIREBASE_AUTH.currentUser;
+              const userId = user.uid;
+              const profileCollection = collection(FIRESTORE_DB, "users");
+              const q = query(profileCollection, where("uid", "==", userId));
+              const querySnapshot = await getDocs(q);
+
+              const deletionPromises = querySnapshot.docs.map(async (doc) => {
+                await deleteDoc(doc.ref);
+              });
+
+              await Promise.all(deletionPromises);
+              await user.delete();
+
+              await signOut(FIREBASE_AUTH);
+            } catch (error) {
+              console.log(error);
+              alert("An error happened: " + error.message);
+            } finally {
+              setShowDeleteAlert(false);
+            }
+          }}
+          onOption1Press={() => setShowDeleteAlert(false)}
+          profileImage={profile.profileImage}
+          username={profile.username}
+        />
+      )}
     </SafeAreaView>
   );
 };

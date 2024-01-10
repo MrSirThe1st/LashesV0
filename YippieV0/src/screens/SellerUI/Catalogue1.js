@@ -102,7 +102,7 @@ const Catalogue1 = ({ navigation }) => {
   };
 
   const addOrder = async () => {
-    try {
+    try { 
       console.log("Cart Before Order:", cart);
       const orderedServices = services
         .map((item, index) => ({

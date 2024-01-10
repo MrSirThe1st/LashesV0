@@ -19,15 +19,18 @@ import {
   doc,
   deleteField,
   getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import BottomSheetEdit from "./BottomSheets/BottomSheetEdit";
 import { useNavigation } from "@react-navigation/native";
+import { ActivityIndicator } from "react-native";
 
 const Service = () => {
   const [services, setServices] = useState([]);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -73,16 +76,18 @@ const Service = () => {
         const user = FIREBASE_AUTH.currentUser;
         const userId = user.uid;
 
-        const userDocRef = doc(FIRESTORE_DB, "users", userId);
-        const querySnapshot = await getDocs(userDocRef);
+        const servicesCollectionRef = collection(FIRESTORE_DB, "users");
+        const q = query(servicesCollectionRef, where("uid", "==", userId));
+        const querySnapshot = await getDocs(q);
 
-        if (querySnapshot.exists()) {
-          const userData = querySnapshot.data();
-          const userServices = userData.services || [];
+        if (!querySnapshot.empty) {
+          const userDoc = querySnapshot.docs[0];
+          const userServices = userDoc.data().services || [];
 
+          setLoading(true);
           // Delete the service from the array in Firestore
           userServices.splice(serviceIndex, 1);
-          await updateDoc(userDocRef, { services: userServices });
+          await updateDoc(userDoc.ref, { services: userServices });
 
           // Remove the deleted service from the local state
           setServices((prevServices) =>
@@ -96,11 +101,10 @@ const Service = () => {
       }
     } catch (error) {
       console.error("Error deleting service: ", error);
+    }finally{
+      setLoading(false);
     }
   };
-
-
-
 
   return (
     <View style={{ flex: 1 }}>
@@ -189,6 +193,13 @@ const Service = () => {
           );
         })}
       </ScrollView>
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color="#1e90ff"
+          style={styles.loadingIndicator}
+        />
+      )}
     </View>
   );
 };

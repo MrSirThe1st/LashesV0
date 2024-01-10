@@ -8,6 +8,8 @@ import {
   StyleSheet,
   Alert,
   Animated,
+  Image,
+  Pressable
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -25,7 +27,8 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import Submit from "../../../componets/Submit";
-
+import * as ImagePicker from "expo-image-picker";
+import { Platform } from "react-native";
 
 const EditAccount = () => {
   const firestore = FIRESTORE_DB;
@@ -34,6 +37,40 @@ const EditAccount = () => {
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
+  const [selectedProfile, setSelectedProfile] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+
+  const pickProfile = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        aspect: [4, 3],
+        quality: 1,
+        allowsMultipleSelection: false,
+      });
+
+      if (!result.canceled) {
+        const selectedUri = result.assets[0].uri;
+        setUserData({ ...userData, profile: [selectedUri] });
+      }
+    } catch (error) {
+      console.error("Error picking profile image:", error);
+    }
+  };
+
+
 
   async function fetchDocument(userUID) {
     const usersCollectionRef = collection(FIRESTORE_DB, "users");
@@ -76,6 +113,9 @@ const EditAccount = () => {
           country: userData.country,
           city: userData.city,
           overview: userData.overview,
+          address: userData.address,
+          overview: userData.overview,
+          profile: userData.profile,
           // userImg: imgUrl,
         });
 
@@ -92,7 +132,6 @@ const EditAccount = () => {
     }
   };
 
-
   useEffect(() => {
     const userUID = auth.currentUser.uid;
     fetchDocument(userUID);
@@ -100,58 +139,27 @@ const EditAccount = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.profile}>
+        <Pressable style={styles.profileAvatarWrapper} onPress={pickProfile}>
+          {userData && userData.profile && userData.profile.length > 0 ? (
+            <Image
+              source={{ uri: userData.profile[0] }}
+              style={styles.profileAvatar}
+            />
+          ) : (
+            <View style={styles.defaultAvatar}>
+              <MaterialCommunityIcons name="camera" size={35} color="#fff" />
+            </View>
+          )}
+        </Pressable>
+      </View>
+
       <Animated.View
         style={{
           margin: 20,
         }}
       >
         <View style={{ alignItems: "center" }}>
-          {/* <TouchableOpacity onPress={() => this.bs.current.snapTo(0)}>
-            <View
-              style={{
-                height: 100,
-                width: 100,
-                borderRadius: 15,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <ImageBackground
-                source={{
-                  uri: image
-                    ? image
-                    : userData
-                    ? userData.userImg ||
-                      "https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg"
-                    : "https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg",
-                }}
-                style={{ height: 100, width: 100 }}
-                imageStyle={{ borderRadius: 15 }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <MaterialCommunityIcons
-                    name="camera"
-                    size={35}
-                    color="#fff"
-                    style={{
-                      opacity: 0.7,
-                      alignItems: "center",
-                      justifyContent: "center",
-                      borderWidth: 1,
-                      borderColor: "#fff",
-                      borderRadius: 10,
-                    }}
-                  />
-                </View>
-              </ImageBackground>
-            </View>
-          </TouchableOpacity> */}
           <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
             {userData ? userData.username : ""}{" "}
             {/* {userData ? userData.username : ""} */}
@@ -199,6 +207,19 @@ const EditAccount = () => {
           />
         </View>
         <View style={styles.action}>
+          <Ionicons name="ios-clipboard-outline" color="#333333" size={20} />
+          <TextInput
+            multiline
+            numberOfLines={3}
+            placeholder="About Me"
+            placeholderTextColor="#666666"
+            value={userData ? userData.overview : ""}
+            onChangeText={(txt) => setUserData({ ...userData, overview: txt })}
+            autoCorrect={true}
+            style={[styles.textInput, { height: 40 }]}
+          />
+        </View>
+        <View style={styles.action}>
           <Feather name="phone" color="#333333" size={20} />
           <TextInput
             placeholder="Phone"
@@ -239,8 +260,23 @@ const EditAccount = () => {
             style={styles.textInput}
           />
         </View>
+        <View style={styles.action}>
+          <MaterialCommunityIcons
+            name="map-marker-outline"
+            color="#333333"
+            size={20}
+          />
+          <TextInput
+            placeholder="City"
+            placeholderTextColor="#666666"
+            autoCorrect={false}
+            value={userData ? userData.address : ""}
+            onChangeText={(txt) => setUserData({ ...userData, address: txt })}
+            style={styles.textInput}
+          />
+        </View>
         <View>
-          <Submit Title="Submit" onPress={handleUpdate}/>
+          <Submit Title="Submit" onPress={handleUpdate} />
         </View>
       </Animated.View>
     </View>
@@ -330,5 +366,17 @@ const styles = StyleSheet.create({
 
     paddingLeft: 10,
     color: "#333333",
+  },
+  profile: {
+    padding: 24,
+    backgroundColor: "#fafdff",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  profileAvatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 9999,
   },
 });

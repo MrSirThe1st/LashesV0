@@ -2,146 +2,141 @@ import React from "react";
 import {
   StyleSheet,
   SafeAreaView,
-  ScrollView,
   View,
+  Image,
   Text,
   TouchableOpacity,
-  Image,
-  Switch,
 } from "react-native";
-import FeatherIcon from "react-native-vector-icons/Feather";
 
 export default function Example() {
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView contentContainerStyle={styles.containerSettings}>
-        <View style={styles.section}>
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#fe9400" }]}>
-                <FeatherIcon color="#fff" name="globe" size={18} />
-              </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={styles.container}>
+        <View style={styles.alert}>
+          <View style={styles.alertContent}>
+            <Image
+              alt=""
+              style={styles.alertAvatar}
+              source={{
+                uri: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80",
+              }}
+            />
 
-              <Text style={styles.rowLabel}>Language</Text>
+            <Text style={styles.alertTitle}>
+              Log out of
+              {"\n"}
+              @MarkSimmons
+            </Text>
 
-              <View style={styles.rowSpacer} />
+            <Text style={styles.alertMessage}>
+              Are you sure you would like to log out of this account? You will
+              need your password to log back in.
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => {
+              // handle onPress
+            }}
+          >
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Yes, log me out</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#007afe" }]}>
-                <FeatherIcon color="#fff" name="moon" size={18} />
+          <View style={{ marginTop: 8 }}>
+            <TouchableOpacity
+              onPress={() => {
+                // handle onPress
+              }}
+            >
+              <View style={styles.btnSecondary}>
+                <Text style={styles.btnSecondaryText}>Cancel</Text>
               </View>
-
-              <Text style={styles.rowLabel}>Dark Mode</Text>
-
-              <View style={styles.rowSpacer} />
-
-              <Switch value={false} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#32c759" }]}>
-                <FeatherIcon color="#fff" name="navigation" size={18} />
-              </View>
-
-              <Text style={styles.rowLabel}>Location</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#8e8d91" }]}>
-                <FeatherIcon color="#fff" name="flag" size={18} />
-              </View>
-
-              <Text style={styles.rowLabel}>Report Bug</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#007afe" }]}>
-                <FeatherIcon color="#fff" name="mail" size={18} />
-              </View>
-
-              <Text style={styles.rowLabel}>Contact Us</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#32c759" }]}>
-                <FeatherIcon color="#fff" name="align-center" size={18} />
-              </View>
-
-              <Text style={styles.rowLabel}>Saved</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => {}}>
-            <View style={styles.row}>
-              <View style={[styles.rowIcon, { backgroundColor: "#fd2d54" }]}>
-                <FeatherIcon color="#fff" name="download" size={18} />
-              </View>
-
-              <Text style={styles.rowLabel}>Downloads</Text>
-
-              <View style={styles.rowSpacer} />
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  containerSettings: {
-    paddingVertical: 24,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    height: 50,
-    backgroundColor: "#f2f2f2",
-    borderRadius: 8,
-    marginBottom: 12,
-    paddingLeft: 12,
-    paddingRight: 12,
-  },
-  rowIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 9999,
-    marginRight: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  rowLabel: {
-    fontSize: 17,
-    fontWeight: "400",
-    color: "#0c0c0c",
-  },
-  rowSpacer: {
+  container: {
+    padding: 24,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
   },
-  section:{
-    padding:24
-  }
+  alert: {
+    position: "relative",
+    flexDirection: "column",
+    alignItems: "stretch",
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    paddingTop: 80,
+  },
+  alertContent: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+  },
+  alertAvatar: {
+    width: 160,
+    height: 160,
+    borderRadius: 9999,
+    alignSelf: "center",
+    marginBottom: 24,
+  },
+  alertTitle: {
+    marginBottom: 16,
+    fontSize: 34,
+    lineHeight: 44,
+    fontWeight: "700",
+    color: "#000",
+    textAlign: "center",
+  },
+  alertMessage: {
+    marginBottom: 24,
+    textAlign: "center",
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "500",
+    color: "#9a9a9a",
+  },
+  btn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: "#f75249",
+    borderColor: "#f75249",
+  },
+  btnText: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  btnSecondary: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: "transparent",
+    borderColor: "transparent",
+  },
+  btnSecondaryText: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: "600",
+    color: "#f75249",
+  },
 });

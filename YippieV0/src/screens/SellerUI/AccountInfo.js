@@ -38,7 +38,7 @@ export default function AccountInfo() {
   const [reviews, setReviews] = useState([]);
   const navigation = useNavigation();
   const [reviewsCount, setReviewsCount] = useState(0);
-
+  const [averageRating, setAverageRating] = useState(0);
 
   const createChat = async () => {
     const chatName = seller.username;
@@ -73,7 +73,7 @@ export default function AccountInfo() {
           // Check if the review belongs to the current seller
           if (review.sellerId === seller.uid) {
             reviewsData.push(review);
-           
+            totalRating += review.rating; // Accumulate ratings
           }
         });
 
@@ -83,7 +83,7 @@ export default function AccountInfo() {
         // Calculate the average rating
         const averageRating =
           reviewsData.length > 0 ? totalRating / reviewsData.length : 0;
-        setAverageRating(averageRating.toFixed(1)); 
+        setAverageRating(averageRating.toFixed(1)); // Set the average rating state
       } catch (error) {
         console.error("Error fetching reviews: ", error);
       }
@@ -93,8 +93,6 @@ export default function AccountInfo() {
   }, [seller.uid]);
 
   // Add a new state variable for average rating
-  const [averageRating, setAverageRating] = useState(0);
-
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -107,7 +105,10 @@ export default function AccountInfo() {
               ),
               value: seller.city,
             },
-            
+            {
+              label: <Stars/>,
+              value: <Text>{averageRating}</Text>,
+            },
             {
               label: (
                 <FeatherIcon
@@ -246,7 +247,7 @@ export default function AccountInfo() {
       <View style={styles.overlay}>
         <TouchableOpacity onPress={() => setShowBottomSheet(!showBottomSheet)}>
           <View style={styles.btnR}>
-            <Text style={styles.btnText}>write a Review</Text>
+            <Text style={styles.btnTextR}>write a Review</Text>
           </View>
         </TouchableOpacity>
         <View style={styles.btnGroup}>
@@ -305,7 +306,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 10,
-    backgroundColor: "#1e90ff",
+    borderWidth: 2,
+    borderColor: "#1e90ff",
   },
   container: {
     paddingVertical: 5,
@@ -406,6 +408,14 @@ const styles = StyleSheet.create({
     marginRight: 4,
     fontSize: 13,
   },
+  btnTextR: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "600",
+    color: "#1e90ff",
+    marginRight: 4,
+    fontSize: 13,
+  },
   btnPrimary: {
     flexDirection: "row",
     alignItems: "center",
@@ -481,7 +491,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     width: "100%",
-    height: 250,
+    height: "250",
   },
 
   aboutDescription: {
@@ -500,8 +510,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-evenly",
     shadowColor: "#000",
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -511,6 +519,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     padding: 10,
     flex: 1,
+    justifyContent: "space-between",
   },
   Chatbtn: {
     flexDirection: "row",
@@ -532,7 +541,7 @@ const styles = StyleSheet.create({
   },
   ChatContainer: {
     alignSelf: "flex-end",
-    marginVertical: 15,
+    marginVertical: 5,
   },
   SeeAll: {
     flexDirection: "row",

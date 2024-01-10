@@ -19,17 +19,36 @@ import Services from "./Services";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Feather } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
-import { collection } from "firebase/firestore";
-import { FIRESTORE_DB, getDocs, query, where } from "../config/firebase";
+import {
+  doc,
+  setDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  getDoc,
+  addDoc,
+  serverTimestamp,
+  arrayUnion,
+  updateDoc
+} from "firebase/firestore";
+import {
+  FIRESTORE_DB,
+  FIREBASE_AUTH,
+} from "../config/firebase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useRoute } from "@react-navigation/native";
+import Search from "./Search";
 
-const CardItem = ({ seller, navigation }) => {
+export const CardItem = ({ seller, navigation }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [isFavourite, toggleFavourite] = useState(false);
-  const [averageRating, setAverageRating] = useState(0);
+  const currentUser = FIREBASE_AUTH.currentUser;
+
+  const route = useRoute();
 
   useEffect(() => {
     const fetchImage = async () => {
-
       const imageRef = ref(storage, seller.thumbnails[0]);
       try {
         const url = await getDownloadURL(imageRef);
@@ -42,7 +61,70 @@ const CardItem = ({ seller, navigation }) => {
     if (seller.thumbnails[0]) {
       fetchImage();
     }
+
+    const checkIfFavorite = async () => {
+      try {
+        const favorites = await AsyncStorage.getItem("favorites");
+        const favoritesArray = favorites ? JSON.parse(favorites) : [];
+
+        const isFavorite = favoritesArray.some((fav) => fav.uid === seller.uid);
+        toggleFavourite(isFavorite);
+      } catch (error) {
+        console.error("Error checking favorites: ", error);
+      }
+    };
+
+    checkIfFavorite();
   }, [seller.thumbnails, seller.uid]);
+
+
+  const handleFavoriteClick = async () => {
+    if (currentUser) {
+      try {
+        const favorites = await AsyncStorage.getItem("favorites");
+        let favoritesArray = favorites ? JSON.parse(favorites) : [];
+
+        const isFavorite = favoritesArray.some((fav) => fav.uid === seller.uid);
+
+        if (isFavorite) {
+          // If already favorited, remove from favorites
+          const updatedFavorites = favoritesArray.filter(
+            (fav) => fav.uid !== seller.uid
+          );
+
+          await AsyncStorage.setItem(
+            "favorites",
+            JSON.stringify(updatedFavorites)
+          );
+          toggleFavourite(false);
+          console.log("Removed from favorites!");
+        } else {
+          // If not favorited, add to favorites
+          const newFavorite = {
+            uid: seller.uid,
+            username: seller.username,
+            categoryLabel: seller.category.label,
+            address: seller.address,
+            thumbnail: seller.thumbnails[0],
+          };
+
+          const updatedFavorites = [...favoritesArray, newFavorite];
+
+          await AsyncStorage.setItem(
+            "favorites",
+            JSON.stringify(updatedFavorites)
+          );
+          toggleFavourite(true);
+          console.log("Added to favorites!");
+        }
+      } catch (error) {
+        console.error("Error updating favorites: ", error);
+      }
+    }
+  };
+
+
+
 
   const renderCardItem = () => {
     return (
@@ -52,6 +134,7 @@ const CardItem = ({ seller, navigation }) => {
           navigation.navigate("AccountInfo", {
             seller,
             thumbnails: seller.thumbnails,
+   
           })
         }
       >
@@ -89,7 +172,7 @@ const CardItem = ({ seller, navigation }) => {
                   {seller.username},{" "}
                 </Text>
                 <TouchableOpacity
-                  onPress={() => toggleFavourite(!isFavourite)}
+                  onPress={handleFavoriteClick}
                   style={{
                     backgroundColor: "#b3d9ff",
                     position: "absolute",
@@ -130,8 +213,6 @@ const CardItem = ({ seller, navigation }) => {
                   R{seller.price}
                 </Text>
               </View>
-              <Stars />
-              <Text>{averageRating.toFixed(1)}</Text>
             </View>
           </View>
         </View>
@@ -149,14 +230,7 @@ const CardItem = ({ seller, navigation }) => {
 const CardLists = ({ sellerData, navigation }) => {
   const renderHeader = () => (
     <View>
-      <TouchableWithoutFeedback
-        onPress={() => navigation.navigate("SearchPage")}
-      >
-        <View style={styles.SearchContainer}>
-          <Icon name="search" size={28} color="grey" style={styles.icon} />
-          <Text style={styles.input}>Search for services</Text>
-        </View>
-      </TouchableWithoutFeedback>
+      <Search navigation={navigation} sellerData={sellerData} />
       <Services navigation={navigation} />
     </View>
   );

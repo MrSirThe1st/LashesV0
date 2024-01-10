@@ -22,6 +22,7 @@ import {
 import { FIREBASE_APP } from "../../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { ActivityIndicator } from "react-native";
 
 const OrderSeller = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
@@ -97,7 +98,7 @@ const OrderSeller = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {loading ? (
-        <Text>Loading...</Text>
+        <ActivityIndicator size="large" color="#1e90ff" />
       ) : sellerOrders.length > 0 ? (
         <View>
           {sellerOrders.map((order, index) => (
@@ -142,7 +143,7 @@ const OrderSeller = () => {
                 }}
               >
                 <Text style={styles.orderTotal}>Total</Text>
-                <Pressable
+                {/* <Pressable
                   style={styles.row}
                   onPress={() => deleteDocument(index)}
                 >
@@ -153,7 +154,7 @@ const OrderSeller = () => {
                       color="#1e90ff"
                     />
                   </View>
-                </Pressable>
+                </Pressable> */}
                 <Text style={styles.orderTotal}>{order.totalPrice}</Text>
               </View>
             </View>

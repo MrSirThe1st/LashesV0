@@ -17,32 +17,92 @@ import * as Animatable from "react-native-animatable";
 import { Icon } from "react-native-elements";
 import { services } from "./Data";
 import filter from "lodash/filter";
+import { CardItem } from "./CardLists";
 
-export default function Search({ navigation }) {
-  const [data, setData] = useState([...services]);
+
+export default function Search({ navigation, sellerData }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [textInputFocused, setTextInputFocused] = useState(true);
-  const textInput = useRef(0);
-  const contains = ({ name }, query) => {
-    if (name.includes(query)) {
-      return true;
-    }
-    return false;
+  const [searchText, setSearchText] = useState("");
+  const [data, setData] = useState([]); // Added data state
+  const textInput = useRef(null);
+
+  const contains = (seller, query) => {
+    const { username = "", category = { label: "" }, address = "" } = seller;
+    const normalizedQuery = query.toLowerCase();
+
+    return (
+      username.toLowerCase().includes(normalizedQuery) ||
+      category.label.toLowerCase().includes(normalizedQuery) ||
+      address.toLowerCase().includes(normalizedQuery)
+    );
   };
+
 
   const handleSearch = (text) => {
-    const dataS = filter(services, (userSearch) => {
-      return contains(userSearch, text);
+    setSearchText(text);
+
+    const sellerSuggestions = filter(sellerData, (seller) => {
+      return contains(seller, text);
     });
 
-    setData([...dataS]);
+    setData(sellerSuggestions);
   };
+
+  const renderSuggestions = () => {
+    if (searchText === "") {
+      return null;
+    }
+
+    const serviceSuggestions = filter(services, (item) =>
+      contains(item, searchText)
+    );
+
+    const sellerSuggestions = filter(sellerData, (item) =>
+      contains(item, searchText)
+    );
+
+    const combinedSuggestions = [...serviceSuggestions, ...sellerSuggestions];
+
+    return (
+      <FlatList
+        data={combinedSuggestions}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => {
+              Keyboard.dismiss();
+              if (item.serviceName) {
+                // Handle service suggestion
+                navigation.navigate("CategoryScreen", {
+                  service: { name: item.serviceName },
+                });
+              } else {
+                // Handle seller suggestion
+                navigation.navigate("AccountInfo", {
+                  seller: item,
+                });
+              }
+              setModalVisible(false);
+              setTextInputFocused(true);
+              setSearchText(""); // Clear the search text after selecting a suggestion
+            }}
+          >
+            <CardItem seller={item} navigation={navigation} />
+          </TouchableOpacity>
+        )}
+        keyExtractor={(item) => (item.serviceId || item.uid).toString()}
+      />
+    );
+  };
+
+
+
   return (
     <View>
       <TouchableWithoutFeedback onPress={() => setModalVisible(true)}>
         <View style={styles.SearchContainer}>
           <Icon name="search" size={28} color="grey" style={styles.Icon} />
-          <Text style={styles.input}>Search for services</Text>
+          <Text style={styles.input}>Search for sellers</Text>
         </View>
       </TouchableWithoutFeedback>
       <Modal animationType="fade" transparent={false} visible={modalVisible}>
@@ -90,39 +150,14 @@ export default function Search({ navigation }) {
                   style={{ marginRight: -10 }}
                   onPress={() => {
                     textInput.current.clear();
-                    handleSearch();
+                    handleSearch("");
                   }}
                 />
               </Animatable.View>
             </View>
           </View>
 
-          <FlatList
-            data={services}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  Keyboard.dismiss;
-                  navigation.navigate("CategoryScreen", {
-                    service: { name: item.name }, // Wrap the service name in an object
-                  });
-                  setModalVisible(false);
-                  setTextInputFocused(true);
-                }}
-              >
-                <View style={styles.view2}>
-                  <Icon
-                    name="search"
-                    size={20}
-                    color="grey"
-                    style={styles.Icon}
-                  />
-                  <Text style={{}}>{item.name}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            keyExtractor={(item) => item.id}
-          />
+          {renderSuggestions()}
         </View>
       </Modal>
     </View>
@@ -138,6 +173,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginHorizontal: 12,
     justifyContent: "space-between",
+    elevation:2
   },
   input: {
     flex: 1,
@@ -198,5 +234,10 @@ const styles = StyleSheet.create({
   },
   icon3: {
     color: "grey",
+  },
+  suggestionItem: {
+    flexDirection: "row",
+    padding: 15,
+    alignItems: "center",
   },
 });

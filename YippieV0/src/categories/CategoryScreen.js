@@ -25,6 +25,7 @@ import { useNavigation } from "@react-navigation/native";
 const CategoryScreen = ({ route }) => {
   const { service } = route.params;
   const [sellerData, setSellerData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -38,8 +39,10 @@ const CategoryScreen = ({ route }) => {
         const querySnapshot = await getDocs(q);
         const sellers = querySnapshot.docs.map((doc) => doc.data());
         setSellerData(sellers);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setLoading(false);
       }
     };
 
@@ -122,14 +125,73 @@ const CategoryScreen = ({ route }) => {
     </Pressable>
   );
 
+  const renderEmptyState = () => (
+    <View style={styles.empty}>
+      <View style={styles.fake}>
+        <View style={styles.fakeCircle} />
+        <View style={styles.fakeBlock}>
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+        </View>
+      </View>
+      <View style={[styles.fake, { opacity: 0.5 }]}>
+        <View style={styles.fakeCircle} />
+        <View style={styles.fakeBlock}>
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+        </View>
+      </View>
+      <View style={styles.fake}>
+        <View style={styles.fakeCircle} />
+        <View style={styles.fakeBlock}>
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+        </View>
+      </View>
+      <View style={styles.fake}>
+        <View style={styles.fakeCircle} />
+        <View style={styles.fakeBlock}>
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+        </View>
+      </View>
+      <View style={[styles.fake, { opacity: 0.5 }]}>
+        <View style={styles.fakeCircle} />
+        <View style={styles.fakeBlock}>
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+        </View>
+      </View>
+      <View style={styles.fake}>
+        <View style={styles.fakeCircle} />
+        <View style={styles.fakeBlock}>
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+          <View style={styles.fakeLine} />
+        </View>
+      </View>
+      <Text style={styles.emptyDescription}>Nothing to show at the moment</Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      <FlatList
-        data={sellerData}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-      />
+      {loading ? (
+        <Text>Loading...</Text>
+      ) : (
+        <FlatList
+          data={sellerData}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={renderEmptyState}
+        />
+      )}
     </View>
   );
 };
@@ -221,5 +283,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "500",
     color: "#909090",
+  },
+  fake: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 24,
+  },
+  fakeCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    backgroundColor: "#1e90ff",
+    marginRight: 16,
+  },
+  fakeLine: {
+    width: 200,
+    height: 8,
+    borderRadius: 12,
+    backgroundColor: "#1e90ff",
+    marginBottom: 8,
+  },
+  fakeBlock: {
+    flexDirection: "column",
+  },
+  empty: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 24,
+  },
+  emptyDescription: {
+    fontSize: 19,
+    lineHeight: 22,
+    fontWeight: "500",
+    color: "#8c9197",
+    textAlign: "center",
   },
 });

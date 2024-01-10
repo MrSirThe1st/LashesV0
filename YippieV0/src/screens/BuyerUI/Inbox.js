@@ -42,13 +42,13 @@ const Inbox = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-   const enterChat = (id, chatName, recipient) => {
-     navigation.navigate("Chat", {
-       id,
-       chatName,
-       recipient,
-     });
-   };
+  const enterChat = (id, chatName, recipient) => {
+    navigation.navigate("Chat", {
+      id,
+      chatName,
+      recipient,
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -58,21 +58,43 @@ const Inbox = ({ navigation }) => {
             <View style={styles.fake}>
               <View style={styles.fakeCircle} />
               <View style={styles.fakeBlock}>
-                <View style={[styles.fakeLine, { width: 120 }]} />
                 <View style={styles.fakeLine} />
-                <View
-                  style={[styles.fakeLine, { width: 70, marginBottom: 0 }]}
-                />
+                <View style={styles.fakeLine} />
               </View>
             </View>
             <View style={[styles.fake, { opacity: 0.5 }]}>
               <View style={styles.fakeCircle} />
               <View style={styles.fakeBlock}>
-                <View style={[styles.fakeLine, { width: 120 }]} />
                 <View style={styles.fakeLine} />
-                <View
-                  style={[styles.fakeLine, { width: 70, marginBottom: 0 }]}
-                />
+                <View style={styles.fakeLine} />
+              </View>
+            </View>
+            <View style={styles.fake}>
+              <View style={styles.fakeCircle} />
+              <View style={styles.fakeBlock}>
+                <View style={styles.fakeLine} />
+                <View style={styles.fakeLine} />
+              </View>
+            </View>
+            <View style={styles.fake}>
+              <View style={styles.fakeCircle} />
+              <View style={styles.fakeBlock}>
+                <View style={styles.fakeLine} />
+                <View style={styles.fakeLine} />
+              </View>
+            </View>
+            <View style={[styles.fake, { opacity: 0.5 }]}>
+              <View style={styles.fakeCircle} />
+              <View style={styles.fakeBlock}>
+                <View style={styles.fakeLine} />
+                <View style={styles.fakeLine} />
+              </View>
+            </View>
+            <View style={styles.fake}>
+              <View style={styles.fakeCircle} />
+              <View style={styles.fakeBlock}>
+                <View style={styles.fakeLine} />
+                <View style={styles.fakeLine} />
               </View>
             </View>
             <Text style={styles.emptyDescription}>Your inbox is empty</Text>

@@ -26,11 +26,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  headerStarsText: {
-    marginLeft: 8,
-    fontWeight: "500",
-    fontSize: 12,
-    lineHeight: 20,
-    color: "#7b7c7e",
-  },
 });
