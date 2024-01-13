@@ -44,6 +44,7 @@ import EditProduct from "../screens/SellerUI/settings/EditProduct";
 import EditService from "../screens/SellerUI/settings/EditService";
 import OrderSeller from "../screens/SellerUI/OrderSeller";
 import Review from "../screens/SellerUI/Review";
+import AccountInfo1 from "../screens/SellerUI/AccountInfo1";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -162,7 +163,7 @@ const HomeTabNavigatorSeller = () => (
     />
 
     <Tab.Screen
-      name="Order details"
+      name="Manage orders"
       component={OrderSeller}
       options={{
         tabBarLabel: "",
@@ -294,6 +295,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="AccountInfo"
                   component={AccountInfo}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="AccountInfo1"
+                  component={AccountInfo1}
                   options={{
                     headerShown: true,
                     title: "",
@@ -484,6 +494,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="AccountInfo"
                   component={AccountInfo}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="AccountInfo1"
+                  component={AccountInfo1}
                   options={{
                     headerShown: true,
                     title: "",

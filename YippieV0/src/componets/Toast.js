@@ -9,6 +9,7 @@ import Animated, {
 import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
+
 const Toast = ({ message, onDismiss }) => {
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(-20);

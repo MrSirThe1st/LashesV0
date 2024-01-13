@@ -93,19 +93,16 @@ export default function Home({ navigation }) {
               USERS.push(user.data());
             });
 
-            setUser(USERS);
             setSellerData(USERS);
           }
         });
     }
   }, [user]);
 
-  return (
-    <SafeAreaView
-      style={styles.container}
 
-    >
-      <StatusBar backgroundColor="white" />
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="white" barStyle="dark-content" />
       <View style={styles.stickyHeader}>
         <YourLogoComponent />
       </View>
@@ -124,12 +121,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stickyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+   
     paddingVertical: 10,
     backgroundColor: "white",
     elevation: 2,
+    alignItems:'flex-start',
   },
   content: {
     flex: 1,

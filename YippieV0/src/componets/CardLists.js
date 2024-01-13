@@ -30,12 +30,9 @@ import {
   addDoc,
   serverTimestamp,
   arrayUnion,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
-import {
-  FIRESTORE_DB,
-  FIREBASE_AUTH,
-} from "../config/firebase";
+import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRoute } from "@react-navigation/native";
 import Search from "./Search";
@@ -76,7 +73,6 @@ export const CardItem = ({ seller, navigation }) => {
 
     checkIfFavorite();
   }, [seller.thumbnails, seller.uid]);
-
 
   const handleFavoriteClick = async () => {
     if (currentUser) {
@@ -123,9 +119,6 @@ export const CardItem = ({ seller, navigation }) => {
     }
   };
 
-
-
-
   const renderCardItem = () => {
     return (
       <Pressable
@@ -134,7 +127,6 @@ export const CardItem = ({ seller, navigation }) => {
           navigation.navigate("AccountInfo", {
             seller,
             thumbnails: seller.thumbnails,
-   
           })
         }
       >
@@ -174,11 +166,12 @@ export const CardItem = ({ seller, navigation }) => {
                 <TouchableOpacity
                   onPress={handleFavoriteClick}
                   style={{
-                    backgroundColor: "#b3d9ff",
+                    backgroundColor: "#e6f5ff",
                     position: "absolute",
                     right: -5,
                     borderRadius: 10,
                     padding: 5,
+                    elevation: 2,
                   }}
                 >
                   <FontAwesome
@@ -265,8 +258,8 @@ const styles = StyleSheet.create({
     flexDirection: "row-reverse",
     alignItems: "stretch",
     borderRadius: 12,
-    backgroundColor: "#fafdff",
-    elevation: 1.5,
+    backgroundColor: "white",
+    elevation: 2,
   },
   cardImg: {
     width: "50%",
@@ -294,7 +287,7 @@ const styles = StyleSheet.create({
   },
   cardAirport: {
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: "400",
     color: "#5f697d",
   },
   cardRow: {

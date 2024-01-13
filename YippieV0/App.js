@@ -23,6 +23,7 @@ import Product from "./src/componets/Product";
 import Chat from "./src/chat/Chat";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { LogBox } from "react-native";
+import { AppProvider } from "./src/componets/AppContext";
 
 LogBox.ignoreLogs([
   "VirtualizedLists should never be nested inside plain ScrollViews",
@@ -30,9 +31,11 @@ LogBox.ignoreLogs([
 
 export default function App() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Navigation />
-    </GestureHandlerRootView>
+    <AppProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Navigation />
+      </GestureHandlerRootView>
+    </AppProvider>
   );
 }
 

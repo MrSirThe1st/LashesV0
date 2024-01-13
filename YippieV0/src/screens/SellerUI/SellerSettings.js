@@ -87,15 +87,19 @@ const SellerSettings = () => {
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.profile}>
         <View style={styles.profileAvatarWrapper}>
-          <Image
-            source={{ uri: profile.profileImage }}
-            style={styles.profileAvatar}
-          />
+          {profile.profileImage ? (
+            <Image
+              source={{ uri: profile.profileImage }}
+              style={styles.profileAvatar}
+            />
+          ) : (
+            
+            <View style={styles.profileAvatarEmpty} />
+          )}
         </View>
         <View style={styles.profileBody}>
           <Text style={styles.profileName}>{profile.username}</Text>
-          <Text style={styles.profileAddress}>
-          </Text>
+          <Text style={styles.profileAddress}></Text>
         </View>
       </View>
       <ScrollView

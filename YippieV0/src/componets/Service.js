@@ -9,6 +9,7 @@ import {
   Image,
   Pressable,
   Animated,
+  Alert
 } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import {
@@ -26,11 +27,31 @@ import FeatherIcon from "react-native-vector-icons/Feather";
 import BottomSheetEdit from "./BottomSheets/BottomSheetEdit";
 import { useNavigation } from "@react-navigation/native";
 import { ActivityIndicator } from "react-native";
+import Toast from "./Toast";
 
 const Service = () => {
   const [services, setServices] = useState([]);
   const navigation = useNavigation();
   const [loading, setLoading] = useState(false);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const showSuccessToast = (message) => {
+    setToastMessage(message);
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+    }, 3000); // Adjust the duration as needed
+  };
+
+  const showErrorToast = (message) => {
+    setToastMessage(message);
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+    }, 3000); // Adjust the duration as needed
+  };
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -73,37 +94,68 @@ const Service = () => {
   const deleteService = async (serviceIndex) => {
     try {
       if (serviceIndex >= 0 && serviceIndex < services.length) {
-        const user = FIREBASE_AUTH.currentUser;
-        const userId = user.uid;
+        const shouldDelete = await showDeleteConfirmationAlert();
 
-        const servicesCollectionRef = collection(FIRESTORE_DB, "users");
-        const q = query(servicesCollectionRef, where("uid", "==", userId));
-        const querySnapshot = await getDocs(q);
+        if (shouldDelete) {
+          const user = FIREBASE_AUTH.currentUser;
+          const userId = user.uid;
 
-        if (!querySnapshot.empty) {
-          const userDoc = querySnapshot.docs[0];
-          const userServices = userDoc.data().services || [];
+          const servicesCollectionRef = collection(FIRESTORE_DB, "users");
+          const q = query(servicesCollectionRef, where("uid", "==", userId));
+          const querySnapshot = await getDocs(q);
 
-          setLoading(true);
-          // Delete the service from the array in Firestore
-          userServices.splice(serviceIndex, 1);
-          await updateDoc(userDoc.ref, { services: userServices });
+          if (!querySnapshot.empty) {
+            const userDoc = querySnapshot.docs[0];
+            const userServices = userDoc.data().services || [];
 
-          // Remove the deleted service from the local state
-          setServices((prevServices) =>
-            prevServices.filter((service, index) => index !== serviceIndex)
-          );
-        } else {
-          console.error("User document not found");
+            setLoading(true);
+            // Delete the service from the array in Firestore
+            userServices.splice(serviceIndex, 1);
+            await updateDoc(userDoc.ref, { services: userServices });
+
+            // Remove the deleted service from the local state
+            setServices((prevServices) =>
+              prevServices.filter((service, index) => index !== serviceIndex)
+            );
+
+            // Show success toast
+            showSuccessToast("Service deleted successfully!");
+          } else {
+            console.error("User document not found");
+          }
         }
       } else {
         console.error("Invalid service index");
       }
     } catch (error) {
       console.error("Error deleting service: ", error);
-    }finally{
+      // Show error toast if needed
+      showErrorToast("Error deleting service");
+    } finally {
       setLoading(false);
     }
+  };
+
+
+  const showDeleteConfirmationAlert = () => {
+    return new Promise((resolve) => {
+      Alert.alert(
+        "Delete Service",
+        "Are you sure you want to delete this service?",
+        [
+          {
+            text: "Cancel",
+            onPress: () => resolve(false),
+            style: "cancel",
+          },
+          {
+            text: "Yes",
+            onPress: () => resolve(true),
+          },
+        ],
+        { cancelable: false }
+      );
+    });
   };
 
   return (
@@ -134,15 +186,6 @@ const Service = () => {
                         {/* <FontAwesome color="#173153" name="bed" size={13} /> */}
 
                         <Text style={styles.cardRowItemText}>{ordered}</Text>
-                      </View>
-
-                      <View style={styles.cardRowItem}>
-                        {/* <FontAwesome
-                          color="#173153"
-                          name="plus-square"
-                          solid={true}
-                          size={13}
-                        /> */}
                       </View>
                     </View>
 
@@ -198,6 +241,12 @@ const Service = () => {
           size="large"
           color="#1e90ff"
           style={styles.loadingIndicator}
+        />
+      )}
+      {toastVisible && (
+        <Toast
+          message={toastMessage}
+          onDismiss={() => setToastVisible(false)}
         />
       )}
     </View>

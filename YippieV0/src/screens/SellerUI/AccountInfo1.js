@@ -25,7 +25,8 @@ import Review from "./Review";
 import StarRatingDisplay from "../../componets/StarRatingDisplay";
 import { useNavigation } from "@react-navigation/native";
 
-export default function AccountInfo() {
+
+export default function AccountInfo1() {
   const db = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const route = useRoute();
@@ -50,19 +51,16 @@ export default function AccountInfo() {
       // Get the ID of the newly created chat
       const chatId = chatRef.id;
 
-
       navigation.navigate("Chat", {
         recipient: seller,
         chatName,
         chatId, // Pass the chatId
-        profileImageUrl: profileImageUrl 
+        profileImageUrl: profileImageUrl,
       });
     } catch (error) {
       alert(error);
     }
   };
-
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
@@ -93,6 +91,7 @@ export default function AccountInfo() {
 
         setReviews(reviewsData);
         setReviewsCount(reviewsData.length);
+        console.log("Reviews Count:", reviewsData);
 
         // Calculate the average rating
         const averageRating =
@@ -198,7 +197,7 @@ export default function AccountInfo() {
             <Pressable style={styles.Chat} onPress={createChat}>
               <View style={styles.Chatbtn}>
                 <Text style={styles.ChatbtnText}>Chat</Text>
-                <FeatherIcon color="#1e90ff" name="send" size={16} />
+                <FeatherIcon color="white" name="send" size={16} />
               </View>
             </Pressable>
           </View>
@@ -325,7 +324,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 10,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "#1e90ff",
   },
   container: {
@@ -547,9 +546,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 4,
     paddingHorizontal: 10,
-    backgroundColor: "white",
-    borderWidth: 1,
-    borderColor: "#1e90ff",
+    elevation: 1,
+    backgroundColor: "#b3d9ff",
   },
   ChatbtnText: {
     fontSize: 14,
@@ -557,7 +555,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginRight: 4,
     fontSize: 13,
-    color: "#1e90ff",
+    color: "white",
   },
   ChatContainer: {
     alignSelf: "flex-end",

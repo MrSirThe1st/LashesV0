@@ -1,17 +1,23 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
-import { GiftedChat } from "react-native-gifted-chat";
-import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase"; // Import your Firebase configuration
-import { collection, query, orderBy, onSnapshot, addDoc, where } from "firebase/firestore";
+import { GiftedChat, renderTicks } from "react-native-gifted-chat";
+import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  where,
+} from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
-
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const authUser = FIREBASE_AUTH.currentUser;
   const route = useRoute();
   const recipient = route.params.recipient;
-  const { id, chatName } = route.params;
+  const { chatName, chatId, profileImageUrl } = route.params;
 
   useEffect(() => {
     const q = query(
@@ -21,12 +27,20 @@ const Chat = () => {
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const newMessages = snapshot.docs.map((doc) => ({
-        _id: doc.id,
-        text: doc.data().text,
-        createdAt: doc.data().createdAt.toDate(),
-        user: doc.data().user,
-      }));
+      const newMessages = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        // Use toMillis to get the timestamp in milliseconds
+        const createdAt = data.createdAt
+          ? data.createdAt.toMillis()
+          : new Date();
+
+        return {
+          _id: doc.id,
+          text: data.text || "",
+          createdAt: createdAt,
+          user: data.user || { _id: "unknown" },
+        };
+      });
       setMessages(newMessages);
     });
 
@@ -36,15 +50,17 @@ const Chat = () => {
 
   const onSend = useCallback(async (newMessages = []) => {
     const { text, createdAt, user } = newMessages[0];
-    const recipientId = recipient.uid;
+    const recipientId = recipient ? recipient.uid : null;
 
     try {
       const docRef = await addDoc(collection(FIRESTORE_DB, "chats"), {
         text,
-        createdAt,
+        createdAt: new Date(createdAt),
         user,
         recipientId,
-        chatName
+        chatName,
+        chatId: chatId || null, // Ensure chatId is defined or set it to null
+        profileImageUrl: profileImageUrl || null,
       });
 
       console.log("Document written with ID:", docRef.id);
@@ -62,6 +78,12 @@ const Chat = () => {
       user={{
         _id: authUser ? authUser.uid : null,
       }}
+      renderTicks={renderTicks}
+      renderChatFooter={() => (
+        <View style={styles.customWrapper}>
+
+        </View>
+      )}
     />
   );
 };

@@ -1,33 +1,17 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { ListItem, Avatar, Badge } from "react-native-elements";
-import { FIRESTORE_DB } from "../config/firebase";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  limit,
-} from "firebase/firestore";
 
-const ListItemComponent = ({ id, chatName, enterChat }) => {
-  const [latestMessage, setLatestMessage] = useState(null);
 
-  useEffect(() => {
-    const q = query(
-      collection(FIRESTORE_DB, "chats", id, "messages"),
-      orderBy("createdAt", "desc"),
-      limit(1)
-    );
-
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const latestMessageData = snapshot.docs.map((doc) => doc.data().text)[0];
-      console.log("Latest message:", latestMessageData);
-      setLatestMessage(latestMessageData);
-    });
-
-    return () => unsubscribe();
-  }, [id]);
+const ListItemComponent = ({
+  id,
+  chatName,
+  enterChat,
+  profileImageUrl,
+  lastMessage,
+}) => {
+  
+console.log("LAST MESSAGE IN ListItemComponent:", lastMessage);
 
   return (
     <ListItem key={id} onPress={() => enterChat(id, chatName)} bottomDivider>
@@ -35,7 +19,7 @@ const ListItemComponent = ({ id, chatName, enterChat }) => {
         <Avatar
           rounded
           source={{
-            uri: "https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg",
+            uri: profileImageUrl,
           }}
         />
         <Badge
@@ -46,7 +30,7 @@ const ListItemComponent = ({ id, chatName, enterChat }) => {
       <ListItem.Content>
         <ListItem.Title>{chatName}</ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
-          {latestMessage || ""}
+          <Text>{lastMessage}</Text>
         </ListItem.Subtitle>
       </ListItem.Content>
     </ListItem>

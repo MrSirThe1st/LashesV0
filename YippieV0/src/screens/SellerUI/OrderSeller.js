@@ -6,6 +6,7 @@ import {
   ImageBackground,
   Image,
   Pressable,
+  StatusBar
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -23,6 +24,7 @@ import { FIREBASE_APP } from "../../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native";
+import { Alert } from "react-native";
 
 const OrderSeller = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
@@ -74,12 +76,32 @@ const OrderSeller = () => {
       const orderToDelete = sellerOrders[orderIndex];
 
       if (orderToDelete) {
-        const orderId = orderToDelete.id; 
+        const orderId = orderToDelete.id;
         if (orderId) {
-          await deleteDoc(doc(FIRESTORE_DB, "Orders", orderId));
-          // Remove the deleted order from the local state
-          setSellerOrders((prevOrders) =>
-            prevOrders.filter((order, index) => index !== orderIndex)
+          // Show an alert for confirmation
+          Alert.alert(
+            "Delete Order",
+            "Are you sure you want to delete this order?",
+            [
+              {
+                text: "No",
+                style: "cancel",
+              },
+              {
+                text: "Yes",
+                onPress: async () => {
+                  try {
+                    await deleteDoc(doc(FIRESTORE_DB, "Orders", orderId));
+                    // Remove the deleted order from the local state
+                    setSellerOrders((prevOrders) =>
+                      prevOrders.filter((order, index) => index !== orderIndex)
+                    );
+                  } catch (error) {
+                    console.log("Error deleting the document:", error);
+                  }
+                },
+              },
+            ]
           );
         } else {
           console.error("Document ID not found in the order data");
@@ -143,7 +165,7 @@ const OrderSeller = () => {
                 }}
               >
                 <Text style={styles.orderTotal}>Total</Text>
-                {/* <Pressable
+                <Pressable
                   style={styles.row}
                   onPress={() => deleteDocument(index)}
                 >
@@ -154,7 +176,7 @@ const OrderSeller = () => {
                       color="#1e90ff"
                     />
                   </View>
-                </Pressable> */}
+                </Pressable>
                 <Text style={styles.orderTotal}>{order.totalPrice}</Text>
               </View>
             </View>
@@ -176,7 +198,7 @@ const OrderSeller = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#FAFAFA",
   },
   empty: {
     flexGrow: 1,
@@ -200,8 +222,10 @@ const styles = StyleSheet.create({
   },
   orderContainer: {
     padding: 16,
-    borderBottomWidth: 2,
-    borderBottomColor: "#ddd",
+    backgroundColor: "white",
+    elevation: 2,
+    margin: 15,
+    borderRadius: 12,
   },
   orderTitle: {
     fontSize: 18,

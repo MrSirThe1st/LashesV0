@@ -8,6 +8,7 @@ import {
   query,
   orderBy,
   collectionGroup,
+  limit,
 } from "firebase/firestore";
 
 const Inbox = ({ navigation }) => {
@@ -23,20 +24,53 @@ const Inbox = ({ navigation }) => {
       snapshot.forEach((doc) => {
         const chatId = doc.id;
         const chatData = doc.data();
-
-        // Use the chatName as a key to group messages by conversation
+        const recipient = chatData.recipientId;
+        const user = chatData.user;
         const chatName = chatData.chatName;
+        const profileImageUrl = chatData.profileImageUrl;
+        const createdAtMillis = chatData.createdAt
+          ? chatData.createdAt.toMillis()
+          : 0;
         if (
           !uniqueChats[chatName] ||
-          chatData.createdAt.toDate() > uniqueChats[chatName].createdAt.toDate()
+          createdAtMillis > uniqueChats[chatName].createdAtMillis
         ) {
-          uniqueChats[chatName] = { id: chatId, data: chatData };
+          uniqueChats[chatName] = {
+            id: chatId,
+            data: { ...chatData, recipient, profileImageUrl, createdAtMillis },
+            lastMessage: "", // Add a placeholder for the last message
+          };
         }
       });
 
       // Convert the object back to an array
       const sortedChats = Object.values(uniqueChats);
       setChats(sortedChats);
+
+      // Subscribe to real-time updates for messages
+      sortedChats.forEach(({ id, data }) => {
+        const messagesRef = collection(db, "chats", id, "messages");
+        const messagesQuery = query(
+          messagesRef,
+          orderBy("createdAt", "desc"),
+          limit(1)
+        );
+
+        onSnapshot(messagesQuery, (messagesSnapshot) => {
+          messagesSnapshot.forEach((messageDoc) => {
+            const lastMessage = messageDoc.data().text || "";
+            console.log("LAST MESSAGE:", lastMessage);
+
+            const chatIndex = sortedChats.findIndex((chat) => chat.id === id);
+
+            if (chatIndex !== -1) {
+              sortedChats[chatIndex].lastMessage = lastMessage;
+              console.log("UPDATED CHATS:", sortedChats);
+              setChats([...sortedChats]);
+            }
+          });
+        });
+      });
     });
 
     return unsubscribe;
@@ -49,6 +83,10 @@ const Inbox = ({ navigation }) => {
       recipient,
     });
   };
+
+  useEffect(() => {
+    console.log("Chats:", chats);
+  }, [chats]);
 
   return (
     <View style={styles.container}>
@@ -100,15 +138,22 @@ const Inbox = ({ navigation }) => {
             <Text style={styles.emptyDescription}>Your inbox is empty</Text>
           </View>
         ) : (
-          chats.map(({ id, data: { chatName, recipient } }) => (
-            <ListItemComponent
-              key={id}
-              id={id}
-              chatName={chatName}
-              recipient={recipient}
-              enterChat={enterChat}
-            />
-          ))
+          chats.map(
+            ({
+              id,
+              data: { chatName, recipient, profileImageUrl, lastMessage },
+            }) => (
+              <ListItemComponent
+                key={id}
+                id={id}
+                chatName={chatName}
+                recipient={recipient}
+                profileImageUrl={profileImageUrl}
+                lastMessage={lastMessage}
+                enterChat={enterChat}
+              />
+            )
+          )
         )}
       </ScrollView>
     </View>

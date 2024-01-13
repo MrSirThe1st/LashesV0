@@ -100,10 +100,6 @@ const CategoriesPage = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.View}>
-        <Search navigation={navigation} />
-      </View>
-
       <FlatList
         data={services}
         renderItem={renderItem}

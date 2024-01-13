@@ -84,6 +84,13 @@ const AddService = () => {
     })();
   }, []);
 
+  const resetState = () => {
+    setPrice("");
+    setName("");
+    setDescription("");
+    setSelectedImages([]);
+  };
+
   const uploadImagesToFirebase = async (selectedImages, setUploading) => {
     setUploading(true);
 
@@ -158,6 +165,7 @@ const AddService = () => {
       };
 
       uploadProductToFirestore(userId, [serviceData]);
+      resetState();
     } finally {
       setUploading(false);
     }
