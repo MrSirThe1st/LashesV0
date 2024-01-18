@@ -18,8 +18,19 @@ import Services from "../../componets/Services";
 import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
-import { collection, query, where, getDocs, onSnapshot, doc } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { Skeleton } from "@rneui/themed";
+import geolib from "geolib";
+import Geocoder from "react-native-geocoding";
+import SkeletonHome from "../../componets/SkeletonHome";
 
 
 const YourLogoComponent = () => (
@@ -34,72 +45,133 @@ export default function Home({ navigation }) {
   const [sellerData, setSellerData] = useState([]);
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      const currentUserCoordinates = await getCurrentUserCoordinates();
 
-  useEffect(() => {
-    async function fetchData() {
-      const q = query(
-        collection(firestore, "users"),
-        where("role", "==", "seller")
+      const sellersSnapshot = await getDocs(
+        query(collection(FIRESTORE_DB, "users"), where("role", "==", "seller"))
       );
-      try {
-        const querySnapshot = await getDocs(q);
-        const sellers = querySnapshot.docs.map((doc) => doc.data());
-        setSellerData(sellers);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-    fetchData();
 
-    const unsubscribe = onSnapshot(
-      query(collection(firestore, "users"), where("role", "==", "seller")),
-      (snapshot) => {
-        const updatedSellers = snapshot.docs.map((doc) => doc.data());
-        setSellerData(updatedSellers);
-      }
-    );
+      const updatedSellers = [];
 
-    return () => unsubscribe();
-  }, []);
+      for (const doc of sellersSnapshot.docs) {
+        const sellerData = doc.data();
+        const coordinates = await extractCoordinatesFromAddress(
+          sellerData.address
+        );
 
+        if (coordinates) {
+          const distance = haversine(currentUserCoordinates, coordinates);
+          console.log(
+            `Distance (${sellerData.username}): ${distance} kilometers`
+          );
 
-  useEffect(() => {
-    if (auth.currentUser) {
-      const userDocRef = doc(firestore, "users", auth.currentUser.uid);
-
-      const unsubscribe = onSnapshot(userDocRef, (snapshot) => {
-        if (snapshot.exists()) {
-          setUser(snapshot.data());
+          updatedSellers.push({
+            ...sellerData,
+            id: doc.id,
+            distance,
+          });
         } else {
-          console.log("No such document!");
+          console.error("Invalid seller coordinates.");
         }
+      }
+
+      updatedSellers.sort((a, b) => a.distance - b.distance);
+
+      setSellerData(updatedSellers);
+    } catch (error) {
+      console.error("Error fetching updated data:", error);
+      // Implement user-friendly error handling or logging as needed
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  const unsubscribe = onSnapshot(
+    query(collection(FIRESTORE_DB, "users"), where("role", "==", "seller")),
+    () => {
+      fetchData();
+    }
+  );
+
+  fetchData(); // Initial fetch
+
+  return () => unsubscribe();
+}, []);
+
+  async function getCurrentUserCoordinates() {
+    try {
+      const user = FIREBASE_AUTH.currentUser;
+      const userId = user.uid;
+
+      const profileCollection = collection(FIRESTORE_DB, "users");
+      const q = query(profileCollection, where("uid", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      let currentUserCoordinates;
+
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        // Assuming userData.address is a valid address from Google Place Autocomplete
+        currentUserCoordinates = extractCoordinatesFromAddress(userData.address);
       });
 
-      return () => unsubscribe();
+      if (currentUserCoordinates) {
+        console.log("Current User Coordinates:", currentUserCoordinates);
+        return currentUserCoordinates;
+      } else {
+        console.error("Invalid current user coordinates.");
+        throw new Error("Invalid current user coordinates");
+      }
+    } catch (error) {
+      console.error("Error fetching user coordinates: ", error);
+      throw error; // Rethrow the error for better handling in the calling function
     }
-  }, [auth.currentUser, firestore]);
+  }
 
-  useEffect(() => {
-    if (user && user.role === "buyer") {
-      firestore
-        .collection("users")
-        .where("role", "==", "seller")
-        .onSnapshot((users) => {
-          if (!users.empty) {
-            const USERS = [];
-
-            users.forEach((user) => {
-              USERS.push(user.data());
-            });
-
-            setSellerData(USERS);
-          }
-        });
+  async function extractCoordinatesFromAddress(address) {
+    try {
+      const json = await Geocoder.from(address);
+      const location = json.results[0].geometry.location;
+      return {
+        latitude: location.lat,
+        longitude: location.lng,
+      };
+    } catch (error) {
+      console.error("Error extracting coordinates: ", error);
+      return null;
     }
-  }, [user]);
+  }
+
+function haversine(coord1, coord2) {
+  const R = 6371; // Radius of the Earth in kilometers
+  const dLat = deg2rad(coord2.latitude - coord1.latitude);
+  const dLon = deg2rad(coord2.longitude - coord1.longitude);
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(deg2rad(coord1.latitude)) *
+      Math.cos(deg2rad(coord2.latitude)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const distance = R * c; // Distance in kilometers
+  return distance;
+}
+
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
 
 
+if (loading) {
+  return <SkeletonHome />;
+}
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -121,11 +193,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   stickyHeader: {
-   
     paddingVertical: 10,
     backgroundColor: "white",
     elevation: 2,
-    alignItems:'flex-start',
+    alignItems: "flex-start",
   },
   content: {
     flex: 1,

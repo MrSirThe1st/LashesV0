@@ -29,7 +29,7 @@ export function BottomSheetReview({ showBottomSheet, setShowBottomSheet, seller 
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [rating, setRating] = useState(0);
   const [username, setUsername] = useState("");
-  const [profileImage, setProfileImage] = useState(null);
+  // const [profileImage, setProfileImage] = useState(null);
   const [reviewText, setReviewText] = useState("");
   const handleReviewTextChange = (text) => {
     setReviewText(text);
@@ -59,7 +59,7 @@ export function BottomSheetReview({ showBottomSheet, setShowBottomSheet, seller 
         reviewText,
         timestamp: serverTimestamp(),
         username: currentUserProfile.username,
-        userProfileImage: currentUserProfile.profile[0],
+        // userProfileImage: currentUserProfile.profile[0],
       });
 
       // Close the bottom sheet after submission
@@ -84,7 +84,7 @@ export function BottomSheetReview({ showBottomSheet, setShowBottomSheet, seller 
           console.log("Fetched Document Data: ", doc.data());
           const userData = doc.data();
           setUsername(userData.username);
-          setProfileImage(userData.profile[0]);
+          // setProfileImage(userData.profile[0]);
         });
       } catch (error) {
         console.error("Error fetching profile: ", error);

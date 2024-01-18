@@ -6,10 +6,12 @@ import {
   ImageBackground,
   Image,
   Pressable,
+  StatusBar,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FeatherIcon from "react-native-vector-icons/Feather";
+import { FIRESTORE_DB } from "../../config/firebase";
 import {
   doc,
   getDocs,
@@ -17,10 +19,14 @@ import {
   query,
   where,
   deleteDoc,
+  onSnapshot
 } from "firebase/firestore";
 import { FIREBASE_APP } from "../../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { ActivityIndicator } from "react-native";
+import { Alert } from "react-native";
+
 
 const Orders = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
@@ -37,19 +43,22 @@ const Orders = () => {
           sellerOrdersCollection,
           where("customerID", "==", user.uid)
         );
-        const querySnapshot = await getDocs(q);
 
-        const ordersData = [];
-        querySnapshot.forEach((doc) => {
-          const orderData = { id: doc.id, ...doc.data() };
-          ordersData.push(orderData);
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const ordersData = [];
+          snapshot.forEach((doc) => {
+            const orderData = { id: doc.id, ...doc.data() };
+            ordersData.push(orderData);
+          });
+
+          setSellerOrders(ordersData);
+          setLoading(false);
         });
 
-        setSellerOrders(ordersData);
+        return unsubscribe; // This will be used to unsubscribe when the component unmounts
       }
     } catch (error) {
       console.error("Error fetching seller orders: ", error);
-    } finally {
       setLoading(false);
     }
   };
@@ -66,6 +75,49 @@ const Orders = () => {
     return () => unsubscribe();
   }, []);
 
+  const deleteDocument = async (orderIndex) => {
+    try {
+      const orderToDelete = sellerOrders[orderIndex];
+
+      if (orderToDelete) {
+        const orderId = orderToDelete.id;
+        if (orderId) {
+          // Show an alert for confirmation
+          Alert.alert(
+            "Delete Order",
+            "Are you sure you want to delete this order?",
+            [
+              {
+                text: "No",
+                style: "cancel",
+              },
+              {
+                text: "Yes",
+                onPress: async () => {
+                  try {
+                    await deleteDoc(doc(FIRESTORE_DB, "Orders", orderId));
+                    // Remove the deleted order from the local state
+                    setSellerOrders((prevOrders) =>
+                      prevOrders.filter((order, index) => index !== orderIndex)
+                    );
+                  } catch (error) {
+                    console.log("Error deleting the document:", error);
+                  }
+                },
+              },
+            ]
+          );
+        } else {
+          console.error("Document ID not found in the order data");
+        }
+      } else {
+        console.error("Invalid order");
+      }
+    } catch (error) {
+      console.log("Error deleting the document:", error);
+    }
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {loading ? (
@@ -75,6 +127,9 @@ const Orders = () => {
           {sellerOrders.map((order, index) => (
             <View key={index} style={styles.orderContainer}>
               <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <Text style={styles.orderTitle}>
+                  {order.sellerName}
+                </Text>
                 <Text style={styles.orderTitle}>
                   Order Number #{order.orderNumber}
                 </Text>
@@ -147,7 +202,7 @@ const Orders = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: "#FAFAFA",
   },
   empty: {
     flexGrow: 1,
@@ -168,6 +223,44 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#878787",
     marginBottom: 24,
+  },
+  orderContainer: {
+    padding: 16,
+    backgroundColor: "white",
+    elevation: 2,
+    margin: 10,
+    borderRadius: 12,
+  },
+  orderTitle: {
+    fontSize: 15,
+    fontWeight: "500",
+  },
+  productContainer: {
+    alignItems: "center",
+    marginVertical: 5,
+    flexDirection: "row",
+  },
+  productLabel: {
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  productPrice: {
+    fontSize: 14,
+    color: "#888",
+  },
+  productQuantity: {
+    fontSize: 14,
+    color: "#888",
+  },
+  orderTotal: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  cardImg: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    marginRight: 10,
   },
 });
 

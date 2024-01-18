@@ -5,6 +5,7 @@ import Onboarding from "../screens/onboarding/Onboarding";
 import Home from "../screens/BuyerUI/Home";
 import Selection from "../screens/selection/Selection";
 import Login from "../screens/Login&SignUp/Login";
+import Login1 from "../screens/Login&SignUp/Login1";
 import Orders from "../screens/BuyerUI/Orders";
 import Profile from "../screens/BuyerUI/Profile";
 import CategoriesPage from "../screens/Categories/CategoriesPage";
@@ -45,6 +46,7 @@ import EditService from "../screens/SellerUI/settings/EditService";
 import OrderSeller from "../screens/SellerUI/OrderSeller";
 import Review from "../screens/SellerUI/Review";
 import AccountInfo1 from "../screens/SellerUI/AccountInfo1";
+import EditAccountBuyer from "../screens/BuyerUI/EditAccountBuyer";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -72,7 +74,7 @@ const HomeTabNavigator = () => (
     />
 
     <Tab.Screen
-      name="Order details"
+      name="Orders"
       component={Orders}
       options={{
         tabBarIcon: ({ focused }) =>
@@ -398,7 +400,7 @@ const Navigation = () => {
                   component={Favorites}
                   options={{
                     headerShown: true,
-                    title: "Account",
+                    title: "Favorites",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -441,6 +443,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="Login"
                   component={Login}
+                  options={{
+                    headerShown: false,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Login1"
+                  component={Login1}
                   options={{
                     headerShown: false,
                     title: "",
@@ -532,7 +543,7 @@ const Navigation = () => {
                   component={Catalogue}
                   options={{
                     headerShown: true,
-                    title: "",
+                    title: "Products",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -541,7 +552,7 @@ const Navigation = () => {
                   component={Catalogue1}
                   options={{
                     headerShown: true,
-                    title: "",
+                    title: "Services",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -575,6 +586,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="EditAccount"
                   component={EditAccount}
+                  options={{
+                    headerShown: true,
+                    title: "Account",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="EditAccountBuyer"
+                  component={EditAccountBuyer}
                   options={{
                     headerShown: true,
                     title: "Account",
@@ -620,6 +640,15 @@ const Navigation = () => {
                 <Stack.Screen
                   name="Login"
                   component={Login}
+                  options={{
+                    headerShown: false,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="Login1"
+                  component={Login1}
                   options={{
                     headerShown: false,
                     title: "",

@@ -6,10 +6,8 @@ import StarRatingDisplay from "../../componets/StarRatingDisplay";
 import { useRoute } from "@react-navigation/native";
 
 const Review = () => {
-
-const route = useRoute();
+  const route = useRoute();
   const { reviews } = route.params;
- 
 
   return (
     <View style={styles.container}>
@@ -20,14 +18,6 @@ const route = useRoute();
           <View>
             <View style={styles.profileContainer}>
               <View style={styles.profileTop}>
-                <View style={styles.avatar}>
-                  <Image
-                    alt=""
-                    style={styles.avatarImg}
-                    source={require("../../assets/homeAssets/happy.png")}
-                  />
-                </View>
-
                 <View style={styles.profileBody}>
                   <Text style={styles.profileTitle}>{item.username}</Text>
                   <StarRatingDisplay rating={item.rating} starSize={20} />
@@ -40,10 +30,7 @@ const route = useRoute();
               <View>
                 <View style={styles.about}>
                   <Text style={styles.aboutDescription}>
-                    <Text
-                      style={styles.aboutDescription}
-        
-                    >
+                    <Text style={styles.aboutDescription}>
                       {item.reviewText}
                     </Text>
                   </Text>
@@ -89,7 +76,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingLeft: 14,
   },
   profileTitle: {
     fontSize: 18,

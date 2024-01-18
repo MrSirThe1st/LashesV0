@@ -5,25 +5,48 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Button,
 } from "react-native";
 import { MyButton } from "./MyButton";
 import BottomSheet from "@gorhom/bottom-sheet";
 import { Alert } from "react-native";
-
+import * as Clipboard from "expo-clipboard";
+import { Feather } from "@expo/vector-icons";
 
 export function BottomSheetLink({
   showBottomSheetLink,
   setShowBottomSheetLink,
 }) {
   const bottomSheetRef = useRef(null);
-  const snapPoints = ["40%"];
+  const snapPoints = ["28%"];
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [message, setMessage] = useState("");
+
+  const emailToCopy = "Lashes_App@outlook.com";
+  const [copiedText, setCopiedText] = useState("");
 
   const handleSheetChanges = useCallback((index) => {
     setShowBottomSheetLink(index > -1);
     setCurrentIndex(index);
   }, []);
+
+  const copyEmailToClipboard = async () => {
+    try {
+      await Clipboard.setStringAsync(emailToCopy);
+      setCopiedText(emailToCopy);
+      Alert.alert("Copied", "we cannot wait to hear from you");
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+    }
+  };
+
+  const fetchCopiedText = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      setCopiedText(text);
+    } catch (error) {
+      console.error("Error fetching from clipboard:", error);
+    }
+  };
 
   useEffect(() => {
     if (showBottomSheetLink) {
@@ -32,28 +55,6 @@ export function BottomSheetLink({
       bottomSheetRef.current?.close();
     }
   }, [showBottomSheetLink]);
-
-  const sendMessage = async () => {
-    try {
-      const sendEmailFunction = firebase.functions().httpsCallable("sendEmail");
-
-      // Replace with your email address
-      const to = "Lashes_App@outlook.com";
-      const subject = "New Message from App User";
-
-      // Call the Cloud Function to send the email
-      const result = await sendEmailFunction({ to, subject, message });
-
-      if (result.data.success) {
-        Alert.alert("Success", "Message sent successfully!");
-      } else {
-        Alert.alert("Error", `Failed to send message: ${result.data.error}`);
-      }
-    } catch (error) {
-      console.error("Error sending message:", error);
-      Alert.alert("Error", "Failed to send message");
-    }
-  };
 
   useEffect(() => {
     if (showBottomSheetLink) {
@@ -73,20 +74,19 @@ export function BottomSheetLink({
       onChange={handleSheetChanges}
     >
       <View style={styles.contentContainer}>
-        <Text>
-          Chat to us and we'll get back ASAP
-        </Text>
-        <TextInput
-          style={styles.inputControlOverview}
-          placeholder="Type your message here"
-          multiline
-          numberOfLines={4}
-          value={message}
-          onChangeText={setMessage}
-        />
-
-        <View style={styles.btnWrap}>
-          <MyButton onPress={sendMessage} title="Send Message" />
+        <View style={{ margin: 15 }}>
+          <Text style={{ fontSize: 16, fontWeight: "500", color: "grey" }}>
+            copy the link to report a bug or share an idea
+          </Text>
+        </View>
+        <View style={styles.content}>
+          <Text style={styles.emailText}>{emailToCopy}</Text>
+          <TouchableOpacity
+            onPress={copyEmailToClipboard}
+            style={styles.Button}
+          >
+            <Feather name="copy" size={24} color="white" />
+          </TouchableOpacity>
         </View>
       </View>
     </BottomSheet>
@@ -94,38 +94,31 @@ export function BottomSheetLink({
 }
 
 const styles = StyleSheet.create({
-  btnWrap: {
-    padding: 12,
-  },
   contentContainer: {
-    marginTop: 24,
     flex: 1,
     alignItems: "center",
-    justifyContent:'space-between'
+    justifyContent: "center",
   },
-  shadow: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.78,
-    shadowRadius: 12,
-    elevation: 24,
+  emailText: {
+    padding: 10,
+    fontWeight: "bold",
+    fontSize: 16,
+    color: "#1e90ff",
   },
-  popupText: {
-    fontSize: 44,
-  },
-  inputControlOverview: {
-    paddingHorizontal: 16,
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fafdff",
+    elevation: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 12,
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#222",
-
-    width: "80%",
-    borderWidth: 1,
-    borderColor: "#3bb3f8",
+  },
+  Button: {
+    backgroundColor: "#1e90ff",
+    padding: 8,
+    borderRadius: 12,
   },
 });
 

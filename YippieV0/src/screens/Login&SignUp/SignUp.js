@@ -16,14 +16,16 @@ import { FIREBASE_AUTH } from "../../config/firebase";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, addDoc, collection } from "firebase/firestore";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const SignUp = ({ navigation, route }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
-  const [cellphoneNumber, setCellphoneNumber] = useState("");
-  const [loading, setLoading] = useState("");
+  // const [cellphoneNumber, setCellphoneNumber] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const auth = FIREBASE_AUTH;
   const db = FIRESTORE_DB;
@@ -40,12 +42,13 @@ const SignUp = ({ navigation, route }) => {
         );
         console.log(response);
         alert("Signed up successfully");
-
+        const userUID = response.user.uid;
         await addDoc(collection(db, "users"), {
           username: username,
           role: role,
           email: email,
-          cellphoneNumber: cellphoneNumber,
+          uid: userUID,
+          // cellphoneNumber: cellphoneNumber,
           role: role,
         }).then(() => {
           console.log("data submitted");
@@ -66,139 +69,127 @@ const SignUp = ({ navigation, route }) => {
       <View>
         <BackButton navigation={navigation} />
       </View>
-      <View style={styles.Wrapper}>
+      <Image
+        alt="My Shop logo"
+        resizeMode="contain"
+        source={require("../../assets/svg/welcome-1.png")}
+        style={styles.logoImg}
+      />
+      <View style={styles.form}>
         <Text style={styles.title}>Create an Account</Text>
-        <View style={styles.inputContainer}>
-          <Icon
-            name="account-circle"
-            size={20}
-            color="black"
-            style={styles.icon}
-          />
-          <TextInput
-            style={styles.input}
-            value={username}
-            onChangeText={setUsername}
-            placeholder={"Userame"}
-            keyboardType={"default"}
-            autoCapitalize="none"
-          />
-        </View>
-        <Text>The username should be your business name</Text>
-        <View style={styles.inputContainer}>
-          <Icon
-            name="alternate-email"
-            size={20}
-            color="black"
-            style={styles.icon}
-          />
-          <TextInput
-            style={styles.input}
-            value={email}
-            autoCapitalize="none"
-            onChangeText={(text) => setEmail(text)}
-            placeholder={"Email"}
-            keyboardType={"email-address"}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="lock" size={20} color="black" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            value={cellphoneNumber}
-            onChangeText={setCellphoneNumber}
-            placeholder={"Cellphone Number"}
-            keyboardType={"default"}
-            secureTextEntry={false}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Icon name="lock" size={20} color="black" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            placeholder={"Password"}
-            keyboardType={"default"}
-            secureTextEntry={true}
-            autoCapitalize="none"
-          />
-        </View>
+        <Text style={styles.subtitle}>
+          Please enter your information below to create a new account.
+        </Text>
 
-        <View style={styles.inputContainer}>
-          <Icon name="lock" size={20} color="black" style={styles.icon} />
-          <TextInput
-            style={styles.input}
-            value={confirmPassword}
-            onChangeText={(text) => setConfirmPassword(text)}
-            placeholder={"confirm Password"}
-            keyboardType={"default"}
-            secureTextEntry={true}
-            autoCapitalize="none"
-          />
-        </View>
-        {/* Loading indicator */}
+        <TextInput
+          style={styles.input}
+          value={username}
+          onChangeText={setUsername}
+          placeholder={"Username"}
+          keyboardType={"default"}
+          autoCapitalize="none"
+        />
+
+        <TextInput
+          style={styles.input}
+          value={email}
+          autoCapitalize="none"
+          onChangeText={(text) => setEmail(text)}
+          placeholder={"Email Address"}
+          keyboardType={"email-address"}
+        />
+
+        {/* <TextInput
+          style={styles.input}
+          value={cellphoneNumber}
+          onChangeText={setCellphoneNumber}
+          placeholder={"Cellphone Number"}
+          keyboardType={"default"}
+          secureTextEntry={false}
+        /> */}
+
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          placeholder={"Password"}
+          keyboardType={"default"}
+          secureTextEntry={true}
+          autoCapitalize="none"
+        />
+
+        <TextInput
+          style={styles.input}
+          value={confirmPassword}
+          onChangeText={(text) => setConfirmPassword(text)}
+          placeholder={"Confirm Password"}
+          keyboardType={"default"}
+          secureTextEntry={true}
+          autoCapitalize="none"
+        />
+
         {loading ? (
           <ActivityIndicator size="large" color="#1e90ff" />
         ) : (
           <TouchableOpacity
-            style={styles.buttonSignUp}
+            style={styles.btn}
             onPress={signUp}
             disabled={false}
           >
-            <Text style={styles.buttonText}>Sign up</Text>
+            <Text style={styles.btnText}>Sign Up</Text>
           </TouchableOpacity>
         )}
-      </View>
 
-      <View style={styles.bottomContainer}>
-        <View style={styles.InnerbottomContainer}>
-          <Text style={styles.forgotPasswordText}>Choose instead to</Text>
-          <Pressable style={styles.button}>
-            <Image
-              source={require("../../assets/icons/google(1).png")}
-              style={[styles.buttonIcon, { width: 30, height: 30 }]}
-            />
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                flex: 1,
-              }}
-            >
-              <Text style={[styles.text, { flex: 1 }]}>
-                Sign Up with Google
-              </Text>
-            </View>
-          </Pressable>
-          <Pressable style={styles.button}>
-            <Image
-              source={require("../../assets/icons/facebook(1).png")}
-              style={[styles.buttonIcon, { width: 30, height: 30 }]}
-            />
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                flex: 1,
-              }}
-            >
-              <Text style={[styles.text, { flex: 1 }]}>
-                Sign Up With Facebook
-              </Text>
-            </View>
-          </Pressable>
+        <View style={styles.formFooter}>
+          <Text>Already have an account?</Text>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("Login");
+            }}
+          >
+            <Text style={{ color: "#FE724E" }}> Login here</Text>
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.footer}>
-            <Text>Already have an account?</Text>
-            <Pressable
-              onPress={() => {
-                navigation.navigate("Login");
-              }}
-            >
-              <Text style={styles.forgotPasswordText}>Login here</Text>
-            </Pressable>
-          </View>
+        <View style={styles.formSpacer}>
+          <Text style={styles.formSpacerText}>Or Sign up with</Text>
+          <View style={styles.formSpacerDivider} />
+        </View>
+
+        <View style={styles.btnGroup}>
+          <TouchableOpacity
+            onPress={() => {
+              // handle onPress
+            }}
+            style={{ flex: 1, paddingHorizontal: 6 }}
+          >
+            <View style={styles.btnFacebook}>
+              {/* <MaterialIcons
+                color="#fff"
+                name="facebook"
+                size={18}
+                style={{ marginRight: 12 }}
+              /> */}
+              <Text style={styles.btnFacebookText}>Facebook</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              // handle onPress
+            }}
+            style={{ flex: 1, paddingHorizontal: 6 }}
+          >
+            <View style={styles.btnGoogle}>
+              {/* <MaterialIcons
+                color="#fff"
+                name="google"
+                size={18}
+                style={{ marginRight: 12 }}
+              /> */}
+              <Text style={styles.btnGoogleText}>Google</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
@@ -208,102 +199,129 @@ const SignUp = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fafdff",
-  },
-  Wrapper: {
-    flex: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  bottomContainer: {
-    flex: 0.5,
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    elevation: 10,
-  },
-  InnerbottomContainer: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  button: {
-    backgroundColor: "#1e90ff",
-    marginHorizontal: 20,
-    paddingHorizontal: 3,
-    paddingVertical: 3,
-    borderRadius: 50,
-    width: "95%",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-  },
-
-  buttonIcon: {
-    backgroundColor: "white",
-    borderRadius: 50,
-  },
-  text: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  input: {
-    width: "90%",
-    height: 45,
-    margin: 12,
-    fontSize: 18,
-    color: "black",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "black",
     backgroundColor: "#fff",
-    borderRadius: 12,
+  },
+  form: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    margin: 12,
-    width: "90%",
-    height: 44,
-    borderWidth: 2,
-    borderColor: "#6fbfff",
   },
-  forgotPasswordContainer: {
-    position: "absolute",
-    right: 12,
-    justifyContent: "center",
-    height: "100%",
-  },
-  forgotPasswordText: {
-    color: "#1e90ff",
-    fontWeight: "bold",
-    marginLeft: 5,
-  },
-  footer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  logoImg: {
+    width: "100%",
+    height: 200,
   },
   title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#1e90ff",
+    fontSize: 29,
+    fontWeight: "700",
+    color: "#242424",
+    textAlign: "center",
+    marginBottom: 12,
   },
-  buttonSignUp: {
-    backgroundColor: "#1e90ff",
-    borderRadius: 5,
-    padding: 10,
-    margin: 10,
+  subtitle: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#989898",
+    marginBottom: 16,
+  },
+  input: {
+    height: 44,
+    backgroundColor: "#EFF1F5",
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#222",
+    marginBottom: 12,
+  },
+  btn: {
+    flexDirection: "row",
     alignItems: "center",
-    color: "white",
-    width: "90%",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: "#FE724E",
+    borderColor: "#FE724E",
+    marginTop: 24,
   },
-  buttonText: {
-    color: "white",
-    fontWeight: "bold",
+  btnText: {
+    fontSize: 16,
+    lineHeight: 26,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  formFooter: {
+    marginTop: 16,
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#454545",
+    textAlign: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+  },
+  formSpacer: {
+    marginTop: 72,
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formSpacerText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#454545",
+    lineHeight: 20,
+    paddingHorizontal: 12,
+    backgroundColor: "#fff",
+    zIndex: 9,
+  },
+  formSpacerDivider: {
+    borderBottomWidth: 2,
+    borderColor: "#eff1f5",
+    position: "absolute",
+    top: 10,
+    left: 0,
+    right: 0,
+  },
+  btnGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 18,
+    marginHorizontal: -6,
+  },
+  btnFacebook: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: "#355288",
+    borderColor: "#355288",
+  },
+  btnFacebookText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  btnGoogle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: "#3367D6",
+    borderColor: "#3367D6",
+  },
+  btnGoogleText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: "600",
+    color: "#fff",
   },
 });
 

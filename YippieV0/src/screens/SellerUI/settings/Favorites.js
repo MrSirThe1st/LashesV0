@@ -9,6 +9,8 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../../config/firebase";
+import FeatherIcon from "react-native-vector-icons/Feather";
+import { FontAwesome5 } from "@expo/vector-icons";
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState([]);
@@ -53,7 +55,6 @@ const Favorites = () => {
 
   return (
     <View style={styles.container}>
-  
       {favorites.length > 0 ? (
         <FlatList
           data={favorites}
@@ -72,7 +73,13 @@ const Favorites = () => {
           )}
         />
       ) : (
-        <Text>No favorites yet</Text>
+        <View style={styles.empty}>
+          <FontAwesome5 name="heart-broken" size={36} color="#FA8072" />
+          <Text style={styles.emptyTitle}>What!? No Favorites Yet ?</Text>
+          <Text style={styles.emptyDescription}>
+            The sellers you heart will appear here
+          </Text>
+        </View>
       )}
     </View>
   );
@@ -84,7 +91,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
-    backgroundColor:'white'
+    backgroundColor: "white",
   },
   title: {
     fontSize: 20,
@@ -93,10 +100,10 @@ const styles = StyleSheet.create({
   },
   favoriteItem: {
     padding: 10,
-    elevation:2,
-    backgroundColor:'white',
-    margin:10,
-    borderRadius:12
+    elevation: 2,
+    backgroundColor: "white",
+    margin: 10,
+    borderRadius: 12,
   },
   thumbnail: {
     width: 50,
@@ -116,6 +123,26 @@ const styles = StyleSheet.create({
   address: {
     fontSize: 12,
     color: "#555",
+  },
+  empty: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyTitle: {
+    fontSize: 21,
+    fontWeight: "600",
+    color: "#000",
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  emptyDescription: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#878787",
+    marginBottom: 24,
   },
 });
 

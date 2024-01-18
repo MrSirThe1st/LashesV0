@@ -49,19 +49,16 @@ export default function AccountInfo() {
 
       // Get the ID of the newly created chat
       const chatId = chatRef.id;
-
-
       navigation.navigate("Chat", {
         recipient: seller,
         chatName,
-        chatId, // Pass the chatId
-        profileImageUrl: profileImageUrl 
+        chatId,
+        profileImageUrl: profileImageUrl,
       });
     } catch (error) {
       alert(error);
     }
   };
-
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -70,6 +67,8 @@ export default function AccountInfo() {
   }, [navigation]);
 
   useEffect(() => {
+    if (seller) {
+    }
     const fetchReviews = async () => {
       try {
         const reviewsCollection = collection(FIRESTORE_DB, "reviews");
@@ -230,14 +229,6 @@ export default function AccountInfo() {
               <View>
                 <View style={styles.profileContainerR}>
                   <View style={styles.profileTop}>
-                    <View style={styles.avatar}>
-                      <Image
-                        alt=""
-                        style={styles.avatarImgR}
-                        source={require("../../assets/homeAssets/happy.png")}
-                      />
-                    </View>
-
                     <View style={styles.profileBody}>
                       <Text style={styles.profileTitle}>{item.username}</Text>
                       <StarRatingDisplay rating={item.rating} starSize={20} />
@@ -375,7 +366,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingLeft: 14,
   },
   profileTitle: {
     fontSize: 18,

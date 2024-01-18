@@ -102,7 +102,7 @@ const Catalogue1 = ({ navigation }) => {
   };
 
   const addOrder = async () => {
-    try { 
+    try {
       console.log("Cart Before Order:", cart);
       const orderedServices = services
         .map((item, index) => ({
@@ -112,7 +112,19 @@ const Catalogue1 = ({ navigation }) => {
         }))
         .filter((item) => item.quantity > 0);
 
+      const userQuery = query(
+        collection(FIRESTORE_DB, "users"),
+        where("uid", "==", currentUserUID)
+      );
+      const userSnapshot = await getDocs(userQuery);
 
+      if (userSnapshot.size !== 1) {
+        console.error("Error finding user document.");
+        return;
+      }
+
+      const userData = userSnapshot.docs[0].data();
+      const username = userData.username;
 
       const order = {
         orderNumber: Math.floor(Math.random() * 100000),
@@ -121,6 +133,8 @@ const Catalogue1 = ({ navigation }) => {
         totalPrice: totalPrice,
         customerID: currentUserUID,
         sellerID: seller.uid,
+        sellerName: seller.username,
+        customerUsername: username,
       };
 
       // Wait for the order to be added
@@ -291,6 +305,11 @@ const Catalogue1 = ({ navigation }) => {
           onDismiss={() => setShowSuccessToast(false)}
         />
       )}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -391,5 +410,11 @@ const styles = StyleSheet.create({
   },
   OverlayTotal: {
     marginTop: 5,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)", 
   },
 });

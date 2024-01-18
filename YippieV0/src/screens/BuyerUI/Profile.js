@@ -1,250 +1,378 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
+  SafeAreaView,
   ScrollView,
   View,
   Text,
-  Image,
   TouchableOpacity,
+  Image,
   Pressable,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import FeatherIcon from "react-native-vector-icons/Feather";
-import Styles from "./Styles";
+import Edit from "../../componets/SettingsComponents.js/Edit";
+import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 import { FIREBASE_AUTH } from "../../config/firebase";
-const auth = FIREBASE_AUTH;
+import { signOut } from "firebase/auth";
+import { FIRESTORE_DB } from "../../config/firebase";
+import EditBuyer from "../../componets/EditBuyer";
 
-const SECTIONS = [
-  {
-    header: "preferences",
-    icon: "help-circle",
-    items: <View style={Styles.customContent}></View>,
-  },
-  {
-    header: "favorites",
-    icon: "help-circle",
-    items: (
-      <View style={Styles.customContent}>
-        <Text>Custom Content Here</Text>
-      </View>
-    ),
-  },
-  {
-    header: "help",
-    icon: "align-center",
-    items: (
-      <View style={Styles.customContent}>
-        <Text>Your Custom Content</Text>
-      </View>
-    ),
-  },
-  {
-    header: "account",
-    icon: "settings",
-    items: (
-      <View style={Styles.customContent}>
-        <Text>Your Custom Content</Text>
-        <Pressable onPress={() => auth.signOut()}>
-          <Text>Sign Out</Text>
-        </Pressable>
-      </View>
-    ),
-  },
-];
+import {
+  doc,
+  deleteDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  onSnapshot
+} from "firebase/firestore";
 
-const Profile = () => {
-  const [value, setValue] = React.useState(0);
+import BottomSheetLink from "../../componets/BottomSheets/BottomSheetLink";
+import BottomSheetReport from "../../componets/BottomSheets/BottomSheetReport";
+import Alert2 from "../../componets/Alerts/Alert2";
+import Alert3 from "../../componets/Alerts/Alert3";
 
-  const { tabs } = React.useMemo(() => {
-    return {
-      tabs: SECTIONS.map(({ header, icon }) => ({
-        name: header,
-        icon,
-      })),
+const SellerSettings = () => {
+  const [profile, setProfile] = useState({
+    username: "",
+    profileImage: "",
+  });
+  const [username, setUsername] = useState("");
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+  const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showBottomSheetLink, setShowBottomSheetLink] = useState(false);
+  const [showBottomSheetReport, setShowBottomSheetReport] = useState(false);
+  const user = FIREBASE_AUTH.currentUser;
+  const userId = user.uid;
+
+  const getInitials = (name) => {
+    const words = name.split(" ");
+    return (
+      (words.length > 0 ? words[0].charAt(0) : "") +
+      (words.length > 1 ? words[1].charAt(0) : "")
+    ).toUpperCase();
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const user = FIREBASE_AUTH.currentUser;
+        const userId = user.uid;
+
+        const profileCollection = collection(FIRESTORE_DB, "users");
+        const q = query(profileCollection, where("uid", "==", userId));
+
+        // Fetch initial data
+        const initialQuerySnapshot = await getDocs(q);
+        initialQuerySnapshot.forEach((doc) => {
+          const userData = doc.data();
+          setProfile({
+            username: userData.username,
+          });
+        });
+
+        // Subscribe to automatic updates using onSnapshot
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "modified") {
+              // Handle modified data
+              const modifiedData = change.doc.data();
+              setProfile({
+                username: modifiedData.username,
+              });
+            }
+          });
+        });
+
+        // Cleanup function to unsubscribe when the component unmounts
+        return () => unsubscribe();
+      } catch (error) {
+        console.error("Error fetching profile: ", error);
+      }
     };
+
+    fetchProfile();
   }, []);
 
+
+  const navigation = useNavigation();
+
+  const handleLogout = () => {
+    setShowLogoutAlert(true);
+  };
+  const handleDelete = () => {
+    setShowDeleteAlert(true);
+  };
+
   return (
-    <SafeAreaView style={{ backgroundColor: "#f8f8f8", flex: 1 }}>
-      <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.profile}>
-          <View style={styles.profileHeader}>
-            <Image
-              alt=""
-              source={{
-                uri: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2.5&w=256&h=256&q=80",
-              }}
-              style={styles.profileAvatar}
-            />
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.profile}>
+        <View style={styles.profileAvatarWrapper}>
+          <Text style={styles.profileAvatarText}>
+            {getInitials(profile.username)}
+          </Text>
+        </View>
 
-            <View style={styles.profileBody}>
-              <Text style={styles.profileName}>Marc im</Text>
-
-              <Text style={styles.profileHandle}>Marc im</Text>
-            </View>
-          </View>
-
-          <TouchableOpacity
+        <View style={styles.profileBody}>
+          <Text style={styles.profileName}>{profile.username}</Text>
+          <Text style={styles.profileAddress}></Text>
+        </View>
+      </View>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Profile</Text>
+          <EditBuyer navigation={navigation} />
+          <Pressable
             onPress={() => {
-              // handle onPress
+              handleLogout();
             }}
           >
-            <View style={styles.profileAction}>
-              <Text style={styles.profileActionText}>Edit Profile</Text>
-
-              <FeatherIcon color="#fff" name="edit-3" size={16} />
+            <View style={styles.row}>
+              <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
+                <MaterialIcons name="logout" size={20} color="#dc143c" />
+              </View>
+              <Text style={styles.rowLabel}>Logout</Text>
+              <View style={styles.rowSpacer} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
+
+          <Text style={styles.sectionHeader}>Delete Account</Text>
+          <Pressable
+            onPress={() => {
+              handleDelete();
+            }}
+          >
+            <View style={styles.row}>
+              <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
+                <MaterialCommunityIcons
+                  name="delete-forever"
+                  size={22}
+                  color="#dc143c"
+                />
+              </View>
+              <Text style={styles.rowLabel}>Delete Account</Text>
+              <View style={styles.rowSpacer} />
+            </View>
+          </Pressable>
         </View>
 
-        <View style={styles.content}>
-          <View style={styles.tabs}>
-            {tabs.map(({ name, icon }, index) => {
-              const isActive = index === value;
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Contact us</Text>
 
-              return (
-                <View
-                  key={name}
-                  style={[
-                    styles.tabWrapper,
-                    isActive && { borderBottomColor: "#1e90ff" },
-                  ]}
-                >
-                  <TouchableOpacity
-                    onPress={() => {
-                      setValue(index);
-                    }}
-                  >
-                    <View style={styles.tab}>
-                      <FeatherIcon
-                        color={isActive ? "#1e90ff" : "#eaf5ff"}
-                        name={icon}
-                        size={16}
-                      />
+          <Pressable
+            onPress={() => setShowBottomSheetLink(!showBottomSheetLink)}
+          >
+            <View style={styles.row}>
+              <View style={[styles.rowIcon, { backgroundColor: "#fff" }]}>
+                <FeatherIcon color="#007afe" name="mail" size={18} />
+              </View>
 
-                      <Text
-                        style={[
-                          styles.tabText,
-                          isActive && { color: "#1e90ff" },
-                        ]}
-                      >
-                        {name}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </View>
-          {SECTIONS[value].items}
+              <Text style={styles.rowLabel}>Contact us</Text>
+
+              <View style={styles.rowSpacer} />
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionHeader}>Content</Text>
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Favorites");
+            }}
+          >
+            <View style={styles.row}>
+              <View style={[styles.rowIcon, { backgroundColor: "white" }]}>
+                <FeatherIcon color="#32c759" name="heart" size={18} />
+              </View>
+
+              <Text style={styles.rowLabel}>Favorites</Text>
+
+              <View style={styles.rowSpacer} />
+            </View>
+          </Pressable>
         </View>
       </ScrollView>
+
+      <BottomSheetLink
+        showBottomSheetLink={showBottomSheetLink}
+        setShowBottomSheetLink={setShowBottomSheetLink}
+      />
+      <BottomSheetReport
+        showBottomSheetReport={showBottomSheetReport}
+        setShowBottomSheetReport={setShowBottomSheetReport}
+      />
+      {showLogoutAlert && (
+        <Alert3
+          text="Are you sure you want to log out?"
+          option="Logout"
+          option1="Cancel"
+          onOptionPress={async () => {
+            try {
+              await signOut(FIREBASE_AUTH);
+              navigation.navigate("Login1");
+            } catch (error) {
+              console.log(error);
+              alert("An error happened: " + error.message);
+            } finally {
+              setShowLogoutAlert(false);
+            }
+          }}
+          onOption1Press={() => setShowLogoutAlert(false)}
+          profileImage={profile.profileImage}
+          username={profile.username}
+        />
+      )}
+      {showDeleteAlert && (
+        <Alert3
+          text="Are you sure you want to Delete your account?"
+          option="Delete"
+          option1="Cancel"
+          onOptionPress={async () => {
+            try {
+              const password = "userCurrentPassword"; // Replace with your actual implementation
+              const credential = EmailAuthProvider.credential(
+                user.email,
+                password
+              );
+              await reauthenticateWithCredential(user, credential);
+              const user = FIREBASE_AUTH.currentUser;
+              const userId = user.uid;
+              const profileCollection = collection(FIRESTORE_DB, "users");
+              const q = query(profileCollection, where("uid", "==", userId));
+              const querySnapshot = await getDocs(q);
+
+              const deletionPromises = querySnapshot.docs.map(async (doc) => {
+                await deleteDoc(doc.ref);
+              });
+
+              await Promise.all(deletionPromises);
+              await user.delete();
+
+              await signOut(FIREBASE_AUTH);
+            } catch (error) {
+              console.log(error);
+              alert("An error happened: " + error.message);
+            } finally {
+              setShowDeleteAlert(false);
+            }
+          }}
+          onOption1Press={() => setShowDeleteAlert(false)}
+          profileImage={profile.profileImage}
+          username={profile.username}
+        />
+      )}
     </SafeAreaView>
   );
 };
 
-export default Profile;
+export default SellerSettings;
 
 const styles = StyleSheet.create({
-  header: {
-    paddingLeft: 24,
-    paddingRight: 24,
-    marginBottom: 12,
+  container: {
+    backgroundColor: "white",
+    paddingBottom: 10,
+    flex: 1,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: "#1d1d1d",
-    marginBottom: 6,
+  section: {
+    paddingHorizontal: 24,
   },
-  subtitle: {
-    fontSize: 15,
-    fontWeight: "500",
-    color: "#929292",
+  sectionHeader: {
+    paddingVertical: 12,
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#9e9e9e",
+    textTransform: "uppercase",
+    letterSpacing: 1.1,
   },
   profile: {
-    paddingTop: 12,
-    paddingHorizontal: 24,
-    paddingBottom: 24,
+    padding: 24,
     backgroundColor: "#fff",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#e3e3e3",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  profileHeader: {
+  profileAvatar: {
+    width: 72,
+    height: 72,
+    borderRadius: 9999,
+  },
+  profileAvatarEmpty: {
+    width: 72,
+    height: 72,
+    borderRadius: 9999,
+    backgroundColor: "#eaf5ff",
+  },
+  profileAvatarWrapper: {
+    width: 72,
+    height: 72,
+    borderRadius: 9999,
+    backgroundColor: "#1e90ff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  profileAction: {
+    position: "absolute",
+    right: -4,
+    bottom: -10,
+    alignItems: "center",
+    justifyContent: "center",
+    width: 28,
+    height: 28,
+    borderRadius: 9999,
+    backgroundColor: "#007bff",
+  },
+  profileName: {
+    marginTop: 20,
+    fontSize: 19,
+    fontWeight: "600",
+    color: "#414d63",
+    textAlign: "center",
+  },
+  profileAddress: {
+    marginTop: 5,
+    fontSize: 16,
+    color: "#989898",
+    textAlign: "center",
+  },
+  row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+    height: 50,
+    backgroundColor: "#fafdff",
+    borderRadius: 8,
+    marginBottom: 12,
+    paddingLeft: 12,
+    paddingRight: 12,
+    elevation: 1,
   },
-  profileAvatar: {
-    width: 60,
-    height: 60,
+  rowIcon: {
+    width: 32,
+    height: 32,
     borderRadius: 9999,
-    borderWidth: 1,
-    borderColor: "#ccc",
     marginRight: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  profileName: {
+  rowLabel: {
     fontSize: 17,
-    fontWeight: "600",
-    color: "#3d3d3d",
+    fontWeight: "400",
+    color: "#0c0c0c",
   },
-  profileHandle: {
-    marginTop: 4,
-    fontSize: 15,
-    color: "#989898",
-  },
-  profileAction: {
-    marginTop: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1e90ff",
-    borderRadius: 12,
-  },
-  profileActionText: {
-    marginRight: 8,
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  tabs: {
-    padding: 16,
-    flexDirection: "row",
-  },
-  tab: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 10,
-    paddingBottom: 10,
-    position: "relative",
-    overflow: "hidden",
-  },
-  tabWrapper: {
+  rowSpacer: {
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    borderColor: "#e5e7eb",
-    borderBottomWidth: 2,
   },
-  tabText: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#6b7280",
-    marginLeft: 5,
-  },
-  container: {
-    flex: 1,
-  },
-  content: {
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderColor: "#e3e3e3",
-    flex: 1,
+  profileAvatarText: {
+    fontSize: 40, 
+    fontWeight: "bold",
+    color: "#fff",
   },
 });

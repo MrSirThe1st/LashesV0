@@ -1,5 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import { GiftedChat, renderTicks } from "react-native-gifted-chat";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import {
@@ -11,13 +16,67 @@ import {
   where,
 } from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
+import * as ImagePicker from "expo-image-picker";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const Chat = () => {
+const Chat = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
   const authUser = FIREBASE_AUTH.currentUser;
   const route = useRoute();
   const recipient = route.params.recipient;
   const { chatName, chatId, profileImageUrl } = route.params;
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setSelectedImageUri(result.uri);
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+    }
+  };
+
+  const renderCustomActions = (props) => (
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <TouchableOpacity onPress={pickImage}>
+        <MaterialIcons name="insert-link" size={24} color="black" />
+      </TouchableOpacity>
+      {/* Add other custom actions as needed */}
+      {renderActions && renderActions(props)}
+    </View>
+  );
+
+  useEffect(() => {
+    (async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Sorry, we need camera roll permissions to make this work!");
+        }
+      }
+    })();
+  }, []);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: chatName, // Set the header title to chatName
+    });
+  }, [navigation, chatName]);
 
   useEffect(() => {
     const q = query(
@@ -69,8 +128,6 @@ const Chat = () => {
     }
   }, []);
 
-
-
   return (
     <GiftedChat
       messages={messages}
@@ -78,12 +135,6 @@ const Chat = () => {
       user={{
         _id: authUser ? authUser.uid : null,
       }}
-      renderTicks={renderTicks}
-      renderChatFooter={() => (
-        <View style={styles.customWrapper}>
-
-        </View>
-      )}
     />
   );
 };

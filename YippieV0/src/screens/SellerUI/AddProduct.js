@@ -49,7 +49,7 @@ const AddProduct = () => {
   const imageHeight = imageWidth * 0.8;
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
-   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -84,6 +84,13 @@ const AddProduct = () => {
       }
     })();
   }, []);
+
+  const resetState = () => {
+    setPrice("");
+    setName("");
+    setDescription("");
+    setSelectedImages([]);
+  };
 
   const uploadImagesToFirebase = async (selectedImages, setUploading) => {
     setUploading(true);
@@ -159,6 +166,7 @@ const AddProduct = () => {
       };
 
       uploadProductToFirestore(userId, [productData]);
+      resetState();
     } finally {
       setUploading(false);
     }
@@ -248,11 +256,17 @@ const AddProduct = () => {
         </View>
 
         <View style={styles.overlay}>
-          <TouchableOpacity onPress={handleUploadImages} mode="outlined">
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>Upload</Text>
+          {uploading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#1e90ff" />
             </View>
-          </TouchableOpacity>
+          ) : (
+            <TouchableOpacity onPress={handleUploadImages} mode="outlined">
+              <View style={styles.btn}>
+                <Text style={styles.btnText}>Upload</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
         {showSuccessToast && (
           <Toast

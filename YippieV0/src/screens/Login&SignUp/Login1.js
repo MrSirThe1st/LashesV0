@@ -20,7 +20,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-const Login = ({ navigation }) => {
+const Login1 = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState("");
@@ -108,8 +108,6 @@ const Login = ({ navigation }) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <BackButton navigation={navigation} />
-
         <View style={styles.containerForm}>
           <View style={styles.header}>
             <Image
@@ -125,9 +123,7 @@ const Login = ({ navigation }) => {
               Sign in to <Text style={{ color: "#075eec" }}>Your Account</Text>
             </Text>
 
-            <Text style={styles.subtitle}>
-              Welcom back
-            </Text>
+            <Text style={styles.subtitle}>Welcom back</Text>
           </View>
 
           <View style={styles.form}>
@@ -259,4 +255,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Login1;

@@ -127,6 +127,9 @@ const OrderSeller = () => {
             <View key={index} style={styles.orderContainer}>
               <View style={{ justifyContent: "center", alignItems: "center" }}>
                 <Text style={styles.orderTitle}>
+                  {order.customerUsername}
+                </Text>
+                <Text style={styles.orderTitle}>
                   Order Number #{order.orderNumber}
                 </Text>
               </View>
@@ -165,7 +168,7 @@ const OrderSeller = () => {
                 }}
               >
                 <Text style={styles.orderTotal}>Total</Text>
-                <Pressable
+                {/* <Pressable
                   style={styles.row}
                   onPress={() => deleteDocument(index)}
                 >
@@ -176,7 +179,7 @@ const OrderSeller = () => {
                       color="#1e90ff"
                     />
                   </View>
-                </Pressable>
+                </Pressable> */}
                 <Text style={styles.orderTotal}>{order.totalPrice}</Text>
               </View>
             </View>
@@ -224,24 +227,17 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "white",
     elevation: 2,
-    margin: 15,
+    margin: 10,
     borderRadius: 12,
   },
   orderTitle: {
     fontSize: 18,
     fontWeight: "600",
-    marginBottom: 8,
   },
   productContainer: {
     alignItems: "center",
-    marginVertical: 8,
+    marginVertical: 5,
     flexDirection: "row",
-  },
-  productImage: {
-    width: 50,
-    height: 50,
-    resizeMode: "cover",
-    marginRight: 8,
   },
   productLabel: {
     fontSize: 16,
@@ -258,7 +254,6 @@ const styles = StyleSheet.create({
   orderTotal: {
     fontSize: 16,
     fontWeight: "600",
-    paddingVertical: 5,
   },
   cardImg: {
     width: 60,

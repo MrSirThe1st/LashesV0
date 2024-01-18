@@ -1,7 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-} from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   SafeAreaView,
@@ -21,7 +18,6 @@ import { FIREBASE_AUTH } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import { FIRESTORE_DB } from "../../config/firebase";
 
-
 import {
   doc,
   deleteDoc,
@@ -34,7 +30,6 @@ import {
 import BottomSheetLink from "../../componets/BottomSheets/BottomSheetLink";
 import BottomSheetReport from "../../componets/BottomSheets/BottomSheetReport";
 import Alert2 from "../../componets/Alerts/Alert2";
-
 
 const SellerSettings = () => {
   const [profile, setProfile] = useState({
@@ -67,7 +62,7 @@ const SellerSettings = () => {
           });
         });
       } catch (error) {
-        console.error("Error fetching profile: ", error);
+        console.error(" ", error);
       }
     };
 
@@ -80,8 +75,8 @@ const SellerSettings = () => {
     setShowLogoutAlert(true);
   };
   const handleDelete = () => {
-    setShowDeleteAlert(true)
-  }
+    setShowDeleteAlert(true);
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -93,7 +88,6 @@ const SellerSettings = () => {
               style={styles.profileAvatar}
             />
           ) : (
-            
             <View style={styles.profileAvatarEmpty} />
           )}
         </View>
@@ -233,7 +227,7 @@ const SellerSettings = () => {
           onOptionPress={async () => {
             try {
               await signOut(FIREBASE_AUTH);
-              navigation.navigate("Login");
+              navigation.navigate("Login1");
             } catch (error) {
               console.log(error);
               alert("An error happened: " + error.message);

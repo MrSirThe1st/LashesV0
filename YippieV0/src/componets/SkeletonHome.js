@@ -8,21 +8,61 @@ const SkeletonHome = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.stickyHeader}>
-        <Skeleton circle width={40} height={40} />
+        <Skeleton
+          circle
+          width={40}
+          height={40}
+          skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+        />
       </View>
       <View style={styles.content}>
         <View style={styles.SearchContainer}>
-          <Skeleton height={40} style={styles.Skeleton} borderRadius={5} />
+          <Skeleton
+            height={40}
+            style={styles.Skeleton}
+            borderRadius={5}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
         </View>
         <View style={styles.Carousel}>
-          <Skeleton width={110} height={90} borderRadius={5} />
-          <Skeleton width={110} height={90} borderRadius={5} />
-          <Skeleton width={110} height={90} borderRadius={5} />
+          <Skeleton
+            width={110}
+            height={90}
+            borderRadius={5}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
+          <Skeleton
+            width={110}
+            height={90}
+            borderRadius={5}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
+          <Skeleton
+            width={110}
+            height={90}
+            borderRadius={5}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
         </View>
         <View style={styles.Cardlists}>
-          <Skeleton animation="pulse" height={154} borderRadius={12} />
-          <Skeleton animation="pulse" height={154} borderRadius={12} />
-          <Skeleton animation="pulse" height={154} borderRadius={12} />
+          <Skeleton
+            animation="pulse"
+            height={154}
+            borderRadius={12}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
+          <Skeleton
+            animation="pulse"
+            height={154}
+            borderRadius={12}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
+          <Skeleton
+            animation="pulse"
+            height={154}
+            borderRadius={12}
+            skeletonStyle={{ backgroundColor: "#eaf5ff" }}
+          />
         </View>
       </View>
     </SafeAreaView>
@@ -34,9 +74,10 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   stickyHeader: {
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "center",
-    paddingVertical: 8,
+    paddingVertical: 10,
+    marginLeft:12
   },
   content: {
     flex: 1,

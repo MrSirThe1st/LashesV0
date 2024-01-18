@@ -22,13 +22,15 @@ console.log("LAST MESSAGE IN ListItemComponent:", lastMessage);
             uri: profileImageUrl,
           }}
         />
-        <Badge
+        {/* <Badge
           status="success"
           containerStyle={{ position: "absolute", top: 1, right: 1 }}
-        />
+        /> */}
       </View>
       <ListItem.Content>
-        <ListItem.Title>{chatName}</ListItem.Title>
+        <ListItem.Title>
+          <Text style={{ fontWeight: "bold" }}>{chatName}</Text>
+        </ListItem.Title>
         <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
           <Text>{lastMessage}</Text>
         </ListItem.Subtitle>

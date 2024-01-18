@@ -43,6 +43,10 @@ export const CardItem = ({ seller, navigation }) => {
   const currentUser = FIREBASE_AUTH.currentUser;
 
   const route = useRoute();
+  const formattedDistance =
+    seller.distance < 1
+      ? `${Math.ceil(seller.distance * 1000)} meters away`
+      : `${Math.ceil(seller.distance)} km away`;
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -119,6 +123,17 @@ export const CardItem = ({ seller, navigation }) => {
     }
   };
 
+  function formatDistance(distance) {
+    if (distance >= 1000) {
+      // Convert to kilometers and round up
+      const distanceInKilometers = Math.ceil(distance / 1000);
+      return `${distanceInKilometers} km`;
+    } else {
+      // Round up the distance in meters
+      return `${Math.ceil(distance)} meters`;
+    }
+  }
+
   const renderCardItem = () => {
     return (
       <Pressable
@@ -186,9 +201,21 @@ export const CardItem = ({ seller, navigation }) => {
 
             <View style={styles.cardRow}>
               <View style={styles.cardRowItem}>
-                <Text style={styles.cardAirport}>{seller.address}</Text>
+                <Text
+                  numberOfLines={3}
+                  ellipsizeMode="tail"
+                  style={styles.cardAirport}
+                >
+                  {seller.address}
+                </Text>
               </View>
             </View>
+            <View style={styles.cardRowD}>
+              <View style={styles.cardRowItemD}>
+                <Text style={styles.cardAirportD}>{formattedDistance}</Text>
+              </View>
+            </View>
+
             <View
               style={{
                 flexDirection: "row",
@@ -400,5 +427,21 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
+  },
+  cardAirportD: {
+    fontSize: 10,
+    fontWeight:'bold',
+  },
+  cardRowD: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: -8,
+    flexWrap: "wrap",
+  },
+  cardRowItemD: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 6,
   },
 });
