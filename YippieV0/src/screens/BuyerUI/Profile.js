@@ -178,7 +178,7 @@ const SellerSettings = () => {
             </View>
           </Pressable>
         </View>
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <Text style={styles.sectionHeader}>Content</Text>
           <Pressable
             onPress={() => {
@@ -195,7 +195,7 @@ const SellerSettings = () => {
               <View style={styles.rowSpacer} />
             </View>
           </Pressable>
-        </View>
+        </View> */}
       </ScrollView>
 
       <BottomSheetLink

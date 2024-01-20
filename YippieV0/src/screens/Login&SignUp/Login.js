@@ -19,6 +19,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -50,6 +51,26 @@ const Login = ({ navigation }) => {
     } catch (error) {
       console.log(error);
       alert("Sign in failed: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const requestPasswordReset = async () => {
+    setLoading(true);
+    try {
+      if (!email) {
+        alert(
+          "Please provide your email address before requesting a password reset."
+        );
+        return;
+      }
+
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent. Check your email inbox.");
+    } catch (error) {
+      console.log(error);
+      alert("Password reset failed: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -103,31 +124,17 @@ const Login = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={{ flex: 1 }}
-      >
+    <KeyboardAwareScrollView style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <BackButton navigation={navigation} />
 
         <View style={styles.containerForm}>
           <View style={styles.header}>
-            <Image
-              alt=""
-              resizeMode="contain"
-              style={styles.headerImg}
-              source={{
-                uri: "https://withfra.me/android-chrome-512x512.png",
-              }}
-            />
-
             <Text style={styles.title}>
               Sign in to <Text style={{ color: "#075eec" }}>Your Account</Text>
             </Text>
 
-            <Text style={styles.subtitle}>
-              Welcom back
-            </Text>
+            <Text style={styles.subtitle}>Welcom back</Text>
           </View>
 
           <View style={styles.form}>
@@ -167,10 +174,39 @@ const Login = ({ navigation }) => {
                 </View>
               </TouchableOpacity>
             </View>
+            <View style={styles.formFooter}>
+              <Text>Forgot your password?</Text>
+              <TouchableOpacity onPress={requestPasswordReset}>
+                <Text style={{ color: "#FE724E" }}> Recover it here</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <View style={styles.formSpacer}>
+            <Text style={styles.formSpacerText}>Or Sign in with</Text>
+            <View style={styles.formSpacerDivider} />
+          </View>
+
+          <View style={styles.btnGroup}>
+            <TouchableOpacity
+              onPress={() => {
+                // handle onPress
+              }}
+              style={{ flex: 1, paddingHorizontal: 6 }}
+            >
+              <View style={styles.btnGoogle}>
+                {/* <MaterialIcons
+                color="#fff"
+                name="google"
+                size={18}
+                style={{ marginRight: 12 }}
+              /> */}
+                <Text style={styles.btnGoogleText}>Google</Text>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -256,6 +292,79 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: "600",
     color: "#fff",
+  },
+  formSpacer: {
+    marginTop: 72,
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  formSpacerText: {
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#454545",
+    lineHeight: 20,
+    paddingHorizontal: 12,
+    zIndex: 9,
+  },
+  formSpacerDivider: {
+    borderBottomWidth: 2,
+    borderColor: "#eff1f5",
+    position: "absolute",
+    top: 10,
+    left: 0,
+    right: 0,
+  },
+  btnGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 18,
+    marginHorizontal: -6,
+  },
+  btnFacebook: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: "#355288",
+    borderColor: "#355288",
+  },
+  btnFacebookText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  btnGoogle: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    backgroundColor: "#3367D6",
+    borderColor: "#3367D6",
+  },
+  btnGoogleText: {
+    fontSize: 18,
+    lineHeight: 26,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  formFooter: {
+    marginTop: 16,
+    fontSize: 13,
+    fontWeight: "500",
+    color: "#454545",
+    textAlign: "center",
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
   },
 });
 

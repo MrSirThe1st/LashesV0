@@ -24,6 +24,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Review from "./Review";
 import StarRatingDisplay from "../../componets/StarRatingDisplay";
 import { useNavigation } from "@react-navigation/native";
+import { Modal } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function AccountInfo() {
   const db = FIRESTORE_DB;
@@ -39,7 +41,18 @@ export default function AccountInfo() {
   const navigation = useNavigation();
   const [reviewsCount, setReviewsCount] = useState(0);
   const [averageRating, setAverageRating] = useState(0);
+  const [isImageModalVisible, setImageModalVisible] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
+  const openImageFullscreen = (index) => {
+    setSelectedImageIndex(index);
+    setImageModalVisible(true);
+  };
+
+  const closeImageFullscreen = () => {
+    setImageModalVisible(false);
+  };
+  
   const createChat = async () => {
     const chatName = seller.username;
 
@@ -110,39 +123,6 @@ export default function AccountInfo() {
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.stats}>
-          {[
-            {
-              label: (
-                <MaterialIcons name="location-city" size={20} color="#48496c" />
-              ),
-              value: seller.city,
-            },
-            {
-              label: <Stars />,
-              value: averageRating > 0 ? <Text>{averageRating}</Text> : null,
-            },
-            {
-              label: (
-                <FeatherIcon
-                  name="map-pin"
-                  size={15}
-                  color="#48496c" // Adjust the color as needed
-                />
-              ),
-              value: seller.country,
-            },
-          ].map(({ label, value }, index) => (
-            <View
-              key={index}
-              style={[styles.statsItem, index === 0 && { borderLeftWidth: 0 }]}
-            >
-              <Text style={styles.statsItemText}>{label}</Text>
-
-              <Text style={styles.statsItemValue}>{value}</Text>
-            </View>
-          ))}
-        </View>
         <View style={styles.photos}>
           <Swiper
             renderPagination={(index, total) => (
@@ -154,16 +134,62 @@ export default function AccountInfo() {
             )}
           >
             {thumbnails.map((thumbnail, index) => (
-              <Image
-                alt=""
+              <Pressable
                 key={index}
-                source={{ uri: thumbnail }}
-                style={styles.photosImg}
-              />
+                onPress={() => openImageFullscreen(index)}
+                style={styles.imageContainer}
+              >
+                <Image
+                  alt=""
+                  source={{ uri: thumbnail }}
+                  style={styles.photosImg}
+                  resizeMode="cover"
+                />
+              </Pressable>
             ))}
           </Swiper>
         </View>
         <View style={styles.profileContainer}>
+          <View style={styles.stats}>
+            {[
+              {
+                label: (
+                  <MaterialIcons
+                    name="location-city"
+                    size={20}
+                    color="#48496c"
+                  />
+                ),
+                value: seller.city,
+              },
+              {
+                label: <Stars />,
+                value: averageRating > 0 ? <Text>{averageRating}</Text> : null,
+              },
+              {
+                label: (
+                  <FeatherIcon
+                    name="map-pin"
+                    size={15}
+                    color="#48496c" // Adjust the color as needed
+                  />
+                ),
+                value: seller.country,
+              },
+            ].map(({ label, value }, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.statsItem,
+                  index === 0 && { borderLeftWidth: 0 },
+                ]}
+              >
+                <Text style={styles.statsItemText}>{label}</Text>
+
+                <Text style={styles.statsItemValue}>{value}</Text>
+              </View>
+            ))}
+          </View>
           <View style={styles.profileTop}>
             <View style={styles.avatar}>
               {profileImageUrl ? (
@@ -175,8 +201,6 @@ export default function AccountInfo() {
               ) : (
                 <Image style={styles.avatarImgEmpty} />
               )}
-
-              <View style={styles.avatarNotification} />
             </View>
 
             <View style={styles.profileBody}>
@@ -254,6 +278,26 @@ export default function AccountInfo() {
           />
         </View>
       </ScrollView>
+      <Modal
+        visible={isImageModalVisible}
+        animationType="slide"
+        transparent={false}
+        onRequestClose={closeImageFullscreen}
+      >
+        <View style={{ flex: 1, backgroundColor: "black" }}>
+          {/* Display the selected image in full screen */}
+          <Image
+            source={{ uri: thumbnails[selectedImageIndex] }}
+            style={{ flex: 1, resizeMode: "contain" }}
+          />
+          <TouchableOpacity
+            style={{ position: "absolute", top: 20, left: 20 }}
+            onPress={closeImageFullscreen}
+          >
+            <AntDesign name="close" size={30} color="#1e90ff" />
+          </TouchableOpacity>
+        </View>
+      </Modal>
       <View style={styles.overlay}>
         <TouchableOpacity onPress={() => setShowBottomSheet(!showBottomSheet)}>
           <View style={styles.btnR}>
@@ -320,7 +364,6 @@ const styles = StyleSheet.create({
     borderColor: "#1e90ff",
   },
   container: {
-    paddingVertical: 5,
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
@@ -475,7 +518,7 @@ const styles = StyleSheet.create({
   },
   photos: {
     position: "relative",
-    height: 250,
+    height: 300,
     overflow: "hidden",
   },
   photosPagination: {
@@ -568,5 +611,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     fontSize: 20,
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -69,12 +69,7 @@ const SignUp = ({ navigation, route }) => {
       <View>
         <BackButton navigation={navigation} />
       </View>
-      <Image
-        alt="My Shop logo"
-        resizeMode="contain"
-        source={require("../../assets/svg/welcome-1.png")}
-        style={styles.logoImg}
-      />
+  
       <View style={styles.form}>
         <Text style={styles.title}>Create an Account</Text>
         <Text style={styles.subtitle}>
@@ -157,22 +152,6 @@ const SignUp = ({ navigation, route }) => {
         </View>
 
         <View style={styles.btnGroup}>
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-            style={{ flex: 1, paddingHorizontal: 6 }}
-          >
-            <View style={styles.btnFacebook}>
-              {/* <MaterialIcons
-                color="#fff"
-                name="facebook"
-                size={18}
-                style={{ marginRight: 12 }}
-              /> */}
-              <Text style={styles.btnFacebookText}>Facebook</Text>
-            </View>
-          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => {
@@ -203,6 +182,7 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: 16,
+    marginTop:35
   },
   logoImg: {
     width: "100%",
@@ -260,7 +240,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   formSpacer: {
-    marginTop: 72,
+    marginTop: 18,
     position: "relative",
     alignItems: "center",
     justifyContent: "center",

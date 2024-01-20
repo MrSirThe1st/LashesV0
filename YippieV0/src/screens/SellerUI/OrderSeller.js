@@ -6,7 +6,7 @@ import {
   ImageBackground,
   Image,
   Pressable,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,6 +19,7 @@ import {
   query,
   where,
   deleteDoc,
+  updateDoc
 } from "firebase/firestore";
 import { FIREBASE_APP } from "../../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -30,6 +31,7 @@ const OrderSeller = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const auth = getAuth(FIREBASE_APP);
+  const [completedOrders, setCompletedOrders] = useState([]);
 
  const fetchSellerOrders = async () => {
    try {
@@ -44,12 +46,17 @@ const OrderSeller = () => {
        const querySnapshot = await getDocs(q);
 
        const ordersData = [];
+       const completedOrdersData = [];
        querySnapshot.forEach((doc) => {
-         const orderData = { id: doc.id, ...doc.data() }; 
+         const orderData = { id: doc.id, ...doc.data() };
          ordersData.push(orderData);
+         if (orderData.status === "COMPLETED") {
+           completedOrdersData.push(orderData.id);
+         }
        });
 
        setSellerOrders(ordersData);
+       setCompletedOrders(completedOrdersData);
      }
    } catch (error) {
      console.error("Error fetching seller orders: ", error);
@@ -58,51 +65,86 @@ const OrderSeller = () => {
    }
  };
 
+ useEffect(() => {
+   const unsubscribe = onAuthStateChanged(auth, (user) => {
+     if (user && user.uid) {
+       fetchSellerOrders(user);
+     } else {
+       console.error("User not authenticated");
+     }
+   });
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user && user.uid) {
-        fetchSellerOrders(user);
-      } else {
-        console.error("User not authenticated");
-      }
-    });
+   return () => unsubscribe();
+ }, []);
 
-    return () => unsubscribe();
-  }, []);
+  // const deleteDocument = async (orderIndex) => {
+  //   try {
+  //     const orderToDelete = sellerOrders[orderIndex];
 
-  const deleteDocument = async (orderIndex) => {
+  //     if (orderToDelete) {
+  //       const orderId = orderToDelete.id;
+  //       if (orderId) {
+  //         // Show an alert for confirmation
+  //         Alert.alert(
+  //           "Delete Order",
+  //           "Are you sure you want to delete this order?",
+  //           [
+  //             {
+  //               text: "No",
+  //               style: "cancel",
+  //             },
+  //             {
+  //               text: "Yes",
+  //               onPress: async () => {
+  //                 try {
+  //                   await deleteDoc(doc(FIRESTORE_DB, "Orders", orderId));
+  //                   // Remove the deleted order from the local state
+  //                   setSellerOrders((prevOrders) =>
+  //                     prevOrders.filter((order, index) => index !== orderIndex)
+  //                   );
+  //                 } catch (error) {
+  //                   console.log("Error deleting the document:", error);
+  //                 }
+  //               },
+  //             },
+  //           ]
+  //         );
+  //       } else {
+  //         console.error("Document ID not found in the order data");
+  //       }
+  //     } else {
+  //       console.error("Invalid order");
+  //     }
+  //   } catch (error) {
+  //     console.log("Error deleting the document:", error);
+  //   }
+  // };
+
+  const markAsCompleted = async (orderIndex) => {
     try {
-      const orderToDelete = sellerOrders[orderIndex];
+      const orderToUpdate = sellerOrders[orderIndex];
 
-      if (orderToDelete) {
-        const orderId = orderToDelete.id;
+      if (orderToUpdate) {
+        const orderId = orderToUpdate.id;
+
         if (orderId) {
-          // Show an alert for confirmation
-          Alert.alert(
-            "Delete Order",
-            "Are you sure you want to delete this order?",
-            [
-              {
-                text: "No",
-                style: "cancel",
-              },
-              {
-                text: "Yes",
-                onPress: async () => {
-                  try {
-                    await deleteDoc(doc(FIRESTORE_DB, "Orders", orderId));
-                    // Remove the deleted order from the local state
-                    setSellerOrders((prevOrders) =>
-                      prevOrders.filter((order, index) => index !== orderIndex)
-                    );
-                  } catch (error) {
-                    console.log("Error deleting the document:", error);
-                  }
-                },
-              },
-            ]
+          // Update the order status to "completed"
+          await updateDoc(doc(FIRESTORE_DB, "Orders", orderId), {
+            status: "COMPLETED",
+          });
+
+          // Update the local state to reflect the change
+          setSellerOrders((prevOrders) =>
+            prevOrders.map((order, index) =>
+              index === orderIndex ? { ...order, status: "COMPLETED" } : order
+            )
           );
+
+          // Update the completedOrders array
+          setCompletedOrders((prevCompletedOrders) => [
+            ...prevCompletedOrders,
+            orderId,
+          ]);
         } else {
           console.error("Document ID not found in the order data");
         }
@@ -110,11 +152,9 @@ const OrderSeller = () => {
         console.error("Invalid order");
       }
     } catch (error) {
-      console.log("Error deleting the document:", error);
+      console.log("Error updating the document:", error);
     }
   };
-
-
 
 
   return (
@@ -126,9 +166,18 @@ const OrderSeller = () => {
           {sellerOrders.map((order, index) => (
             <View key={index} style={styles.orderContainer}>
               <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <Text style={styles.orderTitle}>
-                  {order.customerUsername}
-                </Text>
+                <Text style={styles.orderTitle}>{order.customerUsername}</Text>
+                <View
+                  style={[
+                    styles.orderStatus,
+                    {
+                      backgroundColor:
+                        order.status === "COMPLETED" ? "#66bb6a" : "#e0e0e0",
+                    },
+                  ]}
+                >
+                  <Text style={styles.orderStatusText}>{order.status}</Text>
+                </View>
                 <Text style={styles.orderTitle}>
                   Order Number #{order.orderNumber}
                 </Text>
@@ -168,18 +217,22 @@ const OrderSeller = () => {
                 }}
               >
                 <Text style={styles.orderTotal}>Total</Text>
-                {/* <Pressable
-                  style={styles.row}
-                  onPress={() => deleteDocument(index)}
+                <Pressable
+                  onPress={() => markAsCompleted(index)}
+                  disabled={completedOrders.includes(order.id)} // Disable if already completed
+                  style={[
+                    styles.CompletedStatus,
+                    {
+                      backgroundColor: completedOrders.includes(order.id)
+                        ? "#d3d3d3"
+                        : "#a5d6b8",
+                    },
+                  ]}
                 >
-                  <View style={[styles.rowIcon]}>
-                    <MaterialCommunityIcons
-                      name="delete-forever"
-                      size={24}
-                      color="#1e90ff"
-                    />
-                  </View>
-                </Pressable> */}
+                  <Text style={styles.CompletedStatusText}>
+                    Mark as completed
+                  </Text>
+                </Pressable>
                 <Text style={styles.orderTotal}>{order.totalPrice}</Text>
               </View>
             </View>
@@ -260,6 +313,30 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 12,
     marginRight: 10,
+  },
+  orderStatus: {
+    borderRadius: 5,
+    backgroundColor: "#e0e0e0",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  orderStatusText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
+  CompletedStatus: {
+    borderRadius: 5,
+    backgroundColor: "#a5d6b8",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  CompletedStatusText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 

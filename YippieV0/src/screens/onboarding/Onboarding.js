@@ -19,6 +19,7 @@ import { data } from "../../props/data/data";
 import Pagination from "../../componets/Pagination";
 import CustomButton from "../../componets/CustomButton";
 
+
 const Onboarding = ({ navigation }) => {
   //constants
   const { width: SCREEN_WIDTH } = useWindowDimensions();

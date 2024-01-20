@@ -47,19 +47,19 @@ const SkeletonHome = () => {
         <View style={styles.Cardlists}>
           <Skeleton
             animation="pulse"
-            height={154}
+            height={134}
             borderRadius={12}
             skeletonStyle={{ backgroundColor: "#eaf5ff" }}
           />
           <Skeleton
             animation="pulse"
-            height={154}
+            height={134}
             borderRadius={12}
             skeletonStyle={{ backgroundColor: "#eaf5ff" }}
           />
           <Skeleton
             animation="pulse"
-            height={154}
+            height={134}
             borderRadius={12}
             skeletonStyle={{ backgroundColor: "#eaf5ff" }}
           />

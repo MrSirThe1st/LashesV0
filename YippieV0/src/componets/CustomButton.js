@@ -11,6 +11,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const CustomButton = ({
   flatListRef,
@@ -18,6 +19,15 @@ const CustomButton = ({
   dataLength,
   navigation,
 }) => {
+  const handleOnboardingCompletion = async () => {
+    try {
+      // Set onboarding status to completed in AsyncStorage
+      await AsyncStorage.setItem("onboardingCompleted", "true");
+      console.log("Onboarding completed");
+    } catch (error) {
+      console.error("Error setting onboarding status:", error);
+    }
+  };
   const buttonAnimationStyle = useAnimatedStyle(() => {
     return {
       width:
@@ -59,16 +69,17 @@ const CustomButton = ({
       ],
     };
   });
+
+  const handleButtonPress = () => {
+    if (flatListIndex.value < dataLength - 1) {
+      flatListRef.current.scrollToIndex({ index: flatListIndex.value + 1 });
+    } else {
+      handleOnboardingCompletion();
+      navigation.navigate("Selection");
+    }
+  };
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        if (flatListIndex.value < dataLength - 1) {
-          flatListRef.current.scrollToIndex({ index: flatListIndex.value + 1 });
-        } else {
-          navigation.navigate("Selection");
-        }
-      }}
-    >
+    <TouchableWithoutFeedback onPress={handleButtonPress}>
       <Animated.View style={[styles.container, buttonAnimationStyle]}>
         <Animated.Text style={[styles.textButton, textAnimationStyle]}>
           Get started

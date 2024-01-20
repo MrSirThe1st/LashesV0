@@ -39,6 +39,10 @@ const Favorites = () => {
 
             if (userDocSnapshot.exists()) {
               const userData = userDocSnapshot.data();
+              console.log(
+                "Favorites fetched successfully: ",
+                userData.favorites
+              );
               setFavorites(userData.favorites || []);
             }
           } else {

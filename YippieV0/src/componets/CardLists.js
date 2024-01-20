@@ -81,47 +81,72 @@ export const CardItem = ({ seller, navigation }) => {
   const handleFavoriteClick = async () => {
     if (currentUser) {
       try {
-        const favorites = await AsyncStorage.getItem("favorites");
-        let favoritesArray = favorites ? JSON.parse(favorites) : [];
+        const uid = "uid"; 
+        const usersCollectionRef = collection(FIRESTORE_DB, "users");
+        const userQuery = query(
+          usersCollectionRef,
+          where(uid, "==", currentUser.uid)
+        );
+        const userQuerySnapshot = await getDocs(userQuery);
 
-        const isFavorite = favoritesArray.some((fav) => fav.uid === seller.uid);
+        if (!userQuerySnapshot.empty) {
+          const userDoc = userQuerySnapshot.docs[0];
+          const userData = userDoc.data();
+          const favoritesArray = userData.favorites || [];
 
-        if (isFavorite) {
-          // If already favorited, remove from favorites
-          const updatedFavorites = favoritesArray.filter(
-            (fav) => fav.uid !== seller.uid
+          // Check if the seller is already a favorite
+          const isFavorite = favoritesArray.some(
+            (fav) => fav.uid === seller.uid
           );
 
-          await AsyncStorage.setItem(
-            "favorites",
-            JSON.stringify(updatedFavorites)
-          );
-          toggleFavourite(false);
-          console.log("Removed from favorites!");
-        } else {
-          // If not favorited, add to favorites
-          const newFavorite = {
-            uid: seller.uid,
-            username: seller.username,
-            categoryLabel: seller.category.label,
-            address: seller.address,
-            thumbnail: seller.thumbnails[0],
-          };
+          if (isFavorite) {
+            // If already favorited, remove from favorites
+            const updatedFavorites = favoritesArray.filter(
+              (fav) => fav.uid !== seller.uid
+            );
 
-          const updatedFavorites = [...favoritesArray, newFavorite];
+            // Update favorites in Firestore
+            await updateDoc(userDoc.ref, { favorites: updatedFavorites });
 
-          await AsyncStorage.setItem(
-            "favorites",
-            JSON.stringify(updatedFavorites)
-          );
-          toggleFavourite(true);
-          console.log("Added to favorites!");
+            // Update local storage
+            await AsyncStorage.setItem(
+              "favorites",
+              JSON.stringify(updatedFavorites)
+            );
+
+            toggleFavourite(false);
+            console.log("Removed from favorites!");
+          } else {
+            // If not favorited, add to favorites
+            const newFavorite = {
+              uid: seller.uid,
+              username: seller.username,
+              categoryLabel: seller.category.label,
+              address: seller.address,
+              thumbnail: seller.thumbnails[0],
+            };
+
+            const updatedFavorites = [...favoritesArray, newFavorite];
+
+            // Update favorites in Firestore
+            await updateDoc(userDoc.ref, { favorites: updatedFavorites });
+
+            // Update local storage
+            await AsyncStorage.setItem(
+              "favorites",
+              JSON.stringify(updatedFavorites)
+            );
+
+            toggleFavourite(true);
+            console.log("Added to favorites!");
+          }
         }
       } catch (error) {
         console.error("Error updating favorites: ", error);
       }
     }
   };
+
 
   function formatDistance(distance) {
     if (distance >= 1000) {
@@ -178,7 +203,7 @@ export const CardItem = ({ seller, navigation }) => {
                 <Text style={styles.cardRowItemTextName}>
                   {seller.username},{" "}
                 </Text>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={handleFavoriteClick}
                   style={{
                     backgroundColor: "#e6f5ff",
@@ -194,7 +219,7 @@ export const CardItem = ({ seller, navigation }) => {
                     size={24}
                     color={isFavourite ? "#FA8072" : "white"}
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <Text style={styles.cardTitle}>{seller.category.label}</Text>
               </View>
             </View>
@@ -202,7 +227,7 @@ export const CardItem = ({ seller, navigation }) => {
             <View style={styles.cardRow}>
               <View style={styles.cardRowItem}>
                 <Text
-                  numberOfLines={3}
+                  numberOfLines={2}
                   ellipsizeMode="tail"
                   style={styles.cardAirport}
                 >
@@ -430,7 +455,7 @@ const styles = StyleSheet.create({
   },
   cardAirportD: {
     fontSize: 10,
-    fontWeight:'bold',
+    fontWeight: "bold",
   },
   cardRowD: {
     flexDirection: "row",

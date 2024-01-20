@@ -19,7 +19,7 @@ import {
   query,
   where,
   deleteDoc,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
 import { FIREBASE_APP } from "../../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -27,13 +27,12 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native";
 import { Alert } from "react-native";
 
-
 const Orders = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const auth = getAuth(FIREBASE_APP);
 
-  const fetchSellerOrders = async () => {
+  const fetchBuyerOrders = async () => {
     try {
       const user = auth.currentUser;
 
@@ -66,7 +65,7 @@ const Orders = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user && user.uid) {
-        fetchSellerOrders(user);
+        fetchBuyerOrders(user);
       } else {
         console.error("User not authenticated");
       }
@@ -127,9 +126,7 @@ const Orders = () => {
           {sellerOrders.map((order, index) => (
             <View key={index} style={styles.orderContainer}>
               <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <Text style={styles.orderTitle}>
-                  {order.sellerName}
-                </Text>
+                <Text style={styles.orderTitle}>{order.sellerName}</Text>
                 <Text style={styles.orderTitle}>
                   Order Number #{order.orderNumber}
                 </Text>
@@ -169,18 +166,18 @@ const Orders = () => {
                 }}
               >
                 <Text style={styles.orderTotal}>Total</Text>
-                {/* <Pressable
-                  style={styles.row}
-                  onPress={() => deleteDocument(index)}
+                <View
+                  style={[
+                    styles.orderStatus,
+                    {
+                      backgroundColor:
+                        order.status === "COMPLETED" ? "#66bb6a" : "#e0e0e0",
+                    },
+                  ]}
                 >
-                  <View style={[styles.rowIcon]}>
-                    <MaterialCommunityIcons
-                      name="delete-forever"
-                      size={24}
-                      color="#1e90ff"
-                    />
-                  </View>
-                </Pressable> */}
+                  <Text style={styles.orderStatusText}>{order.status}</Text>
+                </View>
+
                 <Text style={styles.orderTotal}>{order.totalPrice}</Text>
               </View>
             </View>
@@ -261,6 +258,21 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 12,
     marginRight: 10,
+  },
+  orderTotal: {
+    fontWeight: "bold",
+  },
+  orderStatus: {
+    borderRadius: 5,
+    backgroundColor: "#e0e0e0",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  orderStatusText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 

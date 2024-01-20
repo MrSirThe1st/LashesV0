@@ -47,6 +47,7 @@ import OrderSeller from "../screens/SellerUI/OrderSeller";
 import Review from "../screens/SellerUI/Review";
 import AccountInfo1 from "../screens/SellerUI/AccountInfo1";
 import EditAccountBuyer from "../screens/BuyerUI/EditAccountBuyer";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -145,7 +146,7 @@ const HomeTabNavigatorSeller = () => (
         display: "flex",
         paddingVertical: 10,
         elevation: -1,
-        backgroundColor:'white'
+        backgroundColor: "white",
       },
     }}
   >
@@ -244,6 +245,7 @@ const Navigation = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(FIREBASE_AUTH, (user) => {
@@ -278,6 +280,49 @@ const Navigation = () => {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    // Check if onboarding is completed
+    checkOnboardingStatus();
+
+    // ...
+  }, []);
+
+  const checkOnboardingStatus = async () => {
+    try {
+      console.log("Checking onboarding status...");
+      const onboardingStatus = await AsyncStorage.getItem(
+        "onboardingCompleted"
+      );
+      // or const onboardingStatus = await SecureStore.getItemAsync("onboardingCompleted");
+
+      if (onboardingStatus) {
+        console.log("Onboarding has been completed!");
+        setOnboardingCompleted(true);
+      } else {
+        console.log("Onboarding has not been completed.");
+        setOnboardingCompleted(false);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error checking onboarding status:", error);
+      setLoading(false);
+    }
+  };
+
+  const handleOnboardingCompletion = async () => {
+    try {
+      // Set onboarding status to completed in AsyncStorage or SecureStore
+      await AsyncStorage.setItem("onboardingCompleted", "true");
+      // or await SecureStore.setItemAsync("onboardingCompleted", "true");
+
+      // Update state to reflect onboarding completion
+      setOnboardingCompleted(true);
+    } catch (error) {
+      console.error("Error setting onboarding status:", error);
+    }
+  };
 
   if (loading) {
     return <SkeletonHome />;
@@ -606,7 +651,7 @@ const Navigation = () => {
                   component={Favorites}
                   options={{
                     headerShown: true,
-                    title: "Account",
+                    title: "Favorites",
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
@@ -667,11 +712,26 @@ const Navigation = () => {
               </>
             )}
           </>
-        ) : (
+        ) : onboardingCompleted ? (
+          // User is not logged in, onboarding has been completed
           <>
             <Stack.Screen
-              name="Onboarding"
-              component={Onboarding}
+              name="Login1"
+              component={Login1}
+              options={{
+                headerShown: false,
+                title: "",
+                headerStyle: { backgroundColor: "white" },
+              }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false, animation: "none" }}
+            />
+            <Stack.Screen
+              name="SignUp"
+              component={SignUp}
               options={{ headerShown: false, animation: "none" }}
             />
             <Stack.Screen
@@ -694,6 +754,20 @@ const Navigation = () => {
               component={Step4}
               options={{ animation: "none" }}
             />
+
+            <Stack.Screen
+              name="Selection"
+              component={Selection}
+              options={{ headerShown: false, animation: "none" }}
+            />
+          </>
+        ) : (
+          <>
+            <Stack.Screen
+              name="Onboarding"
+              component={Onboarding}
+              options={{ headerShown: false, animation: "none" }}
+            />
             <Stack.Screen
               name="Login"
               component={Login}
@@ -705,9 +779,39 @@ const Navigation = () => {
               options={{ headerShown: false, animation: "none" }}
             />
             <Stack.Screen
+              name="Step1"
+              component={Step1}
+              options={{ animation: "none" }}
+            />
+            <Stack.Screen
+              name="Step2"
+              component={Step2}
+              options={{ animation: "none" }}
+            />
+            <Stack.Screen
+              name="Step3"
+              component={Step3}
+              options={{ animation: "none" }}
+            />
+            <Stack.Screen
+              name="Step4"
+              component={Step4}
+              options={{ animation: "none" }}
+            />
+
+            <Stack.Screen
               name="Selection"
               component={Selection}
               options={{ headerShown: false, animation: "none" }}
+            />
+            <Stack.Screen
+              name="Login1"
+              component={Login1}
+              options={{
+                headerShown: false,
+                title: "",
+                headerStyle: { backgroundColor: "white" },
+              }}
             />
           </>
         )}

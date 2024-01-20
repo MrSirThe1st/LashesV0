@@ -8,6 +8,7 @@ import {
   View,
   Image,
   Pressable,
+  ActivityIndicator,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../config/firebase";
@@ -26,6 +27,7 @@ const Catalogue1 = ({ navigation }) => {
   const db = FIRESTORE_DB;
   const [currentUserUID, setCurrentUserUID] = useState(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -103,6 +105,7 @@ const Catalogue1 = ({ navigation }) => {
 
   const addOrder = async () => {
     try {
+      setLoading(true);
       console.log("Cart Before Order:", cart);
       const orderedServices = services
         .map((item, index) => ({
@@ -135,6 +138,7 @@ const Catalogue1 = ({ navigation }) => {
         sellerID: seller.uid,
         sellerName: seller.username,
         customerUsername: username,
+        status: "PENDING",
       };
 
       // Wait for the order to be added
@@ -150,6 +154,8 @@ const Catalogue1 = ({ navigation }) => {
     } catch (error) {
       console.error("Error adding order: ", error);
       // Handle error
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -161,14 +167,7 @@ const Catalogue1 = ({ navigation }) => {
   const renderProductItem = ({ item }) => {
     return (
       <View>
-        <Pressable
-          onPress={() =>
-            navigation.navigate("ProductDescription", {
-              seller,
-              selectedProduct: item,
-            })
-          }
-        >
+        <Pressable>
           <View style={styles.card}>
             <Image
               alt=""
@@ -258,14 +257,24 @@ const Catalogue1 = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={services}
-        renderItem={renderProductItem}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={3}
-        contentContainerStyle={styles.flatListContainer}
-        showsVerticalScrollIndicator={false}
-      />
+      {services.length === 0 ? (
+        <View style={styles.empty}>
+          <FeatherIcon color="#1e90ff" name="box" size={36} />
+          <Text style={styles.emptyTitle}>No services</Text>
+          <Text style={styles.emptyDescription}>
+            come back later
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={services}
+          renderItem={renderProductItem}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={3}
+          contentContainerStyle={styles.flatListContainer}
+          showsVerticalScrollIndicator={false}
+        />
+      )}
       <View style={styles.overlay}>
         <View style={styles.OverlayTotal}>
           <Text
@@ -276,15 +285,6 @@ const Catalogue1 = ({ navigation }) => {
           >
             {totalQuantity}
           </Text>
-          {/* <Text
-            style={{
-              fontSize: 17,
-              color: totalPrice !== 0 ? "#1e90ff" : "white",
-              paddingHorizontal: 10,
-            }}
-          >
-            R{totalPrice.toLocaleString("en-US")}
-          </Text> */}
         </View>
         <View style={styles.btnGroup}>
           <TouchableOpacity
@@ -292,8 +292,17 @@ const Catalogue1 = ({ navigation }) => {
               addOrder();
             }}
             style={{ flex: 1, paddingHorizontal: 6 }}
+            disabled={services.length === 0} // Disable button when there are no items
           >
-            <View style={styles.btnPrimary}>
+            <View
+              style={[
+                styles.btnPrimary,
+                {
+                  backgroundColor:
+                    services.length === 0 ? "#BDBDBD" : "#1e90ff",
+                },
+              ]}
+            >
               <Text style={styles.btnPrimaryText}>Send order request</Text>
             </View>
           </TouchableOpacity>
@@ -398,9 +407,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    borderWidth: 1,
-    backgroundColor: "#1e90ff",
-    borderColor: "#1e90ff",
+    elevation: 1,
   },
   btnPrimaryText: {
     fontSize: 14,
@@ -415,6 +422,26 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.8)", 
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+  },
+  empty: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyTitle: {
+    fontSize: 21,
+    fontWeight: "600",
+    color: "#000",
+    marginBottom: 8,
+    marginTop: 16,
+  },
+  emptyDescription: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#878787",
+    marginBottom: 24,
   },
 });
