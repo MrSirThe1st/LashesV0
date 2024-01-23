@@ -68,7 +68,7 @@ const Step1 = ({ navigation, route }) => {
               <Controller
                 control={control}
                 rules={{
-                  required: false,
+                  required: true,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>
@@ -105,7 +105,7 @@ const Step1 = ({ navigation, route }) => {
               <Controller
                 control={control}
                 rules={{
-                  required: false,
+                  required: true,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>
@@ -142,7 +142,7 @@ const Step1 = ({ navigation, route }) => {
               <Controller
                 control={control}
                 rules={{
-                  required: false,
+                  required: true,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>
@@ -178,7 +178,7 @@ const Step1 = ({ navigation, route }) => {
               <Controller
                 control={control}
                 rules={{
-                  required: false,
+                  required: true,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>
@@ -228,7 +228,7 @@ const Step1 = ({ navigation, route }) => {
               <Controller
                 control={control}
                 rules={{
-                  required: false,
+                  required: true,
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>

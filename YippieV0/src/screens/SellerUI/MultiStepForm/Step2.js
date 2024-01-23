@@ -17,6 +17,7 @@ import { WizardStore } from "../../../Store";
 import { ProgressBar } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const Step2 = ({ navigation, route }) => {
   const [country, setCountry] = useState("");
@@ -75,7 +76,7 @@ const Step2 = ({ navigation, route }) => {
     };
   }, []);
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.scrollContainer}>
       <SafeAreaView style={styles.container}>
         <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
 
@@ -96,7 +97,7 @@ const Step2 = ({ navigation, route }) => {
             <Controller
               control={control}
               rules={{
-                required: false,
+                required: true,
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={styles.input}>
@@ -164,7 +165,7 @@ const Step2 = ({ navigation, route }) => {
         <Controller
           control={control}
           rules={{
-            required: false,
+            required: true,
           }}
           render={({ field: { onChange, onBlur, value } }) => (
             <GooglePlacesAutocomplete
@@ -182,7 +183,6 @@ const Step2 = ({ navigation, route }) => {
               isRowScrollable={true}
               enablePoweredByContainer={false}
               onPress={(data, details = null) => {
-                console.log("Selected Address:", data.description);
                 setAddress(data.description);
                 onChange(data.description);
               }}
@@ -242,7 +242,7 @@ const Step2 = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
-    </TouchableWithoutFeedback>
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
   },
   formEntry: {
     marginHorizontal: 8,
-    marginVertical: 4,
   },
   container: {
     flex: 1,
@@ -334,6 +333,10 @@ const styles = StyleSheet.create({
     color: "#222",
     borderWidth: 2,
     borderColor: "#6fbfff",
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-between",
   },
   scrollContainer: {
     flexGrow: 1,

@@ -29,25 +29,25 @@ const SelectButton = (props) => {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 20,
+    
+    borderRadius: 12,
     padding: 10,
     width: 180,
     marginHorizontal: 10,
-    elevation: 5,
+  
   },
   square: {
     width: 110,
-    height: 25,
+    height: 70,
     borderRadius: 100,
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
-    margin: 10,
+   
   },
   icon: {
-    width: 140,
-    height: 110,
+    width: 160,
+    height: 150,
     borderRadius: 50,
     resizeMode: "contain",
   },

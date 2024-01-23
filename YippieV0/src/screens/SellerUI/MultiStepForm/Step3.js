@@ -164,11 +164,11 @@ const Step3 = ({ navigation, route }) => {
                 <Controller
                   control={control}
                   rules={{
-                    required: false,
+                    required: true,
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.input}>
-                      <Text style={styles.inputLabel}>write a small brief</Text>
+                      <Text style={styles.inputLabel}>write a small brief about your business</Text>
                       <TextInput
                         autoCorrect={false}
                         onChangeText={(text) => {
@@ -200,7 +200,7 @@ const Step3 = ({ navigation, route }) => {
                 <Controller
                   control={control}
                   rules={{
-                    required: false,
+                    required: true,
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.inputOverview}>

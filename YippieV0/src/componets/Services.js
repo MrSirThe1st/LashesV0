@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    resizeMode: "contain",
+    
     borderTopRightRadius: 12,
     borderTopLeftRadius: 12,
   },
@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   pressableImage: {
-    backgroundColor: "#f2f2f2",
+   
     alignItems: "center",
     justifyContent: "center",
     borderTopRightRadius: 12,

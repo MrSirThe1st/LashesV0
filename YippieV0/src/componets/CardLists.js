@@ -201,7 +201,7 @@ export const CardItem = ({ seller, navigation }) => {
             >
               <View style={{ flexDirection: "column" }}>
                 <Text style={styles.cardRowItemTextName}>
-                  {seller.username},{" "}
+                  {seller.username}{" "}
                 </Text>
                 {/* <TouchableOpacity
                   onPress={handleFavoriteClick}
@@ -227,7 +227,7 @@ export const CardItem = ({ seller, navigation }) => {
             <View style={styles.cardRow}>
               <View style={styles.cardRowItem}>
                 <Text
-                  numberOfLines={2}
+                  numberOfLines={3}
                   ellipsizeMode="tail"
                   style={styles.cardAirport}
                 >
@@ -241,24 +241,7 @@ export const CardItem = ({ seller, navigation }) => {
               </View>
             </View>
 
-            <View
-              style={{
-                flexDirection: "row",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <View style={styles.cardPrice}>
-                <Text>From </Text>
-                <Text
-                  style={styles.cardPriceValue}
-                  ellipsizeMode="tail"
-                  numberOfLines={1}
-                >
-                  R{seller.price}
-                </Text>
-              </View>
-            </View>
+           
           </View>
         </View>
       </Pressable>

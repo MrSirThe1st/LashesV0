@@ -44,21 +44,7 @@ const Chat = ({ navigation }) => {
     }
   };
 
-  const renderCustomActions = (props) => (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <TouchableOpacity onPress={pickImage}>
-        <MaterialIcons name="insert-link" size={24} color="black" />
-      </TouchableOpacity>
-      {/* Add other custom actions as needed */}
-      {renderActions && renderActions(props)}
-    </View>
-  );
+
 
   useEffect(() => {
     (async () => {
@@ -118,7 +104,7 @@ const Chat = ({ navigation }) => {
         user,
         recipientId,
         chatName,
-        chatId: chatId || null, // Ensure chatId is defined or set it to null
+        chatId: chatId || null, 
         profileImageUrl: profileImageUrl || null,
       });
 

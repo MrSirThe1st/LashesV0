@@ -9,14 +9,22 @@ import {
   orderBy,
   collectionGroup,
   limit,
+  where,
 } from "firebase/firestore";
+import { FIREBASE_AUTH } from "../../config/firebase";
 
 const Inbox = ({ navigation }) => {
   const db = FIRESTORE_DB;
   const [chats, setChats] = useState([]);
+  const authUser = FIREBASE_AUTH.currentUser;
 
   useEffect(() => {
-    const q = query(collectionGroup(db, "chats"), orderBy("createdAt", "desc"));
+    const userId = authUser.uid;
+    const q = query(
+      collectionGroup(db, "chats"),
+      orderBy("createdAt", "desc"),
+      where("user._id", "==", userId)
+    );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const uniqueChats = {};
@@ -38,16 +46,14 @@ const Inbox = ({ navigation }) => {
           uniqueChats[chatName] = {
             id: chatId,
             data: { ...chatData, recipient, profileImageUrl, createdAtMillis },
-            lastMessage: "", // Add a placeholder for the last message
+            lastMessage: "",
           };
         }
       });
 
-      // Convert the object back to an array
       const sortedChats = Object.values(uniqueChats);
       setChats(sortedChats);
 
-      // Subscribe to real-time updates for messages
       sortedChats.forEach(({ id, data }) => {
         const messagesRef = collection(db, "chats", id, "messages");
         const messagesQuery = query(

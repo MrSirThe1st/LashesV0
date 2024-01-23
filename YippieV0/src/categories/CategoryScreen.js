@@ -8,6 +8,7 @@ import {
   Image,
   Pressable,
   FlatList,
+  ActivityIndicator
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import {
@@ -182,7 +183,9 @@ const CategoryScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       {loading ? (
-        <Text>Loading...</Text>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
       ) : (
         <FlatList
           data={sellerData}
@@ -319,5 +322,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#8c9197",
     textAlign: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

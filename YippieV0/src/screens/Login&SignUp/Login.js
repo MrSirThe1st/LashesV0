@@ -67,9 +67,9 @@ const Login = ({ navigation }) => {
       }
 
       await sendPasswordResetEmail(auth, email);
-      alert("Password reset email sent. Check your email inbox.");
+      alert("Password reset email sent. Check your email inbox 🚀.");
     } catch (error) {
-      console.log(error);
+      console.log("Password reset error:", error);
       alert("Password reset failed: " + error.message);
     } finally {
       setLoading(false);
@@ -107,21 +107,6 @@ const Login = ({ navigation }) => {
       setLoading(false);
     }
   }
-
-  const signInWithGoogle = async () => {
-    setLoading(true);
-    try {
-      await signInWithRedirect(FIREBASE_AUTH, GoogleAuth);
-
-      const result = await getRedirectResult(auth);
-      console.log(result);
-    } catch (error) {
-      console.log(error);
-      alert("Sign in with Google failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <KeyboardAwareScrollView style={styles.container}>
@@ -181,30 +166,12 @@ const Login = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.formSpacer}>
-            <Text style={styles.formSpacerText}>Or Sign in with</Text>
-            <View style={styles.formSpacerDivider} />
-          </View>
-
-          <View style={styles.btnGroup}>
-            <TouchableOpacity
-              onPress={() => {
-                // handle onPress
-              }}
-              style={{ flex: 1, paddingHorizontal: 6 }}
-            >
-              <View style={styles.btnGoogle}>
-                {/* <MaterialIcons
-                color="#fff"
-                name="google"
-                size={18}
-                style={{ marginRight: 12 }}
-              /> */}
-                <Text style={styles.btnGoogleText}>Google</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
         </View>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#1e90ff" />
+          </View>
+        )}
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );
@@ -322,40 +289,7 @@ const styles = StyleSheet.create({
     marginTop: 18,
     marginHorizontal: -6,
   },
-  btnFacebook: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    backgroundColor: "#355288",
-    borderColor: "#355288",
-  },
-  btnFacebookText: {
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: "600",
-    color: "#fff",
-  },
-  btnGoogle: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderWidth: 1,
-    backgroundColor: "#3367D6",
-    borderColor: "#3367D6",
-  },
-  btnGoogleText: {
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: "600",
-    color: "#fff",
-  },
+  
   formFooter: {
     marginTop: 16,
     fontSize: 13,
@@ -365,6 +299,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });
 

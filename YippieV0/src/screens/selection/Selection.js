@@ -1,13 +1,36 @@
-import React from "react";
-import { StyleSheet, Text, View, SafeAreaView, Pressable, Image } from "react-native";
+import React, { useRef, useEffect } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Pressable,
+  Image,
+} from "react-native";
 import { StatusBar } from "expo-status-bar";
 import SelectButton from "../../componets/SelectButton";
 import Separator from "../../componets/Separator";
-
+import { Video,} from "expo-av";
 
 const Selection = ({ navigation }) => {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    videoRef.current.playAsync();
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Video
+        ref={videoRef}
+        source={require("../../../video/watermarked_preview.mp4")}
+        style={styles.backgroundVideo}
+        resizeMode="cover"
+        shouldPlay
+        isLooping
+        volume={1.0}
+        isMuted={false}
+      />
       <StatusBar style="dark" />
       <View style={styles.upperContainer}>
         <View style={styles.selectButtonDiv}>
@@ -16,7 +39,7 @@ const Selection = ({ navigation }) => {
             buttonText={"Buyer sign up"}
             Icon={require("../../assets/svg/all-good-4.png")}
             onPress={() => {
-              navigation.navigate("SignUp", { role: "buyer" });
+              navigation.navigate("SignUpStep1", { role: "buyer" });
             }}
           />
           <SelectButton
@@ -30,30 +53,15 @@ const Selection = ({ navigation }) => {
         </View>
       </View>
       <View style={styles.bottomContainer}>
-        <Text style={styles.text}>Let's Get Started</Text>
-        <Separator />
-        <Text style={styles.paragraph}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nonummy
-          ligula volutpat id, tristique libero. Aliquam in lorem sit amet leo
-          accumsan luctus. Integer sodales velit tellus, ut faucibus ac, gravida
-          velit. Vestibulum in mauris arcu, ut vulputate metus. Integer
-          scelerisque elementum posuere.
-        </Text>
         <View style={styles.bottomContainerRow}>
           <Pressable
             onPress={() => {
               navigation.navigate("Login");
             }}
+            style={styles.LoginBtn}
           >
             <Text style={styles.textSkip}>Login</Text>
           </Pressable>
-          {/* <Pressable
-            onPress={() => {
-              navigation.navigate("BuyerHome");
-            }}
-          >
-            <Text style={styles.textSkip}>Skip</Text>
-          </Pressable> */}
         </View>
       </View>
     </SafeAreaView>
@@ -74,15 +82,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   bottomContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    elevation: 10,
+    height: "10%",
   },
   text: {
     color: "black",
-    fontSize: 24,
+    fontSize: 20,
     textAlign: "center",
     marginVertical: 20,
   },
@@ -108,8 +112,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   textSkip: {
-    color: "#1e90ff",
+    color: "white",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  backgroundVideo: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  LoginBtn: {
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    marginTop: 35,
+    marginVertical: 5,
+    backgroundColor: "#1e90ff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

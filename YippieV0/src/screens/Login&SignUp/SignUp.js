@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  
 } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -16,20 +17,27 @@ import { FIREBASE_AUTH } from "../../config/firebase";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, addDoc, collection } from "firebase/firestore";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import { Ionicons } from "@expo/vector-icons";
+
+
 
 const SignUp = ({ navigation, route }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
-  // const [cellphoneNumber, setCellphoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [location, setLocation] = useState("");
   const auth = FIREBASE_AUTH;
   const db = FIRESTORE_DB;
-  const { role } = route.params;
+  const { role, address } = route.params;
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  useEffect(() => {
+    console.log("Selected Address in SignUp:", address);
+  }, [address]);
 
   const signUp = async () => {
     if (password === confirmPassword) {
@@ -48,7 +56,7 @@ const SignUp = ({ navigation, route }) => {
           role: role,
           email: email,
           uid: userUID,
-          // cellphoneNumber: cellphoneNumber,
+          address:address,
           role: role,
         }).then(() => {
           console.log("data submitted");
@@ -69,7 +77,7 @@ const SignUp = ({ navigation, route }) => {
       <View>
         <BackButton navigation={navigation} />
       </View>
-  
+
       <View style={styles.form}>
         <Text style={styles.title}>Create an Account</Text>
         <Text style={styles.subtitle}>
@@ -102,38 +110,53 @@ const SignUp = ({ navigation, route }) => {
           keyboardType={"default"}
           secureTextEntry={false}
         /> */}
-
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          placeholder={"Password"}
-          keyboardType={"default"}
-          secureTextEntry={true}
-          autoCapitalize="none"
-        />
-
-        <TextInput
-          style={styles.input}
-          value={confirmPassword}
-          onChangeText={(text) => setConfirmPassword(text)}
-          placeholder={"Confirm Password"}
-          keyboardType={"default"}
-          secureTextEntry={true}
-          autoCapitalize="none"
-        />
-
-        {loading ? (
-          <ActivityIndicator size="large" color="#1e90ff" />
-        ) : (
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            style={styles.inputR}
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            placeholder={"Password"}
+            secureTextEntry={!showPassword}
+            keyboardType={"default"}
+            autoCapitalize="none"
+          />
           <TouchableOpacity
-            style={styles.btn}
-            onPress={signUp}
-            disabled={false}
+            onPress={() => setShowPassword(!showPassword)}
+            style={{ padding: 10 }}
           >
-            <Text style={styles.btnText}>Sign Up</Text>
+            <Ionicons
+              name={showPassword ? "eye-off" : "eye"}
+              size={20}
+              color="#6b7280"
+            />
           </TouchableOpacity>
-        )}
+        </View>
+
+        <View style={{ flexDirection: "row" }}>
+          <TextInput
+            style={styles.inputR}
+            value={confirmPassword}
+            onChangeText={(text) => setConfirmPassword(text)}
+            placeholder={"Confirm Password"}
+            keyboardType={"default"}
+            secureTextEntry={!showConfirmPassword}
+            autoCapitalize="none"
+          />
+          <TouchableOpacity
+            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            style={{ padding: 10 }}
+          >
+            <Ionicons
+              name={showConfirmPassword ? "eye-off" : "eye"}
+              size={20}
+              color="#6b7280"
+            />
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity style={styles.btn} onPress={signUp} disabled={false}>
+          <Text style={styles.btnText}>Sign Up</Text>
+        </TouchableOpacity>
 
         <View style={styles.formFooter}>
           <Text>Already have an account?</Text>
@@ -145,32 +168,12 @@ const SignUp = ({ navigation, route }) => {
             <Text style={{ color: "#FE724E" }}> Login here</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={styles.formSpacer}>
-          <Text style={styles.formSpacerText}>Or Sign up with</Text>
-          <View style={styles.formSpacerDivider} />
-        </View>
-
-        <View style={styles.btnGroup}>
-
-          <TouchableOpacity
-            onPress={() => {
-              // handle onPress
-            }}
-            style={{ flex: 1, paddingHorizontal: 6 }}
-          >
-            <View style={styles.btnGoogle}>
-              {/* <MaterialIcons
-                color="#fff"
-                name="google"
-                size={18}
-                style={{ marginRight: 12 }}
-              /> */}
-              <Text style={styles.btnGoogleText}>Google</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
       </View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -182,7 +185,7 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingHorizontal: 16,
-    marginTop:35
+    marginTop: 35,
   },
   logoImg: {
     width: "100%",
@@ -210,6 +213,17 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#222",
     marginBottom: 12,
+  },
+  inputR: {
+    height: 44,
+    backgroundColor: "#EFF1F5",
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#222",
+    marginBottom: 12,
+    width:"90%"
   },
   btn: {
     flexDirection: "row",
@@ -302,6 +316,12 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: "600",
     color: "#fff",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });
 

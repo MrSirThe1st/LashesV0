@@ -135,7 +135,7 @@ const Login1 = ({ navigation }) => {
             />
 
             <Text style={styles.title}>
-              Sign in to <Text style={{ color: "#1e90ff" }}>Your Account</Text>
+              Sign in to Your Accoun
             </Text>
 
             <Text style={styles.subtitle}>Welcom back</Text>
@@ -185,7 +185,7 @@ const Login1 = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.formSpacer}>
+          {/* <View style={styles.formSpacer}>
             <Text style={styles.formSpacerText}>Or Sign in with</Text>
             <View style={styles.formSpacerDivider} />
           </View>
@@ -198,16 +198,16 @@ const Login1 = ({ navigation }) => {
               style={{ flex: 1, paddingHorizontal: 6 }}
             >
               <View style={styles.btnGoogle}>
-                {/* <MaterialIcons
+                 <MaterialIcons
                 color="#fff"
                 name="google"
                 size={18}
                 style={{ marginRight: 12 }}
-              /> */}
+              /> 
                 <Text style={styles.btnGoogleText}>Google</Text>
               </View>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </SafeAreaView>
     </KeyboardAwareScrollView>

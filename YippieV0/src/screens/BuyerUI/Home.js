@@ -3,18 +3,9 @@ import {
   View,
   StyleSheet,
   Image,
-  TextInput,
-  Text,
   StatusBar,
-  Pressable,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  ScrollView,
-  FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import Services from "../../componets/Services";
 import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
 import { FIREBASE_AUTH } from "../../config/firebase";
@@ -24,11 +15,7 @@ import {
   where,
   getDocs,
   onSnapshot,
-  doc,
-  getDoc,
 } from "firebase/firestore";
-import { Skeleton } from "@rneui/themed";
-import geolib from "geolib";
 import Geocoder from "react-native-geocoding";
 import SkeletonHome from "../../componets/SkeletonHome";
 
@@ -46,64 +33,71 @@ export default function Home({ navigation }) {
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [user, setUser] = useState(null);
   
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      setLoading(true);
-      const currentUserCoordinates = await getCurrentUserCoordinates();
 
-      const sellersSnapshot = await getDocs(
-        query(collection(FIRESTORE_DB, "users"), where("role", "==", "seller"))
-      );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const currentUserCoordinates = await getCurrentUserCoordinates();
 
-      const updatedSellers = [];
-
-      for (const doc of sellersSnapshot.docs) {
-        const sellerData = doc.data();
-        const coordinates = await extractCoordinatesFromAddress(
-          sellerData.address
+        const sellersSnapshot = await getDocs(
+          query(
+            collection(FIRESTORE_DB, "users"),
+            where("role", "==", "seller")
+          )
         );
 
-        if (coordinates) {
-          const distance = haversine(currentUserCoordinates, coordinates);
-          console.log(
-            `Distance (${sellerData.username}): ${distance} kilometers`
+        const updatedSellers = [];
+
+        for (const doc of sellersSnapshot.docs) {
+          const sellerData = doc.data();
+          const coordinates = await extractCoordinatesFromAddress(
+            sellerData.address
           );
 
-          updatedSellers.push({
-            ...sellerData,
-            id: doc.id,
-            distance,
-          });
-        } else {
-          console.error("Invalid seller coordinates.");
+          if (coordinates) {
+            const distance = haversine(currentUserCoordinates, coordinates);
+            console.log(
+              `Distance (${sellerData.username}): ${distance} kilometers`
+            );
+
+            updatedSellers.push({
+              ...sellerData,
+              id: doc.id,
+              distance,
+            });
+          } else {
+            console.error("Invalid seller coordinates.");
+          }
+        }
+
+        updatedSellers.sort((a, b) => a.distance - b.distance);
+
+        setSellerData(updatedSellers);
+      } catch (error) {
+        console.error("Error fetching updated data:", error);
+      } finally {
+        setLoading(false);
+        if (initialLoading) {
+          setInitialLoading(false);
         }
       }
+    };
 
-      updatedSellers.sort((a, b) => a.distance - b.distance);
+    const unsubscribe = onSnapshot(
+      query(collection(FIRESTORE_DB, "users"), where("role", "==", "seller")),
+      () => {
+        fetchData();
+      }
+    );
 
-      setSellerData(updatedSellers);
-    } catch (error) {
-      console.error("Error fetching updated data:", error);
-      // Implement user-friendly error handling or logging as needed
-    } finally {
-      setLoading(false); 
-    }
-  };
+    fetchData();
 
-  const unsubscribe = onSnapshot(
-    query(collection(FIRESTORE_DB, "users"), where("role", "==", "seller")),
-    () => {
-      fetchData();
-    }
-  );
-
-  fetchData(); // Initial fetch
-
-  return () => unsubscribe();
-}, []);
+    return () => unsubscribe();
+  }, [initialLoading]);
 
   async function getCurrentUserCoordinates() {
     try {
@@ -118,7 +112,6 @@ useEffect(() => {
 
       querySnapshot.forEach((doc) => {
         const userData = doc.data();
-        // Assuming userData.address is a valid address from Google Place Autocomplete
         currentUserCoordinates = extractCoordinatesFromAddress(userData.address);
       });
 
@@ -131,7 +124,7 @@ useEffect(() => {
       }
     } catch (error) {
       console.error("Error fetching user coordinates: ", error);
-      throw error; // Rethrow the error for better handling in the calling function
+      throw error; 
     }
   }
 
@@ -169,7 +162,7 @@ function deg2rad(deg) {
 }
 
 
-if (loading) {
+if (initialLoading) {
   return <SkeletonHome />;
 }
   return (
