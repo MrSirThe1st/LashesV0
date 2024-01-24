@@ -34,6 +34,7 @@ const SignUp = ({ navigation, route }) => {
   const { role, address } = route.params;
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
 
   useEffect(() => {
     console.log("Selected Address in SignUp:", address);

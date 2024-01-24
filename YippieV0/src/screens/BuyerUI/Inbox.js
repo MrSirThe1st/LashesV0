@@ -1,4 +1,10 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import ListItemComponent from "../../componets/ListItemComponent";
 import { FIRESTORE_DB } from "../../config/firebase";
@@ -10,6 +16,8 @@ import {
   collectionGroup,
   limit,
   where,
+  deleteDoc,
+  doc
 } from "firebase/firestore";
 import { FIREBASE_AUTH } from "../../config/firebase";
 
@@ -17,16 +25,30 @@ const Inbox = ({ navigation }) => {
   const db = FIRESTORE_DB;
   const [chats, setChats] = useState([]);
   const authUser = FIREBASE_AUTH.currentUser;
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const userId = authUser.uid;
-    const q = query(
-      collectionGroup(db, "chats"),
-      orderBy("createdAt", "desc"),
-      where("user._id", "==", userId)
-    );
+  const deleteConversation = async (chatId) => {
+    try {
+      // Delete the conversation from the database
+      await deleteDoc(doc(db, "chats", chatId));
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
+      // Update state to reflect the deleted conversation
+      setChats((prevChats) => prevChats.filter((chat) => chat.id !== chatId));
+    } catch (error) {
+      console.error("Error deleting conversation:", error);
+    }
+  };
+
+useEffect(() => {
+  const userId = authUser.uid;
+  const q = query(
+    collectionGroup(db, "chats"),
+    orderBy("createdAt", "desc"),
+    where("user._id", "==", userId)
+  );
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    try {
       const uniqueChats = {};
 
       snapshot.forEach((doc) => {
@@ -77,10 +99,18 @@ const Inbox = ({ navigation }) => {
           });
         });
       });
-    });
 
-    return unsubscribe;
-  }, []);
+      // Update loading state to indicate that data has been loaded
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      // Update loading state to indicate that an error occurred
+      setLoading(false);
+    }
+  });
+
+  return unsubscribe;
+}, []);
 
   const enterChat = (id, chatName, recipient) => {
     navigation.navigate("Chat", {
@@ -96,72 +126,79 @@ const Inbox = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {chats.length === 0 ? (
-          <View style={styles.empty}>
-            <View style={styles.fake}>
-              <View style={styles.fakeCircle} />
-              <View style={styles.fakeBlock}>
-                <View style={styles.fakeLine} />
-                <View style={styles.fakeLine} />
+      {loading ? ( // Render loading indicator if data is still being fetched
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      ) : (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {chats.length === 0 ? (
+            <View style={styles.empty}>
+              <View style={styles.fake}>
+                <View style={styles.fakeCircle} />
+                <View style={styles.fakeBlock}>
+                  <View style={styles.fakeLine} />
+                  <View style={styles.fakeLine} />
+                </View>
               </View>
-            </View>
-            <View style={[styles.fake, { opacity: 0.5 }]}>
-              <View style={styles.fakeCircle} />
-              <View style={styles.fakeBlock}>
-                <View style={styles.fakeLine} />
-                <View style={styles.fakeLine} />
+              <View style={[styles.fake, { opacity: 0.5 }]}>
+                <View style={styles.fakeCircle} />
+                <View style={styles.fakeBlock}>
+                  <View style={styles.fakeLine} />
+                  <View style={styles.fakeLine} />
+                </View>
               </View>
-            </View>
-            <View style={styles.fake}>
-              <View style={styles.fakeCircle} />
-              <View style={styles.fakeBlock}>
-                <View style={styles.fakeLine} />
-                <View style={styles.fakeLine} />
+              <View style={styles.fake}>
+                <View style={styles.fakeCircle} />
+                <View style={styles.fakeBlock}>
+                  <View style={styles.fakeLine} />
+                  <View style={styles.fakeLine} />
+                </View>
               </View>
-            </View>
-            <View style={styles.fake}>
-              <View style={styles.fakeCircle} />
-              <View style={styles.fakeBlock}>
-                <View style={styles.fakeLine} />
-                <View style={styles.fakeLine} />
+              <View style={styles.fake}>
+                <View style={styles.fakeCircle} />
+                <View style={styles.fakeBlock}>
+                  <View style={styles.fakeLine} />
+                  <View style={styles.fakeLine} />
+                </View>
               </View>
-            </View>
-            <View style={[styles.fake, { opacity: 0.5 }]}>
-              <View style={styles.fakeCircle} />
-              <View style={styles.fakeBlock}>
-                <View style={styles.fakeLine} />
-                <View style={styles.fakeLine} />
+              <View style={[styles.fake, { opacity: 0.5 }]}>
+                <View style={styles.fakeCircle} />
+                <View style={styles.fakeBlock}>
+                  <View style={styles.fakeLine} />
+                  <View style={styles.fakeLine} />
+                </View>
               </View>
-            </View>
-            <View style={styles.fake}>
-              <View style={styles.fakeCircle} />
-              <View style={styles.fakeBlock}>
-                <View style={styles.fakeLine} />
-                <View style={styles.fakeLine} />
+              <View style={styles.fake}>
+                <View style={styles.fakeCircle} />
+                <View style={styles.fakeBlock}>
+                  <View style={styles.fakeLine} />
+                  <View style={styles.fakeLine} />
+                </View>
               </View>
+              <Text style={styles.emptyDescription}>Your inbox is empty</Text>
             </View>
-            <Text style={styles.emptyDescription}>Your inbox is empty</Text>
-          </View>
-        ) : (
-          chats.map(
-            ({
-              id,
-              data: { chatName, recipient, profileImageUrl, lastMessage },
-            }) => (
-              <ListItemComponent
-                key={id}
-                id={id}
-                chatName={chatName}
-                recipient={recipient}
-                profileImageUrl={profileImageUrl}
-                lastMessage={lastMessage}
-                enterChat={enterChat}
-              />
+          ) : (
+            chats.map(
+              ({
+                id,
+                data: { chatName, recipient, profileImageUrl, lastMessage },
+              }) => (
+                <ListItemComponent
+                  key={id}
+                  id={id}
+                  chatName={chatName}
+                  recipient={recipient}
+                  profileImageUrl={profileImageUrl}
+                  lastMessage={lastMessage}
+                  enterChat={enterChat}
+                  onDeletePress={() => deleteConversation(id)}
+                />
+              )
             )
-          )
-        )}
-      </ScrollView>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -206,6 +243,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#8c9197",
     textAlign: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

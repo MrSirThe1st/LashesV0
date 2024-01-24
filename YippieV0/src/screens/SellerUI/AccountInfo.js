@@ -96,17 +96,16 @@ export default function AccountInfo() {
             ...doc.data(),
           };
 
-          // Check if the review belongs to the current seller
           if (review.sellerId === seller.uid) {
             reviewsData.push(review);
-            totalRating += review.rating; // Accumulate ratings
+            totalRating += review.rating; 
           }
         });
 
         setReviews(reviewsData);
         setReviewsCount(reviewsData.length);
 
-        // Calculate the average rating
+
         const averageRating =
           reviewsData.length > 0 ? totalRating / reviewsData.length : 0;
         setAverageRating(averageRating.toFixed(1)); // Set the average rating state
@@ -118,7 +117,6 @@ export default function AccountInfo() {
     fetchReviews();
   }, [seller.uid]);
 
-  // Add a new state variable for average rating
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>

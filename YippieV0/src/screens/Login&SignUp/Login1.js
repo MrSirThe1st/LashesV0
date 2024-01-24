@@ -93,7 +93,7 @@ const Login1 = ({ navigation }) => {
           const targetScreen =
             userRole === "seller" ? "SellerHome" : "BuyerHome";
 
-          navigation.navigate(targetScreen, { screen: "HomeScreen" });
+          
         } else {
           console.log("Invalid user role:", userRole);
         }
@@ -107,20 +107,7 @@ const Login1 = ({ navigation }) => {
     }
   }
 
-  const signInWithGoogle = async () => {
-    setLoading(true);
-    try {
-      await signInWithRedirect(FIREBASE_AUTH, GoogleAuth);
 
-      const result = await getRedirectResult(auth);
-      console.log(result);
-    } catch (error) {
-      console.log(error);
-      alert("Sign in with Google failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <KeyboardAwareScrollView style={styles.container}>

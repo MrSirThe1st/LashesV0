@@ -94,7 +94,7 @@ const Login = ({ navigation }) => {
           const targetScreen =
             userRole === "seller" ? "SellerHome" : "BuyerHome";
 
-          navigation.navigate(targetScreen, { screen: "HomeScreen" });
+          // navigation.navigate(targetScreen, { screen: "HomeScreen" });
         } else {
           console.log("Invalid user role:", userRole);
         }

@@ -207,7 +207,7 @@ const HomeTabNavigatorSeller = () => (
 
     <Tab.Screen
       name="Inbox"
-      component={Inbox}
+      component={InboxSeller}
       options={{
         tabBarLabel: "",
         tabBarIcon: ({ focused }) =>
