@@ -60,9 +60,7 @@ export default function Home({ navigation }) {
 
           if (coordinates) {
             const distance = haversine(currentUserCoordinates, coordinates);
-            console.log(
-              `Distance (${sellerData.username}): ${distance} kilometers`
-            );
+        
 
             updatedSellers.push({
               ...sellerData,
@@ -78,7 +76,7 @@ export default function Home({ navigation }) {
 
         setSellerData(updatedSellers);
       } catch (error) {
-        console.error("Error fetching updated data:", error);
+   
       } finally {
         setLoading(false);
         if (initialLoading) {
@@ -116,10 +114,10 @@ export default function Home({ navigation }) {
       });
 
       if (currentUserCoordinates) {
-        console.log("Current User Coordinates:", currentUserCoordinates);
+     
         return currentUserCoordinates;
       } else {
-        console.error("Invalid current user coordinates.");
+    
         throw new Error("Invalid current user coordinates");
       }
     } catch (error) {

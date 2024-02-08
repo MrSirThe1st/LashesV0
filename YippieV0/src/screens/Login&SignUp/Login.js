@@ -46,11 +46,17 @@ const Login = ({ navigation }) => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-      alert("Signed in successfully");
       fetchDocument(response.user.uid);
     } catch (error) {
       console.log(error);
-      alert("Sign in failed: " + error.message);
+      let errorMessage = "Sign in failed. Please try again."; 
+
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "User not found. Please check your email.";
+      } else if (error.code === "auth/wrong-password") {
+        errorMessage = "Invalid password. Please try again.";
+      }
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -70,7 +76,13 @@ const Login = ({ navigation }) => {
       alert("Password reset email sent. Check your email inbox 🚀.");
     } catch (error) {
       console.log("Password reset error:", error);
-      alert("Password reset failed: " + error.message);
+      let errorMessage = "Password reset failed. Please try again."; // Default error message
+
+      if (error.code === "auth/user-not-found") {
+        errorMessage = "User not found. Please check your email.";
+      }
+
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -109,71 +121,69 @@ const Login = ({ navigation }) => {
   }
 
   return (
-    <KeyboardAwareScrollView style={styles.container}>
-      <SafeAreaView style={styles.container}>
-        <BackButton navigation={navigation} />
+    <SafeAreaView style={styles.container}>
+      <BackButton navigation={navigation} />
 
-        <View style={styles.containerForm}>
-          <View style={styles.header}>
-            <Text style={styles.title}>
-              Sign in to <Text style={{ color: "#075eec" }}>Your Account</Text>
-            </Text>
+      <View style={styles.containerForm}>
+        <View style={styles.header}>
+          <Text style={styles.title}>
+            Sign in to <Text style={{ color: "#075eec" }}>Your Account</Text>
+          </Text>
 
-            <Text style={styles.subtitle}>Welcom back</Text>
+          <Text style={styles.subtitle}>Welcom back</Text>
+        </View>
+
+        <View style={styles.form}>
+          <View style={styles.input}>
+            <Text style={styles.inputLabel}>Email address</Text>
+
+            <TextInput
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              onChangeText={(email) => setEmail(email)}
+              placeholder="john@example.com"
+              placeholderTextColor="#6b7280"
+              style={styles.inputControl}
+              value={email}
+            />
           </View>
 
-          <View style={styles.form}>
-            <View style={styles.input}>
-              <Text style={styles.inputLabel}>Email address</Text>
+          <View style={styles.input}>
+            <Text style={styles.inputLabel}>Password</Text>
 
-              <TextInput
-                autoCapitalize="none"
-                autoCorrect={false}
-                keyboardType="email-address"
-                onChangeText={(email) => setEmail(email)}
-                placeholder="john@example.com"
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                value={email}
-              />
-            </View>
+            <TextInput
+              autoCorrect={false}
+              onChangeText={(password) => setPassword(password)}
+              placeholder="********"
+              placeholderTextColor="#6b7280"
+              style={styles.inputControl}
+              secureTextEntry={true}
+              value={password}
+            />
+          </View>
 
-            <View style={styles.input}>
-              <Text style={styles.inputLabel}>Password</Text>
-
-              <TextInput
-                autoCorrect={false}
-                onChangeText={(password) => setPassword(password)}
-                placeholder="********"
-                placeholderTextColor="#6b7280"
-                style={styles.inputControl}
-                secureTextEntry={true}
-                value={password}
-              />
-            </View>
-
-            <View style={styles.formAction}>
-              <TouchableOpacity onPress={signIn}>
-                <View style={styles.btn}>
-                  <Text style={styles.btnText}>Sign in</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.formFooter}>
-              <Text>Forgot your password?</Text>
-              <TouchableOpacity onPress={requestPasswordReset}>
-                <Text style={{ color: "#FE724E" }}> Recover it here</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.formAction}>
+            <TouchableOpacity onPress={signIn}>
+              <View style={styles.btn}>
+                <Text style={styles.btnText}>Sign in</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.formFooter}>
+            <Text>Forgot your password?</Text>
+            <TouchableOpacity onPress={requestPasswordReset}>
+              <Text style={{ color: "#FE724E" }}> Recover it here</Text>
+            </TouchableOpacity>
           </View>
         </View>
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#1e90ff" />
-          </View>
-        )}
-      </SafeAreaView>
-    </KeyboardAwareScrollView>
+      </View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
+    </SafeAreaView>
   );
 };
 

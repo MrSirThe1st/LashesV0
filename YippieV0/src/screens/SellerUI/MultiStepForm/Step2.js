@@ -167,13 +167,12 @@ const Step2 = ({ navigation, route }) => {
           rules={{
             required: true,
           }}
-          render={({ field: { onChange, onBlur, value } }) => (
+          render={({ field: { onChange} }) => (
             <GooglePlacesAutocomplete
               placeholder="Enter your address"
               minLength={2}
               autoFocus={false}
               value={address}
-              onBlur={onBlur}
               onChangeText={(text) => {
                 setAddress(text);
                 onChange(text);
@@ -219,6 +218,11 @@ const Step2 = ({ navigation, route }) => {
           )}
           name="address"
         />
+        {errors.address && (
+            <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+              add your addres before continuing.
+            </Text>
+          )}
         <View
           style={[
             styles.BottomContainer,

@@ -8,12 +8,13 @@ export const WizardStore = new Store({
   cellphoneNumber: "",
   password: "",
   confirmPassword: "",
-  overview:"",
+  overview: "",
   country: null,
   city: null,
-  category:null,
-  brief:"",
-  address:""
+  category: null,
+  brief: "",
+  address: "",
+  website:"",
 });
 
 registerInDevtools({

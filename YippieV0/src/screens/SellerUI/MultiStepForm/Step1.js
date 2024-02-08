@@ -16,6 +16,7 @@ import { WizardStore } from "../../../Store";
 import { ProgressBar } from "react-native-paper";
 import { useIsFocused } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import PhoneInput from "react-native-phone-input";
 
 const Step1 = ({ navigation, route }) => {
   const [username, setUsername] = useState("");
@@ -50,6 +51,16 @@ const Step1 = ({ navigation, route }) => {
     });
     navigation.navigate("Step2", { role: "seller" });
   };
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
+  };
+
+  const handleSelectCountry = (country) => {
+    setCountryCode(country.iso2);
+    toggleModal();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
@@ -138,37 +149,34 @@ const Step1 = ({ navigation, route }) => {
 
             {/* cellphoneNumber */}
 
-            <View style={[styles.formEntry]}>
+            <View style={styles.formEntry}>
               <Controller
                 control={control}
-                rules={{
-                  required: true,
-                }}
+                rules={{ required: true }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <View style={styles.input}>
-                    <Text style={styles.inputLabel}>cellphone Number</Text>
-
-                    <TextInput
-                      autoCorrect={false}
+                    <Text style={styles.inputLabel}>Cellphone Number</Text>
+                    <PhoneInput
+                      ref={(ref) => {
+                        this.phone = ref;
+                      }}
+                      initialCountry="za"
+                      style={styles.inputControl}
+                      onPressFlag={() => {}}
+                      textStyle={{ color: "#222" }}
+                      onChangePhoneNumber={onChange}
                       onChangeText={(text) => {
                         setCellphoneNumber(text);
                         onChange(text);
                       }}
-                      placeholder="cellphone number"
-                      placeholderTextColor="#6b7280"
-                      style={styles.inputControl}
-                      value={cellphoneNumber}
-                      onBlur={onBlur}
-                      keyboardType="numeric"
                     />
                   </View>
                 )}
                 name="cellphoneNumber"
+                defaultValue=""
               />
               {errors.cellphoneNumber && (
-                <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                  This is a required field.
-                </Text>
+                <Text style={styles.errorText}>This is a required field.</Text>
               )}
             </View>
 

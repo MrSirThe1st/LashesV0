@@ -17,7 +17,7 @@ import {
   limit,
   where,
   deleteDoc,
-  doc
+  doc,
 } from "firebase/firestore";
 import { FIREBASE_AUTH } from "../../config/firebase";
 
@@ -39,84 +39,92 @@ const Inbox = ({ navigation }) => {
     }
   };
 
-useEffect(() => {
-  const userId = authUser.uid;
-  const q = query(
-    collectionGroup(db, "chats"),
-    orderBy("createdAt", "desc"),
-    where("user._id", "==", userId)
-  );
+  useEffect(() => {
+    const userId = authUser.uid;
+    const q = query(
+      collectionGroup(db, "chats"),
+      orderBy("createdAt", "desc"),
+      where("user._id", "==", userId)
+    );
 
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    try {
-      const uniqueChats = {};
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      try {
+        const uniqueChats = {};
 
-      snapshot.forEach((doc) => {
-        const chatId = doc.id;
-        const chatData = doc.data();
-        const recipient = chatData.recipientId;
-        const user = chatData.user;
-        const chatName = chatData.chatName;
-        const profileImageUrl = chatData.profileImageUrl;
-        const createdAtMillis = chatData.createdAt
-          ? chatData.createdAt.toMillis()
-          : 0;
-        if (
-          !uniqueChats[chatName] ||
-          createdAtMillis > uniqueChats[chatName].createdAtMillis
-        ) {
-          uniqueChats[chatName] = {
-            id: chatId,
-            data: { ...chatData, recipient, profileImageUrl, createdAtMillis },
-            lastMessage: "",
-          };
-        }
-      });
+        snapshot.forEach((doc) => {
+          const chatId = doc.id;
+          const chatData = doc.data();
+          const sellerId = chatData.recipientId;
+          const user = chatData.user;
+          const sellerName = chatData.recipientName;
+          const sellerAvatar = chatData.sellerAvatar;
+          const createdAtMillis = chatData.createdAt
+            ? chatData.createdAt.toMillis()
+            : 0;
+          if (
+            !uniqueChats[sellerName] ||
+            createdAtMillis > uniqueChats[sellerName].createdAtMillis
+          ) {
+            uniqueChats[sellerName] = {
+              id: chatId,
+              data: {
+                ...chatData,
+                sellerId,
+                sellerAvatar,
+                createdAtMillis,
+                sellerName,
+              },
+              lastMessage: "",
+            };
+          }
+        });
 
-      const sortedChats = Object.values(uniqueChats);
-      setChats(sortedChats);
+        const sortedChats = Object.values(uniqueChats);
+        setChats(sortedChats);
 
-      sortedChats.forEach(({ id, data }) => {
-        const messagesRef = collection(db, "chats", id, "messages");
-        const messagesQuery = query(
-          messagesRef,
-          orderBy("createdAt", "desc"),
-          limit(1)
-        );
+        sortedChats.forEach(({ id, data }) => {
+          const messagesRef = collection(db, "chats", id, "messages");
+          const messagesQuery = query(
+            messagesRef,
+            orderBy("createdAt", "desc"),
+            limit(1)
+          );
 
-        onSnapshot(messagesQuery, (messagesSnapshot) => {
-          messagesSnapshot.forEach((messageDoc) => {
-            const lastMessage = messageDoc.data().text || "";
-            console.log("LAST MESSAGE:", lastMessage);
+          onSnapshot(messagesQuery, (messagesSnapshot) => {
+            messagesSnapshot.forEach((messageDoc) => {
+              const lastMessage = messageDoc.data().text || "";
+              console.log("LAST MESSAGE:", lastMessage);
 
-            const chatIndex = sortedChats.findIndex((chat) => chat.id === id);
+              const chatIndex = sortedChats.findIndex((chat) => chat.id === id);
 
-            if (chatIndex !== -1) {
-              sortedChats[chatIndex].lastMessage = lastMessage;
-              console.log("UPDATED CHATS:", sortedChats);
-              setChats([...sortedChats]);
-            }
+              if (chatIndex !== -1) {
+                sortedChats[chatIndex].lastMessage = lastMessage;
+                console.log("UPDATED CHATS:", sortedChats);
+                setChats([...sortedChats]);
+              }
+            });
           });
         });
-      });
 
-      // Update loading state to indicate that data has been loaded
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      // Update loading state to indicate that an error occurred
-      setLoading(false);
-    }
-  });
+        // Update loading state to indicate that data has been loaded
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Update loading state to indicate that an error occurred
+        setLoading(false);
+      }
+    });
 
-  return unsubscribe;
-}, []);
+    return unsubscribe;
+  }, []);
 
-  const enterChat = (id, chatName, recipient) => {
+  const enterChat = (id, sellerName, sellerId, sellerAvatar) => {
+    console.log("sellerAvatar:", sellerAvatar);
     navigation.navigate("Chat", {
       id,
-      chatName,
-      recipient,
+      sellerId,
+      sellerName,
+      sellerAvatar,
     });
   };
 
@@ -182,14 +190,14 @@ useEffect(() => {
             chats.map(
               ({
                 id,
-                data: { chatName, recipient, profileImageUrl, lastMessage },
+                data: { sellerName, sellerId, sellerAvatar, lastMessage },
               }) => (
                 <ListItemComponent
                   key={id}
                   id={id}
-                  chatName={chatName}
-                  recipient={recipient}
-                  profileImageUrl={profileImageUrl}
+                  sellerName={sellerName}
+                  sellerId={sellerId}
+                  sellerAvatar={sellerAvatar}
                   lastMessage={lastMessage}
                   enterChat={enterChat}
                   onDeletePress={() => deleteConversation(id)}

@@ -51,6 +51,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SignUpStep1 from "../screens/Login&SignUp/SignUpStep1";
 import InboxSeller from "../screens/SellerUI/InboxSeller";
 import { ActivityIndicator, View } from "react-native";
+import ChatSeller from "../chat/ChatSeller";
+import Cart from "../screens/BuyerUI/Cart";
+import CartSeller from "../screens/SellerUI/CartSeller";
+import { Feather } from "@expo/vector-icons";
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -105,14 +110,14 @@ const HomeTabNavigator = () => (
     />
 
     <Tab.Screen
-      name="Inbox"
-      component={Inbox}
+      name="Cart"
+      component={Cart}
       options={{
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <FontAwesome5 name="envelope" size={24} color="#1e90ff" />
+            <Feather name="shopping-cart" size={24} color="#1e90ff" />
           ) : (
-            <FontAwesome5 name="envelope" size={24} color="black" />
+            <Feather name="shopping-cart" size={24} color="black" />
           ),
       }}
     />
@@ -206,15 +211,15 @@ const HomeTabNavigatorSeller = () => (
     />
 
     <Tab.Screen
-      name="Inbox"
-      component={InboxSeller}
+      name="Cart"
+      component={CartSeller}
       options={{
         tabBarLabel: "",
         tabBarIcon: ({ focused }) =>
           focused ? (
-            <FontAwesome5 name="envelope" size={24} color="#1e90ff" />
+            <Feather name="shopping-cart" size={24} color="#1e90ff" />
           ) : (
-            <FontAwesome5 name="envelope" size={24} color="black" />
+            <Feather name="shopping-cart" size={24} color="black" />
           ),
       }}
     />
@@ -290,6 +295,7 @@ const Navigation = ({ navigation }) => {
 
   const checkOnboardingStatus = async () => {
     try {
+      setLoading(true);
       console.log("Checking onboarding status...");
       const onboardingStatus = await AsyncStorage.getItem(
         "onboardingCompleted"
@@ -313,7 +319,6 @@ const Navigation = ({ navigation }) => {
 
 
   if (loading) {
-    // Loading indicator
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" color="#1e90ff" />
@@ -373,6 +378,15 @@ const Navigation = ({ navigation }) => {
                 <Stack.Screen
                   name="Chat"
                   component={Chat}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
+                  name="ChatSeller"
+                  component={ChatSeller}
                   options={{
                     headerShown: true,
                     title: "",
@@ -578,6 +592,15 @@ const Navigation = ({ navigation }) => {
                   }}
                 />
                 <Stack.Screen
+                  name="ChatSeller"
+                  component={ChatSeller}
+                  options={{
+                    headerShown: true,
+                    title: "",
+                    headerStyle: { backgroundColor: "white" },
+                  }}
+                />
+                <Stack.Screen
                   name="Catalogue"
                   component={Catalogue}
                   options={{
@@ -707,7 +730,6 @@ const Navigation = ({ navigation }) => {
             )}
           </>
         ) : onboardingCompleted ? (
-  
           <>
             <Stack.Screen
               name="Selection"

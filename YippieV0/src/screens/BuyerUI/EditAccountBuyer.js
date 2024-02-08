@@ -10,6 +10,7 @@ import {
   Animated,
   Image,
   Pressable,
+  ActivityIndicator
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -35,6 +36,7 @@ const EditAccountBuyer = () => {
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
@@ -53,6 +55,7 @@ const EditAccountBuyer = () => {
     const usersCollectionRef = collection(FIRESTORE_DB, "users");
 
     try {
+      setLoading(true);
       const q = query(usersCollectionRef, where("uid", "==", userUID));
       const querySnapshot = await getDocs(q);
 
@@ -66,6 +69,8 @@ const EditAccountBuyer = () => {
       }
     } catch (error) {
       console.error("Error fetching document:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -73,6 +78,7 @@ const EditAccountBuyer = () => {
     const userUID = auth.currentUser.uid;
 
     try {
+      setLoading(true);
       const usersCollectionRef = collection(FIRESTORE_DB, "users");
       const q = query(usersCollectionRef, where("uid", "==", userUID));
       const querySnapshot = await getDocs(q);
@@ -98,6 +104,8 @@ const EditAccountBuyer = () => {
       }
     } catch (error) {
       console.error("Error updating document:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,6 +184,11 @@ const EditAccountBuyer = () => {
           <Submit Title="Submit" onPress={handleUpdate} />
         </View>
       </Animated.View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -280,8 +293,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profileAvatar: {
-    fontSize: 40, // or any other suitable size
+    fontSize: 40, 
     fontWeight: "bold",
-    color:"#fff"
+    color: "#fff",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

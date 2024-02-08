@@ -9,7 +9,10 @@ import {
   Alert,
   Animated,
   Image,
-  Pressable
+  Pressable,
+  KeyboardAvoidingView,
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -29,12 +32,15 @@ import {
 import Submit from "../../../componets/Submit";
 import * as ImagePicker from "expo-image-picker";
 import { Platform } from "react-native";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import PhoneInput from "react-native-phone-input";
 
 const EditAccount = () => {
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [profile, setProfile] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState([]);
@@ -53,6 +59,7 @@ const EditAccount = () => {
 
   const pickProfile = async () => {
     try {
+      setLoading(true);
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: false,
@@ -67,6 +74,8 @@ const EditAccount = () => {
       }
     } catch (error) {
       console.error("Error picking profile image:", error);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -76,6 +85,7 @@ const EditAccount = () => {
     const usersCollectionRef = collection(FIRESTORE_DB, "users");
 
     try {
+      setLoading(true);
       const q = query(usersCollectionRef, where("uid", "==", userUID));
       const querySnapshot = await getDocs(q);
 
@@ -89,6 +99,8 @@ const EditAccount = () => {
       }
     } catch (error) {
       console.error("Error fetching document:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -96,6 +108,7 @@ const EditAccount = () => {
     const userUID = auth.currentUser.uid;
 
     try {
+      setLoading(true);
       const usersCollectionRef = collection(FIRESTORE_DB, "users");
       const q = query(usersCollectionRef, where("uid", "==", userUID));
       const querySnapshot = await getDocs(q);
@@ -129,6 +142,8 @@ const EditAccount = () => {
       }
     } catch (error) {
       console.error("Error updating document:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -137,149 +152,174 @@ const EditAccount = () => {
     fetchDocument(userUID);
   }, []);
 
+
+
   return (
-    <View style={styles.container}>
-      <View style={styles.profile}>
-        <Pressable style={styles.profileAvatarWrapper} onPress={pickProfile}>
-          {userData && userData.profile && userData.profile.length > 0 ? (
-            <Image
-              source={{ uri: userData.profile[0] }}
-              style={styles.profileAvatar}
+    <KeyboardAvoidingView style={{ flex: 1 }}>
+      <ScrollView style={styles.container}>
+        <View style={styles.profile}>
+          <Pressable style={styles.profileAvatarWrapper} onPress={pickProfile}>
+            {userData && userData.profile && userData.profile.length > 0 ? (
+              <Image
+                source={{ uri: userData.profile[0] }}
+                style={styles.profileAvatar}
+              />
+            ) : (
+              <View style={styles.defaultAvatar}>
+                <MaterialCommunityIcons name="camera" size={35} color="#fff" />
+              </View>
+            )}
+          </Pressable>
+        </View>
+
+        <Animated.View
+          style={{
+            margin: 20,
+          }}
+        >
+          <View style={{ alignItems: "center" }}>
+            <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
+              {userData ? userData.username : ""}{" "}
+              {/* {userData ? userData.username : ""} */}
+            </Text>
+            {/* <Text>{user.uid}</Text> */}
+          </View>
+
+          <View style={styles.action}>
+            <MaterialCommunityIcons
+              name="account-circle-outline"
+              size={20}
+              color="#333333"
             />
-          ) : (
-            <View style={styles.defaultAvatar}>
-              <MaterialCommunityIcons name="camera" size={35} color="#fff" />
-            </View>
-          )}
-        </Pressable>
-      </View>
+            <TextInput
+              placeholder="First Name"
+              placeholderTextColor="#666666"
+              autoCorrect={false}
+              value={userData ? userData.username : ""}
+              onChangeText={(txt) =>
+                setUserData({ ...userData, username: txt })
+              }
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.action}>
+            <MaterialIcons name="alternate-email" size={20} color="#333333" />
+            <TextInput
+              placeholder="Last Name"
+              placeholderTextColor="#666666"
+              value={userData ? userData.email : ""}
+              onChangeText={(txt) => setUserData({ ...userData, email: txt })}
+              autoCorrect={false}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.action}>
+            <Ionicons name="ios-clipboard-outline" color="#333333" size={20} />
+            <TextInput
+              multiline
+              numberOfLines={3}
+              placeholder="About Me"
+              placeholderTextColor="#666666"
+              value={userData ? userData.brief : ""}
+              onChangeText={(txt) => setUserData({ ...userData, brief: txt })}
+              autoCorrect={true}
+              style={[styles.textInput, { height: 40 }]}
+            />
+          </View>
+          <View style={styles.action}>
+            <Ionicons name="ios-clipboard-outline" color="#333333" size={20} />
+            <TextInput
+              multiline
+              numberOfLines={3}
+              placeholder="About Me"
+              placeholderTextColor="#666666"
+              value={userData ? userData.overview : ""}
+              onChangeText={(txt) =>
+                setUserData({ ...userData, overview: txt })
+              }
+              autoCorrect={true}
+              style={[styles.textInput, { height: 40 }]}
+            />
+          </View>
+          <View style={styles.action}>
+            <Feather name="phone" color="#333333" size={20} />
+            <PhoneInput
+              ref={(ref) => {
+                this.phone = ref;
+              }}
+              initialCountry="za"
+              onPressFlag={() => {}}
+              value={userData ? userData.cellphoneNumber : ""}
+              onChangePhoneNumber={(number) =>
+                setUserData({ ...userData, cellphoneNumber: number })
+              }
+              style={styles.textInput}
+            />
+          </View>
 
-      <Animated.View
-        style={{
-          margin: 20,
-        }}
-      >
-        <View style={{ alignItems: "center" }}>
-          <Text style={{ marginTop: 10, fontSize: 18, fontWeight: "bold" }}>
-            {userData ? userData.username : ""}{" "}
-            {/* {userData ? userData.username : ""} */}
-          </Text>
-          {/* <Text>{user.uid}</Text> */}
+          <View style={styles.action}>
+            <FontAwesome name="globe" color="#333333" size={20} />
+            <TextInput
+              placeholder="Country"
+              placeholderTextColor="#666666"
+              autoCorrect={false}
+              value={userData ? userData.country : ""}
+              onChangeText={(txt) => setUserData({ ...userData, country: txt })}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.action}>
+            <MaterialCommunityIcons
+              name="map-marker-outline"
+              color="#333333"
+              size={20}
+            />
+            <TextInput
+              placeholder="City"
+              placeholderTextColor="#666666"
+              autoCorrect={false}
+              value={userData ? userData.city : ""}
+              onChangeText={(txt) => setUserData({ ...userData, city: txt })}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.action}>
+            <MaterialCommunityIcons
+              name="map-marker-outline"
+              color="#333333"
+              size={20}
+            />
+            <GooglePlacesAutocomplete
+              placeholder="Edit address..."
+              placeholderTextColor="#666666"
+              onPress={(data, details = null) => {
+                setUserData({
+                  ...userData,
+                  address: details.formatted_address,
+                });
+              }}
+              query={{
+                key: "AIzaSyDZ_unBvP3bbZljXfJOVDMDnQG6Onwa4kM",
+                language: "en", // language of the results
+              }}
+              styles={{
+                textInput: styles.textInput,
+                container: { flex: 1 },
+              }}
+              fetchDetails={true}
+            />
+          </View>
+          <View>
+            <Submit Title="Submit" onPress={handleUpdate} />
+          </View>
+        </Animated.View>
+      </ScrollView>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
         </View>
-
-        <View style={styles.action}>
-          <MaterialCommunityIcons
-            name="account-circle-outline"
-            size={20}
-            color="#333333"
-          />
-          <TextInput
-            placeholder="First Name"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            value={userData ? userData.username : ""}
-            onChangeText={(txt) => setUserData({ ...userData, username: txt })}
-            style={styles.textInput}
-          />
-        </View>
-        <View style={styles.action}>
-          <MaterialIcons name="alternate-email" size={20} color="#333333" />
-          <TextInput
-            placeholder="Last Name"
-            placeholderTextColor="#666666"
-            value={userData ? userData.email : ""}
-            onChangeText={(txt) => setUserData({ ...userData, email: txt })}
-            autoCorrect={false}
-            style={styles.textInput}
-          />
-        </View>
-        <View style={styles.action}>
-          <Ionicons name="ios-clipboard-outline" color="#333333" size={20} />
-          <TextInput
-            multiline
-            numberOfLines={3}
-            placeholder="About Me"
-            placeholderTextColor="#666666"
-            value={userData ? userData.brief : ""}
-            onChangeText={(txt) => setUserData({ ...userData, brief: txt })}
-            autoCorrect={true}
-            style={[styles.textInput, { height: 40 }]}
-          />
-        </View>
-        <View style={styles.action}>
-          <Ionicons name="ios-clipboard-outline" color="#333333" size={20} />
-          <TextInput
-            multiline
-            numberOfLines={3}
-            placeholder="About Me"
-            placeholderTextColor="#666666"
-            value={userData ? userData.overview : ""}
-            onChangeText={(txt) => setUserData({ ...userData, overview: txt })}
-            autoCorrect={true}
-            style={[styles.textInput, { height: 40 }]}
-          />
-        </View>
-        <View style={styles.action}>
-          <Feather name="phone" color="#333333" size={20} />
-          <TextInput
-            placeholder="Phone"
-            placeholderTextColor="#666666"
-            keyboardType="number-pad"
-            autoCorrect={false}
-            value={userData ? userData.cellphoneNumber : ""}
-            onChangeText={(txt) =>
-              setUserData({ ...userData, cellphoneNumber: txt })
-            }
-            style={styles.textInput}
-          />
-        </View>
-
-        <View style={styles.action}>
-          <FontAwesome name="globe" color="#333333" size={20} />
-          <TextInput
-            placeholder="Country"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            value={userData ? userData.country : ""}
-            onChangeText={(txt) => setUserData({ ...userData, country: txt })}
-            style={styles.textInput}
-          />
-        </View>
-        <View style={styles.action}>
-          <MaterialCommunityIcons
-            name="map-marker-outline"
-            color="#333333"
-            size={20}
-          />
-          <TextInput
-            placeholder="City"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            value={userData ? userData.city : ""}
-            onChangeText={(txt) => setUserData({ ...userData, city: txt })}
-            style={styles.textInput}
-          />
-        </View>
-        <View style={styles.action}>
-          <MaterialCommunityIcons
-            name="map-marker-outline"
-            color="#333333"
-            size={20}
-          />
-          <TextInput
-            placeholder="City"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            value={userData ? userData.address : ""}
-            onChangeText={(txt) => setUserData({ ...userData, address: txt })}
-            style={styles.textInput}
-          />
-        </View>
-        <View>
-          <Submit Title="Submit" onPress={handleUpdate} />
-        </View>
-      </Animated.View>
-    </View>
+      )}
+    </KeyboardAvoidingView>
   );
 };
 
@@ -378,5 +418,11 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 9999,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

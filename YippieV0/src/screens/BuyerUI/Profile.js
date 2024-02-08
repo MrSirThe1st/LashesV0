@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Image,
   Pressable,
+  Alert
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Edit from "../../componets/SettingsComponents.js/Edit";
@@ -26,13 +27,14 @@ import {
   query,
   where,
   getDocs,
-  onSnapshot
+  onSnapshot,
 } from "firebase/firestore";
-
+import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import BottomSheetLink from "../../componets/BottomSheets/BottomSheetLink";
 import BottomSheetReport from "../../componets/BottomSheets/BottomSheetReport";
 import Alert2 from "../../componets/Alerts/Alert2";
 import Alert3 from "../../componets/Alerts/Alert3";
+import { Modal } from "react-native";
 
 const SellerSettings = () => {
   const [profile, setProfile] = useState({
@@ -44,6 +46,8 @@ const SellerSettings = () => {
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [showBottomSheetLink, setShowBottomSheetLink] = useState(false);
   const [showBottomSheetReport, setShowBottomSheetReport] = useState(false);
+  const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
 
@@ -96,7 +100,6 @@ const SellerSettings = () => {
     fetchProfile();
   }, []);
 
-
   const navigation = useNavigation();
 
   const handleLogout = () => {
@@ -104,7 +107,31 @@ const SellerSettings = () => {
   };
   const handleDelete = () => {
     setShowDeleteAlert(true);
+    setPasswordModalVisible(true);
   };
+
+  
+  const promptForPassword = () => {
+    return new Promise((resolve, reject) => {
+      Alert.prompt(
+        "Enter your current password",
+        null,
+        [
+          {
+            text: "Cancel",
+            onPress: () => reject(new Error("Password prompt canceled")),
+            style: "cancel",
+          },
+          {
+            text: "OK",
+            onPress: (password) => resolve(password),
+          },
+        ],
+        "secure-text"
+      );
+    });
+  };
+
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -178,7 +205,7 @@ const SellerSettings = () => {
             </View>
           </Pressable>
         </View>
-        {/* <View style={styles.section}>
+        <View style={styles.section}>
           <Text style={styles.sectionHeader}>Content</Text>
           <Pressable
             onPress={() => {
@@ -195,7 +222,7 @@ const SellerSettings = () => {
               <View style={styles.rowSpacer} />
             </View>
           </Pressable>
-        </View> */}
+        </View>
       </ScrollView>
 
       <BottomSheetLink
@@ -234,13 +261,21 @@ const SellerSettings = () => {
           option1="Cancel"
           onOptionPress={async () => {
             try {
-              const password = "userCurrentPassword"; // Replace with your actual implementation
+              const currentPassword = await promptForPassword();
+
+              // Ensure that user is not undefined before accessing its properties
+              const user = FIREBASE_AUTH.currentUser;
+              if (!user) {
+                throw new Error("User is not authenticated");
+              }
+
               const credential = EmailAuthProvider.credential(
                 user.email,
-                password
+                currentPassword
               );
               await reauthenticateWithCredential(user, credential);
-              const user = FIREBASE_AUTH.currentUser;
+
+              
               const userId = user.uid;
               const profileCollection = collection(FIRESTORE_DB, "users");
               const q = query(profileCollection, where("uid", "==", userId));
@@ -255,8 +290,11 @@ const SellerSettings = () => {
 
               await signOut(FIREBASE_AUTH);
             } catch (error) {
-              console.log(error);
-              alert("An error happened: " + error.message);
+              console.error("Error during account deletion:", error.message);
+              alert(
+                "Error",
+                "Failed to delete account. Please try again."
+              );
             } finally {
               setShowDeleteAlert(false);
             }
@@ -371,7 +409,7 @@ const styles = StyleSheet.create({
     flexBasis: 0,
   },
   profileAvatarText: {
-    fontSize: 40, 
+    fontSize: 40,
     fontWeight: "bold",
     color: "#fff",
   },

@@ -3,14 +3,14 @@ import React from "react";
 import { ListItem, Avatar } from "react-native-elements";
 import { LongPressGestureHandler, State } from "react-native-gesture-handler";
 
-const ListItemComponent = ({
+const ListItemComponentSeller = ({
   id,
-  sellerName,
+  chatName,
   enterChat,
   sellerAvatar,
   lastMessage,
   onDeletePress,
-  sellerId,
+  recipient,
 }) => {
   const handleLongPress = () => {
     Alert.alert(
@@ -42,20 +42,21 @@ const ListItemComponent = ({
       <View>
         <ListItem
           key={id}
-          onPress={() => enterChat(id, sellerName, sellerId)}
+          onPress={() => enterChat(id, chatName, recipient)}
           bottomDivider
         >
           <View>
             <Avatar
-              rounded
-              source={{
-                uri: sellerAvatar,
-              }}
+              //   rounded
+              //   source={{
+              //     uri: sellerAvatar,
+              //   }}
+              style={styles.avatarBackground}
             />
           </View>
           <ListItem.Content>
             <ListItem.Title>
-              <Text style={{ fontWeight: "bold" }}>{sellerName}</Text>
+              <Text style={{ fontWeight: "bold" }}>{chatName}</Text>
             </ListItem.Title>
             <ListItem.Subtitle numberOfLines={1} ellipsizeMode="tail">
               <Text>{lastMessage}</Text>
@@ -67,6 +68,12 @@ const ListItemComponent = ({
   );
 };
 
-export default ListItemComponent;
+export default ListItemComponentSeller;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  avatarBackground: {
+    backgroundColor: "red", // Set your desired background color
+    borderRadius: 50, // Adjust the borderRadius as needed
+    padding: 20, // Add padding if necessary
+  },
+});

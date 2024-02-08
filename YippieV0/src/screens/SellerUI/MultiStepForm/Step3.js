@@ -75,6 +75,7 @@ const Step3 = ({ navigation, route }) => {
   const [brief, setBrief] = useState("");
   const [overview, setOverview] = useState("");
   const [category, setCategory] = useState("");
+  const [website, setWebsite] = useState("");
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -94,13 +95,14 @@ const Step3 = ({ navigation, route }) => {
       s.overview = data.overview;
       s.brief = data.brief;
       s.category = data.category;
+      s.website = data.website;
     });
     console.log("overview:", overview);
     console.log("brief:", brief);
     console.log("category:", category);
+    console.log("website:", website);
     navigation.navigate("Step4", { role: "seller" });
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
@@ -120,7 +122,8 @@ const Step3 = ({ navigation, route }) => {
                 }}
               >
                 <Text style={styles.title}>
-                  Tell us what you<Text style={{ color: "#1e90ff" }}> do </Text>
+                  Pick a <Text style={{ color: "#1e90ff" }}>category</Text>{" "}
+                  below
                 </Text>
               </View>
 
@@ -157,6 +160,11 @@ const Step3 = ({ navigation, route }) => {
                     )}
                     name="category"
                   />
+                  {errors.address && (
+                    <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                      add your addres before continuing.
+                    </Text>
+                  )}
                 </View>
               </View>
 
@@ -168,14 +176,17 @@ const Step3 = ({ navigation, route }) => {
                   }}
                   render={({ field: { onChange, onBlur, value } }) => (
                     <View style={styles.input}>
-                      <Text style={styles.inputLabel}>write a small brief about your business</Text>
+                      <Text style={styles.inputLabel}>
+                        Tell us what you{" "}
+                        <Text style={{ color: "#1e90ff" }}>do</Text>
+                      </Text>
                       <TextInput
                         autoCorrect={false}
                         onChangeText={(text) => {
                           setBrief(text);
                           onChange(text);
                         }}
-                        placeholder="eg. I make incredible nails"
+                        placeholder="eg. I am a tailor"
                         placeholderTextColor="#6b7280"
                         style={styles.inputControl}
                         value={brief}
@@ -186,13 +197,49 @@ const Step3 = ({ navigation, route }) => {
                   )}
                   name="brief"
                 />
+                {errors.address && (
+                  <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                    add your addres before continuing.
+                  </Text>
+                )}
+              </View>
+
+              <View style={styles.formEntry}>
+                <Controller
+                  control={control}
+                  rules={{
+                    required: false,
+                  }}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <View style={styles.input}>
+                      <Text style={styles.inputLabel}>
+                        Does your business have a{" "}
+                        <Text style={{ color: "#1e90ff" }}>website?</Text>
+                      </Text>
+                      <TextInput
+                        autoCorrect={false}
+                        onChangeText={(text) => {
+                          setWebsite(text);
+                          onChange(text);
+                        }}
+                        placeholder="www.Lashes.com"
+                        placeholderTextColor="#6b7280"
+                        style={styles.inputControl}
+                        value={website}
+                        autoCapitalize="none"
+                        onBlur={onBlur}
+                      />
+                    </View>
+                  )}
+                  name="website"
+                />
               </View>
 
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.title}>
                   Give us a small{" "}
-                  <Text style={{ color: "#1e90ff" }}> Overview </Text> about
-                  your business
+                  <Text style={{ color: "#1e90ff" }}>descripstion</Text> of your
+                  business below
                 </Text>
               </View>
 
@@ -225,6 +272,11 @@ const Step3 = ({ navigation, route }) => {
                   )}
                   name="overview"
                 />
+                {errors.address && (
+                  <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+                    add your addres before continuing.
+                  </Text>
+                )}
               </View>
             </View>
 
@@ -271,7 +323,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   title: {
-    fontSize: 30,
+    fontSize: 20,
     fontWeight: "bold",
   },
   dropdown: {

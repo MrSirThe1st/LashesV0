@@ -50,7 +50,6 @@ const SignUp = ({ navigation, route }) => {
           password
         );
         console.log(response);
-        alert("Signed up successfully");
         const userUID = response.user.uid;
         await addDoc(collection(db, "users"), {
           username: username,

@@ -10,7 +10,6 @@ import {
   Image,
   Pressable,
   FlatList,
-  Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -25,7 +24,12 @@ import { MaterialIcons } from "@expo/vector-icons";
 import Review from "./Review";
 import StarRatingDisplay from "../../componets/StarRatingDisplay";
 import { useNavigation } from "@react-navigation/native";
+import { Modal } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
+import { FontAwesome } from "@expo/vector-icons";
+
+import { Feather } from "@expo/vector-icons";
 
 export default function AccountInfo1() {
   const db = FIRESTORE_DB;
@@ -43,6 +47,10 @@ export default function AccountInfo1() {
   const [averageRating, setAverageRating] = useState(0);
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const isDeliveryAvailable = seller?.delivery ?? false;
+  const isPickupAvailable = seller?.pickup ?? false;
+  const isWebsiteAvailable = seller?.website ?? false;
+  const isWhatsappAvailable = seller?.whatsapp ?? false;
 
   const openImageFullscreen = (index) => {
     setSelectedImageIndex(index);
@@ -53,26 +61,22 @@ export default function AccountInfo1() {
     setImageModalVisible(false);
   };
 
-  const createChat = async () => {
-    const chatName = seller.username;
+  const openWhatsAppChat = async () => {
+    const sellerPhoneNumber = seller.cellphoneNumber;
+
+    const message = "Hello, I am interested in your product.";
+
+    const deepLink = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
 
     try {
-      // Create a new chat document
-      const chatRef = await addDoc(collection(db, "chats"), { chatName });
-
-      // Get the ID of the newly created chat
-      const chatId = chatRef.id;
-
-      navigation.navigate("Chat", {
-        recipient: seller,
-        chatName,
-        chatId, // Pass the chatId
-        profileImageUrl: profileImageUrl,
-      });
+      await Linking.openURL(deepLink);
     } catch (error) {
-      alert(error);
+      console.error("Error opening WhatsApp:", error);
     }
   };
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => null,
@@ -80,6 +84,8 @@ export default function AccountInfo1() {
   }, [navigation]);
 
   useEffect(() => {
+    if (seller) {
+    }
     const fetchReviews = async () => {
       try {
         const reviewsCollection = collection(FIRESTORE_DB, "reviews");
@@ -94,18 +100,15 @@ export default function AccountInfo1() {
             ...doc.data(),
           };
 
-          // Check if the review belongs to the current seller
           if (review.sellerId === seller.uid) {
             reviewsData.push(review);
-            totalRating += review.rating; // Accumulate ratings
+            totalRating += review.rating;
           }
         });
 
         setReviews(reviewsData);
         setReviewsCount(reviewsData.length);
-        console.log("Reviews Count:", reviewsData);
 
-        // Calculate the average rating
         const averageRating =
           reviewsData.length > 0 ? totalRating / reviewsData.length : 0;
         setAverageRating(averageRating.toFixed(1)); // Set the average rating state
@@ -116,8 +119,6 @@ export default function AccountInfo1() {
 
     fetchReviews();
   }, [seller.uid]);
-
-  // Add a new state variable for average rating
 
   return (
     <View style={{ flex: 1, backgroundColor: "white" }}>
@@ -216,14 +217,81 @@ export default function AccountInfo1() {
               <Text style={styles.aboutDescription}>{seller.overview}</Text>
             </View>
           </View>
-          <View style={styles.ChatContainer}>
-            <Pressable style={styles.Chat} onPress={createChat}>
-              <View style={styles.Chatbtn}>
-                <Text style={styles.ChatbtnText}>Chat</Text>
-                <FeatherIcon color="white" name="send" size={16} />
+
+          {/* delivery */}
+          <View style={{ flexDirection: "row", paddingVertical: 10 }}>
+            {isDeliveryAvailable && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <Feather name="truck" size={18} color="#1e90ff" />
+                  <Text
+                    style={{
+                      paddingLeft: 4,
+                      color: "#48496c",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Delivery available
+                  </Text>
+                </View>
               </View>
-            </Pressable>
+            )}
+            {isPickupAvailable && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 8,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: "row",
+
+                    alignItems: "center",
+                  }}
+                >
+                  <FontAwesome name="home" size={24} color="#1e90ff" />
+                  <Text
+                    style={{
+                      paddingLeft: 4,
+                      color: "#48496c",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Pickup available
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
+
+          {/* delivery */}
+
+          {/* chat */}
+
+          <View style={styles.ChatContainer}>
+            {isWebsiteAvailable && (
+              <View style={styles.Websitebtn}>
+                <FontAwesome name="globe" size={18} color="#1e90ff" />
+                <Text>{seller.website}</Text>
+              </View>
+            )}
+            {isWhatsappAvailable && (
+              <Pressable style={styles.Chat} onPress={openWhatsAppChat}>
+                <View style={styles.Chatbtn}>
+                  <Text style={styles.ChatbtnText}>Chat</Text>
+                  <FontAwesome name="whatsapp" size={16} color="#25D366" />
+                </View>
+              </Pressable>
+            )}
+          </View>
+          {/* chat */}
         </View>
         <View style={styles.SeeAll}>
           {reviewsCount > 0 && (
@@ -246,20 +314,12 @@ export default function AccountInfo1() {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={reviews.slice(0, 3)}
+            data={reviews.slice(0, 5)}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <View>
                 <View style={styles.profileContainerR}>
                   <View style={styles.profileTop}>
-                    <View style={styles.avatar}>
-                      <Image
-                        alt=""
-                        style={styles.avatarImgR}
-                        source={require("../../assets/homeAssets/happy.png")}
-                      />
-                    </View>
-
                     <View style={styles.profileBody}>
                       <Text style={styles.profileTitle}>{item.username}</Text>
                       <StarRatingDisplay rating={item.rating} starSize={20} />
@@ -367,7 +427,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 6,
     paddingHorizontal: 10,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: "#1e90ff",
   },
   container: {
@@ -416,7 +476,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    paddingLeft: 14,
   },
   profileTitle: {
     fontSize: 18,
@@ -430,7 +489,7 @@ const styles = StyleSheet.create({
     color: "#778599",
   },
   profileDescription: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: "bold",
     lineHeight: 18,
     paddingVertical: 5,
@@ -496,6 +555,7 @@ const styles = StyleSheet.create({
 
   avatar: {
     position: "relative",
+    marginRight: 8,
   },
   avatarImg: {
     width: 60,
@@ -526,7 +586,7 @@ const styles = StyleSheet.create({
   },
   photos: {
     position: "relative",
-    height: 250,
+    height: 300,
     overflow: "hidden",
   },
   photosPagination: {
@@ -588,8 +648,22 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 4,
     paddingHorizontal: 10,
-    elevation: 1,
-    backgroundColor: "#b3d9ff",
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#25D366",
+    marginVertical: 4,
+  },
+  Websitebtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#1e90ff",
+    marginRight: 5,
   },
   ChatbtnText: {
     fontSize: 14,
@@ -597,11 +671,13 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginRight: 4,
     fontSize: 13,
-    color: "white",
+    color: "#25D366",
   },
   ChatContainer: {
-    alignSelf: "flex-end",
     marginVertical: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   SeeAll: {
     flexDirection: "row",
@@ -618,5 +694,10 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     fontSize: 20,
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

@@ -45,7 +45,6 @@ const Login1 = ({ navigation }) => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-      alert("Signed in successfully");
       fetchDocument(response.user.uid);
     } catch (error) {
       console.log(error);
@@ -92,8 +91,6 @@ const Login1 = ({ navigation }) => {
           // Redirect to the appropriate screen
           const targetScreen =
             userRole === "seller" ? "SellerHome" : "BuyerHome";
-
-          
         } else {
           console.log("Invalid user role:", userRole);
         }
@@ -107,10 +104,8 @@ const Login1 = ({ navigation }) => {
     }
   }
 
-
-
   return (
-    <KeyboardAwareScrollView style={styles.container}>
+   
       <SafeAreaView style={styles.container}>
         <View style={styles.containerForm}>
           <View style={styles.header}>
@@ -121,9 +116,7 @@ const Login1 = ({ navigation }) => {
               source={require("../../../assets/adaptive-icon.png")}
             />
 
-            <Text style={styles.title}>
-              Sign in to Your Accoun
-            </Text>
+            <Text style={styles.title}>Sign in to Your Accoun</Text>
 
             <Text style={styles.subtitle}>Welcom back</Text>
           </View>
@@ -196,8 +189,13 @@ const Login1 = ({ navigation }) => {
             </TouchableOpacity>
           </View> */}
         </View>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#1e90ff" />
+          </View>
+        )}
       </SafeAreaView>
-    </KeyboardAwareScrollView>
+
   );
 };
 
@@ -208,7 +206,6 @@ const styles = StyleSheet.create({
   },
   containerForm: {
     flex: 1,
-
     padding: 24,
   },
   header: {
@@ -356,6 +353,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });
 

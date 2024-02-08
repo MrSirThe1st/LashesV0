@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View, FlatList, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import {
   collection,
   query,
@@ -14,6 +21,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -48,6 +56,7 @@ const Favorites = () => {
           } else {
             console.error("User document not found.");
           }
+          setLoading(false);
         } catch (error) {
           console.error("Error fetching favorites: ", error);
         }
@@ -59,7 +68,11 @@ const Favorites = () => {
 
   return (
     <View style={styles.container}>
-      {favorites.length > 0 ? (
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      ) : favorites.length > 0 ? (
         <FlatList
           data={favorites}
           keyExtractor={(item) => item.uid}
@@ -92,10 +105,10 @@ const Favorites = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+   
     padding: 16,
     backgroundColor: "white",
+    
   },
   title: {
     fontSize: 20,
@@ -108,6 +121,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     margin: 10,
     borderRadius: 12,
+    
   },
   thumbnail: {
     width: 50,
@@ -147,6 +161,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#878787",
     marginBottom: 24,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

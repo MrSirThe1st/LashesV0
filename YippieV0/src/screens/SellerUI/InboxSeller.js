@@ -7,6 +7,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import ListItemComponent from "../../componets/ListItemComponent";
+import ListItemComponentSeller from "../../componets/ListItemComponentSeller";
 import { FIRESTORE_DB } from "../../config/firebase";
 import {
   collection,
@@ -41,61 +42,89 @@ const InboxSeller = ({ navigation }) => {
 
   useEffect(() => {
     const userId = authUser.uid;
-
-    // Query for documents where user._id === userId
-    const userQuery = query(
+    const q = query(
       collectionGroup(db, "chats"),
       orderBy("createdAt", "desc"),
-      where("user._id", "==", userId)
+      where("recipientId", "==", userId),
+      // where("user._id", "==", userId)
     );
 
-    // Query for documents where recipientId === userId
-    const recipientQuery = query(
-      collectionGroup(db, "chats"),
-      orderBy("createdAt", "desc"),
-      where("recipientId", "==", userId)
-    );
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      try {
+        const uniqueChats = {};
 
-    // Execute both queries concurrently
-    const unsubscribeUser = onSnapshot(userQuery, (userSnapshot) => {
-      // Handle user documents
-      const userChats = userSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        data: doc.data(),
-      }));
+        snapshot.forEach((doc) => {
+          const chatId = doc.id;
+          const chatData = doc.data();
+          const recipient = chatData.senderId;
+          const user = chatData.user;
+          const chatName = chatData.chatName;
+          // const sellerAvatar = chatData.sellerAvatar;
+          const createdAtMillis = chatData.createdAt
+            ? chatData.createdAt.toMillis()
+            : 0;
+          if (
+            !uniqueChats[chatName] ||
+            createdAtMillis > uniqueChats[chatName].createdAtMillis
+          ) {
+            uniqueChats[chatName] = {
+              id: chatId,
+              data: {
+                ...chatData,
+                recipient,
+                // sellerAvatar,
+                createdAtMillis,
+              },
+              lastMessage: "",
+            };
+          }
+        });
 
-      // Merge or handle the results as needed
-      setChats((prevChats) => [...prevChats, ...userChats]);
-      setLoading(false);
-    });
+        const sortedChats = Object.values(uniqueChats);
+        setChats(sortedChats);
 
-    const unsubscribeRecipient = onSnapshot(
-      recipientQuery,
-      (recipientSnapshot) => {
-        // Handle recipient documents
-        const recipientChats = recipientSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }));
+        sortedChats.forEach(({ id, data }) => {
+          const messagesRef = collection(db, "chats", id, "messages");
+          const messagesQuery = query(
+            messagesRef,
+            orderBy("createdAt", "desc"),
+            limit(1)
+          );
 
-        // Merge or handle the results as needed
-        setChats((prevChats) => [...prevChats, ...recipientChats]);
+          onSnapshot(messagesQuery, (messagesSnapshot) => {
+            messagesSnapshot.forEach((messageDoc) => {
+              const lastMessage = messageDoc.data().text || "";
+              console.log("LAST MESSAGE:", lastMessage);
+
+              const chatIndex = sortedChats.findIndex((chat) => chat.id === id);
+
+              if (chatIndex !== -1) {
+                sortedChats[chatIndex].lastMessage = lastMessage;
+                console.log("UPDATED CHATS:", sortedChats);
+                setChats([...sortedChats]);
+              }
+            });
+          });
+        });
+
+        // Update loading state to indicate that data has been loaded
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // Update loading state to indicate that an error occurred
         setLoading(false);
       }
-    );
+    });
 
-    return () => {
-      // Unsubscribe when the component is unmounted
-      unsubscribeUser();
-      unsubscribeRecipient();
-    };
-  }, [authUser.uid, db]);
+    return unsubscribe;
+  }, []);
 
-  const enterChat = (id, chatName, recipient) => {
-    navigation.navigate("Chat", {
+  const enterChat = (id, chatName, recipient, sellerAvatar) => {
+    navigation.navigate("ChatSeller", {
       id,
       chatName,
       recipient,
+      // sellerAvatar,
     });
   };
 
@@ -161,14 +190,14 @@ const InboxSeller = ({ navigation }) => {
             chats.map(
               ({
                 id,
-                data: { chatName, recipient, profileImageUrl, lastMessage },
+                data: { chatName, recipient, sellerAvatar, lastMessage },
               }) => (
-                <ListItemComponent
+                <ListItemComponentSeller
                   key={id}
                   id={id}
                   chatName={chatName}
                   recipient={recipient}
-                  profileImageUrl={profileImageUrl}
+                  // sellerAvatar={sellerAvatar}
                   lastMessage={lastMessage}
                   enterChat={enterChat}
                   onDeletePress={() => deleteConversation(id)}

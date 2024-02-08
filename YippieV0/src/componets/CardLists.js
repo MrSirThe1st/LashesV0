@@ -81,7 +81,7 @@ export const CardItem = ({ seller, navigation }) => {
   const handleFavoriteClick = async () => {
     if (currentUser) {
       try {
-        const uid = "uid"; 
+        const uid = "uid";
         const usersCollectionRef = collection(FIRESTORE_DB, "users");
         const userQuery = query(
           usersCollectionRef,
@@ -99,22 +99,13 @@ export const CardItem = ({ seller, navigation }) => {
             (fav) => fav.uid === seller.uid
           );
 
+          let updatedFavorites = [];
+
           if (isFavorite) {
             // If already favorited, remove from favorites
-            const updatedFavorites = favoritesArray.filter(
+            updatedFavorites = favoritesArray.filter(
               (fav) => fav.uid !== seller.uid
             );
-
-            // Update favorites in Firestore
-            await updateDoc(userDoc.ref, { favorites: updatedFavorites });
-
-            // Update local storage
-            await AsyncStorage.setItem(
-              "favorites",
-              JSON.stringify(updatedFavorites)
-            );
-
-            toggleFavourite(false);
             console.log("Removed from favorites!");
           } else {
             // If not favorited, add to favorites
@@ -125,27 +116,23 @@ export const CardItem = ({ seller, navigation }) => {
               address: seller.address,
               thumbnail: seller.thumbnails[0],
             };
-
-            const updatedFavorites = [...favoritesArray, newFavorite];
-
-            // Update favorites in Firestore
-            await updateDoc(userDoc.ref, { favorites: updatedFavorites });
-
-            // Update local storage
-            await AsyncStorage.setItem(
-              "favorites",
-              JSON.stringify(updatedFavorites)
-            );
-
-            toggleFavourite(true);
+            updatedFavorites = [...favoritesArray, newFavorite];
             console.log("Added to favorites!");
           }
+
+          // Update local storage immediately
+          AsyncStorage.setItem("favorites", JSON.stringify(updatedFavorites));
+          toggleFavourite(!isFavorite); // Update state immediately
+
+          // Perform asynchronous update to Firestore
+          await updateDoc(userDoc.ref, { favorites: updatedFavorites });
         }
       } catch (error) {
         console.error("Error updating favorites: ", error);
       }
     }
   };
+
 
 
   function formatDistance(distance) {
@@ -203,7 +190,7 @@ export const CardItem = ({ seller, navigation }) => {
                 <Text style={styles.cardRowItemTextName}>
                   {seller.username}{" "}
                 </Text>
-                {/* <TouchableOpacity
+                <TouchableOpacity
                   onPress={handleFavoriteClick}
                   style={{
                     backgroundColor: "#e6f5ff",
@@ -219,7 +206,7 @@ export const CardItem = ({ seller, navigation }) => {
                     size={24}
                     color={isFavourite ? "#FA8072" : "white"}
                   />
-                </TouchableOpacity> */}
+                </TouchableOpacity>
                 <Text style={styles.cardTitle}>{seller.category.label}</Text>
               </View>
             </View>

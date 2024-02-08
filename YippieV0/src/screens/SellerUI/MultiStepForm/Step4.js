@@ -52,6 +52,11 @@ const Step4 = ({ navigation, route }) => {
   const country = WizardStore.getRawState().country;
   const category = WizardStore.getRawState().category;
   const address = WizardStore.getRawState().address;
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [websiteEnabled, setWebsiteEnabled] = useState(false);
+  const [deliveryEnabled, setDeliveryEnabled] = useState(false);
+  const [pickupEnabled, setPickupEnabled] = useState(false);
+
 
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState([]);
@@ -185,7 +190,6 @@ const Step4 = ({ navigation, route }) => {
           password
         );
         console.log(response);
-        alert("Signed up successfully");
 
         // Get the UID of the newly created user
         const userUID = response.user.uid;
@@ -205,6 +209,10 @@ const Step4 = ({ navigation, route }) => {
           city,
           country,
           address,
+          whatsapp: whatsappEnabled,
+          website: websiteEnabled,
+          delivery: deliveryEnabled,
+          pickup: pickupEnabled,
         });
 
         console.log("User document created successfully");
