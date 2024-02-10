@@ -19,6 +19,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, addDoc, collection } from "firebase/firestore";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import { Ionicons } from "@expo/vector-icons";
+import PhoneInput from "react-native-phone-input";
 
 
 
@@ -27,6 +28,7 @@ const SignUp = ({ navigation, route }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [username, setUsername] = useState("");
+  const [cellphoneNumber, setCellphoneNumber] = useState("");
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState("");
   const auth = FIREBASE_AUTH;
@@ -56,8 +58,9 @@ const SignUp = ({ navigation, route }) => {
           role: role,
           email: email,
           uid: userUID,
-          address:address,
+          address: address,
           role: role,
+          cellphoneNumber: cellphoneNumber,
         }).then(() => {
           console.log("data submitted");
         });
@@ -81,7 +84,7 @@ const SignUp = ({ navigation, route }) => {
       <View style={styles.form}>
         <Text style={styles.title}>Create an Account</Text>
         <Text style={styles.subtitle}>
-          Please enter your information below to create a new account.
+          Please enter your information below to create your account.
         </Text>
 
         <TextInput
@@ -100,6 +103,13 @@ const SignUp = ({ navigation, route }) => {
           onChangeText={(text) => setEmail(text)}
           placeholder={"Email Address"}
           keyboardType={"email-address"}
+        />
+
+        <PhoneInput
+          initialCountry="za"
+          onPressFlag={() => {}}
+          onChangePhoneNumber={(number) => setCellphoneNumber(number)}
+          style={styles.input}
         />
 
         {/* <TextInput

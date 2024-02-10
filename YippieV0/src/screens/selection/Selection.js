@@ -23,7 +23,7 @@ const Selection = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <Video
         ref={videoRef}
-        source={require("../../../video/watermarked_preview.mp4")}
+        source={require("../../../video/video4.mp4")}
         style={styles.backgroundVideo}
         resizeMode="cover"
         shouldPlay

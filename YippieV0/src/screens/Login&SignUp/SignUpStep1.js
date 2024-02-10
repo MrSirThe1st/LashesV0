@@ -23,6 +23,7 @@ import { WizardStore } from "../../Store";
 const SignUpStep1 = ({ navigation, route }) => {
   const [loading, setLoading] = useState(false);
   const [address, setAddress] = useState("");
+
   const auth = FIREBASE_AUTH;
   const db = FIRESTORE_DB;
   const { role } = route.params;

@@ -8,7 +8,10 @@ import {
   TouchableOpacity,
   Image,
   Pressable,
-  Alert
+  Alert,
+  TextInput,
+  Modal,
+  ActivityIndicator,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Edit from "../../componets/SettingsComponents.js/Edit";
@@ -19,7 +22,8 @@ import { FIREBASE_AUTH } from "../../config/firebase";
 import { signOut } from "firebase/auth";
 import { FIRESTORE_DB } from "../../config/firebase";
 import EditBuyer from "../../componets/EditBuyer";
-
+import BackArrow from "../../componets/BackArrow";
+import BackButton from "../../componets/BackButton";
 import {
   doc,
   deleteDoc,
@@ -34,7 +38,6 @@ import BottomSheetLink from "../../componets/BottomSheets/BottomSheetLink";
 import BottomSheetReport from "../../componets/BottomSheets/BottomSheetReport";
 import Alert2 from "../../componets/Alerts/Alert2";
 import Alert3 from "../../componets/Alerts/Alert3";
-import { Modal } from "react-native";
 
 const SellerSettings = () => {
   const [profile, setProfile] = useState({
@@ -44,9 +47,13 @@ const SellerSettings = () => {
   const [username, setUsername] = useState("");
   const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
+  const [showReauthModal, setShowReauthModal] = useState(false);
   const [showBottomSheetLink, setShowBottomSheetLink] = useState(false);
   const [showBottomSheetReport, setShowBottomSheetReport] = useState(false);
   const [passwordModalVisible, setPasswordModalVisible] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
@@ -94,6 +101,8 @@ const SellerSettings = () => {
         return () => unsubscribe();
       } catch (error) {
         console.error("Error fetching profile: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -106,11 +115,43 @@ const SellerSettings = () => {
     setShowLogoutAlert(true);
   };
   const handleDelete = () => {
-    setShowDeleteAlert(true);
-    setPasswordModalVisible(true);
+    setShowReauthModal(true);
   };
 
-  
+  const handleDeleteAccount = async () => {
+    try {
+      setLoading(true);
+      const credential = EmailAuthProvider.credential(email, password);
+      await reauthenticateWithCredential(user, credential);
+      const profileCollection = collection(FIRESTORE_DB, "users");
+      const q = query(profileCollection, where("uid", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      const deletionPromises = querySnapshot.docs.map(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+      await Promise.all(deletionPromises);
+      await user.delete();
+      await signOut(FIREBASE_AUTH);
+    } catch (error) {
+      let errorMessage = "An error occurred. Please try again.";
+      if (error.code === "auth/wrong-password") {
+        errorMessage = "Invalid password. Please try again.";
+      } else if (error.code === "auth/invalid-email") {
+        errorMessage = "Invalid email address. Please try again.";
+      } else if (error.code === "auth/requires-recent-login") {
+        errorMessage = "Please log in again to delete your account.";
+      } else {
+        errorMessage = "An error occurred. Please try again later.";
+      }
+      alert(errorMessage);
+    } finally {
+      setShowReauthModal(false);
+      setLoading(false);
+    }
+  };
+
   const promptForPassword = () => {
     return new Promise((resolve, reject) => {
       Alert.prompt(
@@ -131,7 +172,6 @@ const SellerSettings = () => {
       );
     });
   };
-
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -224,7 +264,52 @@ const SellerSettings = () => {
           </Pressable>
         </View>
       </ScrollView>
+      <Modal
+        visible={showReauthModal}
+        onRequestClose={() => setShowReauthModal(false)}
+      >
+        <View style={styles.overlay}>
+          <View style={styles.alert}>
+            {profile.profileImage ? (
+              <Image
+                style={styles.alertAvatar}
+                source={{ uri: profile.profileImage }}
+              />
+            ) : (
+              <Image style={styles.alertAvatar} />
+            )}
 
+            <Text style={styles.alertTitle}>{profile.username}</Text>
+            <Text style={styles.alertMessage}>
+              Are you sure you want to Delete your account?
+            </Text>
+
+            <View>
+              <View style={styles.reauthContainer}>
+                <Text style={styles.reauthLabel}>Email</Text>
+                <TextInput
+                  style={styles.inputR}
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
+                />
+                <Text style={styles.reauthLabel}>Password</Text>
+                <TextInput
+                  style={styles.inputR}
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  secureTextEntry={true}
+                />
+              </View>
+              <TouchableOpacity
+                style={styles.btn}
+                onPress={handleDeleteAccount}
+              >
+                <Text style={styles.btnText}>Delete account</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <BottomSheetLink
         showBottomSheetLink={showBottomSheetLink}
         setShowBottomSheetLink={setShowBottomSheetLink}
@@ -275,7 +360,6 @@ const SellerSettings = () => {
               );
               await reauthenticateWithCredential(user, credential);
 
-              
               const userId = user.uid;
               const profileCollection = collection(FIRESTORE_DB, "users");
               const q = query(profileCollection, where("uid", "==", userId));
@@ -291,10 +375,7 @@ const SellerSettings = () => {
               await signOut(FIREBASE_AUTH);
             } catch (error) {
               console.error("Error during account deletion:", error.message);
-              alert(
-                "Error",
-                "Failed to delete account. Please try again."
-              );
+              alert("Error", "Failed to delete account. Please try again.");
             } finally {
               setShowDeleteAlert(false);
             }
@@ -303,6 +384,11 @@ const SellerSettings = () => {
           profileImage={profile.profileImage}
           username={profile.username}
         />
+      )}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -412,5 +498,105 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
     color: "#fff",
+  },
+  overlay: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    alignSelf: "center",
+  },
+  alert: {
+    backgroundColor: "white",
+    padding: 24,
+    borderRadius: 8,
+    width: "90%",
+    maxWidth: 450,
+  },
+  alertAvatar: {
+    width: 110,
+    height: 110,
+    borderRadius: 9999,
+    alignSelf: "center",
+    marginBottom: 10,
+  },
+  alertTitle: {
+    marginBottom: 16,
+    fontSize: 25,
+    lineHeight: 44,
+    fontWeight: "700",
+    color: "#000",
+    textAlign: "center",
+  },
+  alertMessage: {
+    marginBottom: 24,
+    textAlign: "center",
+    fontSize: 16,
+    lineHeight: 22,
+    fontWeight: "500",
+    color: "#9a9a9a",
+  },
+  btnContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 8,
+  },
+  btn: {
+    marginRight: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: "#FA8072",
+    borderColor: "#f75249",
+  },
+  btnText: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: "600",
+    color: "#fff",
+  },
+  btnSecondary: {
+    flex: 1,
+    marginLeft: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    backgroundColor: "transparent",
+    borderColor: "#1e90ff",
+  },
+  btnSecondaryText: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: "600",
+    color: "#1e90ff",
+  },
+  inputR: {
+    height: 44,
+    backgroundColor: "#EFF1F5",
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#222",
+    marginBottom: 12,
+  },
+  reauthLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+    color: "#989898",
+    marginBottom: 10,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

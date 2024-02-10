@@ -12,6 +12,7 @@ import {
   Button,
   TextInput,
   Switch,
+  ActivityIndicator,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import Edit from "../../componets/SettingsComponents.js/Edit";
@@ -50,6 +51,7 @@ const SellerSettings = () => {
   const [showBottomSheetLink, setShowBottomSheetLink] = useState(false);
   const [showBottomSheetReport, setShowBottomSheetReport] = useState(false);
   const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [websiteEnabled, setWebsiteEnabled] = useState(false);
   const [deliveryEnabled, setDeliveryEnabled] = useState(false);
   const [pickupEnabled, setPickupEnabled] = useState(false);
@@ -79,6 +81,8 @@ const SellerSettings = () => {
         });
       } catch (error) {
         console.error(" ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -146,6 +150,7 @@ const SellerSettings = () => {
 
   const handleDeleteAccount = async () => {
     try {
+      setLoading(true);
       const credential = EmailAuthProvider.credential(email, password);
       await reauthenticateWithCredential(user, credential);
       const profileCollection = collection(FIRESTORE_DB, "users");
@@ -173,6 +178,7 @@ const SellerSettings = () => {
       alert(errorMessage);
     } finally {
       setShowReauthModal(false);
+      setLoading(false);
     }
   };
 
@@ -485,6 +491,11 @@ const SellerSettings = () => {
           username={profile.username}
         />
       )}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -688,5 +699,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     color: "#0c0c0c",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

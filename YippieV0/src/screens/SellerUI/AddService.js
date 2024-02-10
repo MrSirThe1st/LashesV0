@@ -48,8 +48,7 @@ const AddService = () => {
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
   const [showSuccessToast, setShowSuccessToast] = useState(false);
-  
-
+  const [loading, setLoading] = useState(true);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -101,12 +100,10 @@ const AddService = () => {
         const response = await fetch(imageUri);
         const blob = await response.blob();
         await uploadBytes(storageReference, blob);
-        // Get the download URL for the uploaded image
         const downloadURL = await getDownloadURL(storageReference);
         return downloadURL;
       });
 
-      // Wait for all uploadPromises to complete
       const imageUrls = await Promise.all(uploadPromises);
 
       return imageUrls;
@@ -237,24 +234,18 @@ const AddService = () => {
               value={description}
               autoCapitalize="none"
               onChangeText={(text) => setDescription(text)}
-              placeholder={"description(Optianal)"}
+              placeholder={"description"}
               keyboardType={"default"}
             />
           </View>
         </View>
 
         <View style={styles.overlay}>
-          {uploading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#1e90ff" />
+          <TouchableOpacity onPress={handleUploadImages} mode="outlined">
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Upload</Text>
             </View>
-          ) : (
-            <TouchableOpacity onPress={handleUploadImages} mode="outlined">
-              <View style={styles.btn}>
-                <Text style={styles.btnText}>Upload</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          </TouchableOpacity>
         </View>
         {showSuccessToast && (
           <Toast
@@ -263,6 +254,11 @@ const AddService = () => {
           />
         )}
       </View>
+      {uploading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -438,5 +434,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

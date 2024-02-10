@@ -92,9 +92,9 @@ const Favorites = () => {
       ) : (
         <View style={styles.empty}>
           <FontAwesome5 name="heart-broken" size={36} color="#FA8072" />
-          <Text style={styles.emptyTitle}>What!? No Favorites Yet ?</Text>
+          <Text style={styles.emptyTitle}>No Favorites Yet</Text>
           <Text style={styles.emptyDescription}>
-            The sellers you heart will appear here
+            Your favorite sellers will appear here
           </Text>
         </View>
       )}

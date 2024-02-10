@@ -39,7 +39,7 @@ const AddProduct = () => {
   const [price, setPrice] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  // const [category, setCategory] = useState("");
   const [selectedImages, setSelectedImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const navigation = useNavigation();
@@ -50,6 +50,7 @@ const AddProduct = () => {
   const user = FIREBASE_AUTH.currentUser;
   const userId = user.uid;
   const [showSuccessToast, setShowSuccessToast] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -57,7 +58,7 @@ const AddProduct = () => {
       allowsEditing: false,
       aspect: [4, 3],
       quality: 1,
-      allowsMultipleSelection: true,
+      allowsMultipleSelection: false,
     });
 
     if (!result.canceled) {
@@ -239,11 +240,11 @@ const AddProduct = () => {
               value={description}
               autoCapitalize="none"
               onChangeText={(text) => setDescription(text)}
-              placeholder={"description(Optianal)"}
+              placeholder={"description(Optional)"}
               keyboardType={"default"}
             />
           </View>
-          <View style={styles.inputContainer}>
+          {/* <View style={styles.inputContainer}>
             <TextInput
               style={styles.input}
               value={category}
@@ -252,21 +253,15 @@ const AddProduct = () => {
               placeholder={"About the product(Optianal)"}
               keyboardType={"default"}
             />
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.overlay}>
-          {uploading ? (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#1e90ff" />
+          <TouchableOpacity onPress={handleUploadImages} mode="outlined">
+            <View style={styles.btn}>
+              <Text style={styles.btnText}>Upload</Text>
             </View>
-          ) : (
-            <TouchableOpacity onPress={handleUploadImages} mode="outlined">
-              <View style={styles.btn}>
-                <Text style={styles.btnText}>Upload</Text>
-              </View>
-            </TouchableOpacity>
-          )}
+          </TouchableOpacity>
         </View>
         {showSuccessToast && (
           <Toast
@@ -275,6 +270,11 @@ const AddProduct = () => {
           />
         )}
       </View>
+      {uploading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 };
@@ -461,5 +461,11 @@ const styles = StyleSheet.create({
   },
   Xbutton: {
     paddingVertical: 5,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

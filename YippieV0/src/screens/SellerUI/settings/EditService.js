@@ -9,6 +9,7 @@ import {
   Alert,
   Animated,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import {
   doc,
@@ -25,17 +26,19 @@ import { FIREBASE_AUTH, FIRESTORE_DB } from "../../../config/firebase";
 
 const EditService = ({ navigation }) => {
   const route = useRoute();
-  const { img, label, ordered, likes, price } = route.params;
+  const { img, label, ordered, likes, price, description } = route.params;
+  const [loading, setLoading] = useState(true);
   const firestore = FIRESTORE_DB;
   const auth = FIREBASE_AUTH;
   const [userData, setUserData] = useState({
     label: label,
     price: price,
+    description: description,
   });
 
   const handleUpdate = async () => {
     const userUID = auth.currentUser.uid;
-
+    setLoading(true);
     try {
       const usersCollectionRef = collection(FIRESTORE_DB, "users");
       const q = query(usersCollectionRef, where("uid", "==", userUID));
@@ -50,6 +53,7 @@ const EditService = ({ navigation }) => {
               ...service,
               name: userData.label,
               price: userData.price,
+              description: userData.description,
             };
           }
           return service;
@@ -69,10 +73,14 @@ const EditService = ({ navigation }) => {
       }
     } catch (error) {
       console.error("Error updating document:", error);
+    } finally {
+      setLoading(false); // Set loading to false after handling the update operation
     }
   };
 
-
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -117,10 +125,30 @@ const EditService = ({ navigation }) => {
             style={styles.textInput}
           />
         </View>
+        <View style={styles.action}>
+          <MaterialCommunityIcons
+            name="currency-usd"
+            size={20}
+            color="#333333"
+          />
+          <TextInput
+            placeholder="Price"
+            placeholderTextColor="#666666"
+            autoCorrect={false}
+            value={userData ? userData.description : ""}
+            onChangeText={(txt) => setUserData({ ...userData, description: txt })}
+            style={styles.textInput}
+          />
+        </View>
         <View>
           <Submit Title="Submit" onPress={handleUpdate} />
         </View>
       </Animated.View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </View>
   );
 };
@@ -158,5 +186,11 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingLeft: 10,
     color: "#333333",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

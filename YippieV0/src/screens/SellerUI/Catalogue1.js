@@ -9,6 +9,7 @@ import {
   Image,
   Pressable,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../config/firebase";
@@ -16,6 +17,7 @@ import { collection, getDocs, where, query, addDoc } from "firebase/firestore";
 import { useRoute } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
 import Toast from "../../componets/Toast";
+import { AntDesign } from "@expo/vector-icons";
 
 const Catalogue1 = ({ navigation }) => {
   const [services, setServices] = useState([]);
@@ -28,6 +30,20 @@ const Catalogue1 = ({ navigation }) => {
   const [currentUserUID, setCurrentUserUID] = useState(null);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isImageModalVisible, setImageModalVisible] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedImageUri, setSelectedImageUri] = useState("");
+
+  const openImageFullscreen = ( uri) => {
+    
+    setSelectedImageUri(uri);
+    setImageModalVisible(true);
+  };
+
+  const closeImageFullscreen = () => {
+    setImageModalVisible(false);
+  };
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -167,7 +183,7 @@ const Catalogue1 = ({ navigation }) => {
   const renderProductItem = ({ item }) => {
     return (
       <View>
-        <Pressable>
+        <Pressable onPress={() => openImageFullscreen(item.img)}>
           <View style={styles.card}>
             <Image
               alt=""
@@ -241,6 +257,26 @@ const Catalogue1 = ({ navigation }) => {
             </Text>
           </Pressable>
         </View>
+        <Modal
+          visible={isImageModalVisible}
+          animationType="slide"
+          transparent={false}
+          onRequestClose={closeImageFullscreen}
+        >
+          <View style={{ flex: 1, backgroundColor: "black" }}>
+            {/* Display the selected image in full screen */}
+            <Image
+              source={{ uri: selectedImageUri }}
+              style={{ flex: 1, resizeMode: "contain" }}
+            />
+            <TouchableOpacity
+              style={{ position: "absolute", top: 20, left: 20 }}
+              onPress={closeImageFullscreen}
+            >
+              <AntDesign name="close" size={30} color="#1e90ff" />
+            </TouchableOpacity>
+          </View>
+        </Modal>
       </View>
     );
   };
@@ -261,9 +297,7 @@ const Catalogue1 = ({ navigation }) => {
         <View style={styles.empty}>
           <FeatherIcon color="#1e90ff" name="box" size={36} />
           <Text style={styles.emptyTitle}>No services</Text>
-          <Text style={styles.emptyDescription}>
-            come back later
-          </Text>
+          <Text style={styles.emptyDescription}>come back later</Text>
         </View>
       ) : (
         <FlatList

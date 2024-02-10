@@ -10,7 +10,8 @@ import {
   Animated,
   Image,
   Pressable,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -31,6 +32,7 @@ import Submit from "../../componets/Submit";
 import * as ImagePicker from "expo-image-picker";
 import { Platform } from "react-native";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+import PhoneInput from "react-native-phone-input";
 
 const EditAccountBuyer = () => {
   const firestore = FIRESTORE_DB;
@@ -92,6 +94,7 @@ const EditAccountBuyer = () => {
           username: userData.username,
           email: userData.email,
           address: userData.address,
+          cellphoneNumber: userData.cellphoneNumber,
         });
 
         console.log("User Updated!");
@@ -138,23 +141,6 @@ const EditAccountBuyer = () => {
           </Text>
           {/* <Text>{user.uid}</Text> */}
         </View>
-
-        <View style={styles.action}>
-          <MaterialCommunityIcons
-            name="account-circle-outline"
-            size={20}
-            color="#333333"
-          />
-          <TextInput
-            placeholder="First Name"
-            placeholderTextColor="#666666"
-            autoCorrect={false}
-            value={userData ? userData.username : ""}
-            onChangeText={(txt) => setUserData({ ...userData, username: txt })}
-            style={styles.textInput}
-          />
-        </View>
-
         <View style={styles.action}>
           <MaterialCommunityIcons
             name="map-marker-outline"
@@ -177,6 +163,36 @@ const EditAccountBuyer = () => {
               container: { flex: 1 },
             }}
             fetchDetails={true}
+          />
+        </View>
+        <View style={styles.action}>
+          <MaterialCommunityIcons
+            name="account-circle-outline"
+            size={20}
+            color="#333333"
+          />
+          <TextInput
+            placeholder="First Name"
+            placeholderTextColor="#666666"
+            autoCorrect={false}
+            value={userData ? userData.username : ""}
+            onChangeText={(txt) => setUserData({ ...userData, username: txt })}
+            style={styles.textInput}
+          />
+        </View>
+        <View style={styles.action}>
+          <Feather name="phone" color="#333333" size={20} />
+          <PhoneInput
+            ref={(ref) => {
+              this.phone = ref;
+            }}
+            initialCountry="za"
+            onPressFlag={() => {}}
+            value={userData ? userData.cellphoneNumber : ""}
+            onChangePhoneNumber={(number) =>
+              setUserData({ ...userData, cellphoneNumber: number })
+            }
+            style={styles.textInput}
           />
         </View>
 

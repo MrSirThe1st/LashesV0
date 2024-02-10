@@ -9,7 +9,7 @@ import {
   Image,
   Pressable,
   Animated,
-  Alert
+  Alert,
 } from "react-native";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import {
@@ -21,6 +21,7 @@ import {
   deleteField,
   getDoc,
   updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import FeatherIcon from "react-native-vector-icons/Feather";
@@ -52,7 +53,6 @@ const Service = () => {
     }, 3000); // Adjust the duration as needed
   };
 
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -61,28 +61,33 @@ const Service = () => {
 
         const servicesCollection = collection(FIRESTORE_DB, "users");
         const q = query(servicesCollection, where("uid", "==", userId));
-        const querySnapshot = await getDocs(q);
 
-        const servicesData = [];
-        querySnapshot.forEach((doc) => {
-          const userData = doc.data();
-          const userServices = userData.services || [];
+        // Create a real-time listener for the services collection
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+          const servicesData = [];
+          snapshot.forEach((doc) => {
+            const userData = doc.data();
+            const userServices = userData.services || [];
 
-          userServices.forEach((service) => {
-            servicesData.push({
-              img:
-                service.images && service.images.length > 0
-                  ? service.images[0]
-                  : "",
-              label: service.name || "",
-              ordered: 0,
-              likes: 0,
-              price: service.price || 0,
+            userServices.forEach((service) => {
+              servicesData.push({
+                img:
+                  service.images && service.images.length > 0
+                    ? service.images[0]
+                    : "",
+                label: service.name || "",
+                description: service.description,
+                likes: 0,
+                price: service.price || 0,
+              });
             });
           });
+
+          setServices(servicesData);
         });
 
-        setServices(servicesData);
+        // Return the unsubscribe function to clean up the listener
+        return unsubscribe;
       } catch (error) {
         console.error("Error fetching services: ", error);
       }
@@ -136,7 +141,6 @@ const Service = () => {
     }
   };
 
-
   const showDeleteConfirmationAlert = () => {
     return new Promise((resolve) => {
       Alert.alert(
@@ -161,87 +165,90 @@ const Service = () => {
   return (
     <View style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
-        {services.map(({ img, label, ordered, likes, price }, index) => {
-          return (
-            <View
-              key={index}
-              style={[styles.cardWrapper, index === 0 && { borderTopWidth: 0 }]}
-            >
-              <Pressable key={index}>
-                <View style={styles.card}>
-                  <Image
-                    alt=""
-                    resizeMode="cover"
-                    source={{ uri: img }}
-                    style={styles.cardImg}
-                  />
+        {services.map(
+          ({ img, label, ordered, likes, price, description }, index) => {
+            return (
+              <View
+                key={index}
+                style={[
+                  styles.cardWrapper,
+                  index === 0 && { borderTopWidth: 0 },
+                ]}
+              >
+                <Pressable key={index}>
+                  <View style={styles.card}>
+                    <Image
+                      alt=""
+                      resizeMode="cover"
+                      source={{ uri: img }}
+                      style={styles.cardImg}
+                    />
 
-                  <View style={styles.cardBody}>
-                    <Text numberOfLines={1} style={styles.cardTitle}>
-                      {label}
-                    </Text>
+                    <View style={styles.cardBody}>
+                      <Text numberOfLines={1} style={styles.cardTitle}>
+                        {label}
+                      </Text>
 
-                    <View style={styles.cardRow}>
-                      <View style={styles.cardRowItem}>
-                        {/* <FontAwesome color="#173153" name="bed" size={13} /> */}
+                      <View style={styles.cardRow}>
+                        <View style={styles.cardRowItem}>
+                          <Text style={styles.cardRowItemText} numberOfLines={1}>
+                            {description}
+                          </Text>
+                        </View>
+                      </View>
 
-                        <Text style={styles.cardRowItemText}>{ordered}</Text>
+                      <Text style={styles.cardPrice}>
+                        {price.toLocaleString("en-US")}
+                      </Text>
+                    </View>
+
+                    <View style={styles.menu}>
+                      <View style={styles.contentContainer}>
+                        <Pressable
+                          onPress={() =>
+                            navigation.navigate("EditService", {
+                              img: services[index].img,
+                              label: services[index].label,
+                              ordered: services[index].ordered,
+                              price: services[index].price,
+                              description: services[index].description,
+                            })
+                          }
+                          style={styles.row}
+                        >
+                          <View style={[styles.rowIcon]}>
+                            <FeatherIcon
+                              color="#1e90ff"
+                              name="edit-3"
+                              size={22}
+                            />
+                          </View>
+                        </Pressable>
+                        <Pressable
+                          style={styles.row}
+                          onPress={() => deleteService(index)}
+                        >
+                          <View style={[styles.rowIcon]}>
+                            <MaterialCommunityIcons
+                              name="delete-forever"
+                              size={22}
+                              color="#1e90ff"
+                            />
+                          </View>
+                        </Pressable>
                       </View>
                     </View>
-
-                    <Text style={styles.cardPrice}>
-                      R{price.toLocaleString("en-US")}
-                    </Text>
                   </View>
-
-                  <View style={styles.menu}>
-                    <View style={styles.contentContainer}>
-                      <Pressable
-                        onPress={() =>
-                          navigation.navigate("EditService", {
-                            img: services[index].img,
-                            label: services[index].label,
-                            ordered: services[index].ordered,
-                            likes: services[index].likes,
-                            price: services[index].price,
-                          })
-                        }
-                        style={styles.row}
-                      >
-                        <View style={[styles.rowIcon]}>
-                          <FeatherIcon
-                            color="#1e90ff"
-                            name="edit-3"
-                            size={22}
-                          />
-                        </View>
-                      </Pressable>
-                      <Pressable
-                        style={styles.row}
-                        onPress={() => deleteService(index)}
-                      >
-                        <View style={[styles.rowIcon]}>
-                          <MaterialCommunityIcons
-                            name="delete-forever"
-                            size={22}
-                            color="#1e90ff"
-                          />
-                        </View>
-                      </Pressable>
-                    </View>
-                  </View>
-                </View>
-              </Pressable>
-            </View>
-          );
-        })}
+                </Pressable>
+              </View>
+            );
+          }
+        )}
       </ScrollView>
       {loading && (
-        <ActivityIndicator
-          size="large"
-          color="#1e90ff"
-          style={styles.loadingIndicator}
-        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
       )}
       {toastVisible && (
         <Toast
@@ -339,5 +346,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });
