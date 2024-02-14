@@ -18,6 +18,7 @@ import { useRoute } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
 import Toast from "../../componets/Toast";
 import { AntDesign } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 
 const Catalogue1 = ({ navigation }) => {
   const [services, setServices] = useState([]);
@@ -33,9 +34,9 @@ const Catalogue1 = ({ navigation }) => {
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedImageUri, setSelectedImageUri] = useState("");
+  const sellerPhoneNumber = seller.cellphoneNumber;
 
-  const openImageFullscreen = ( uri) => {
-    
+  const openImageFullscreen = (uri) => {
     setSelectedImageUri(uri);
     setImageModalVisible(true);
   };
@@ -44,10 +45,10 @@ const Catalogue1 = ({ navigation }) => {
     setImageModalVisible(false);
   };
 
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const sellerId = route.params.seller.uid;
 
         const servicesCollection = collection(FIRESTORE_DB, "users");
@@ -77,6 +78,8 @@ const Catalogue1 = ({ navigation }) => {
         setServices(servicesData);
       } catch (error) {
         console.error("Error fetching products: ", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -144,17 +147,19 @@ const Catalogue1 = ({ navigation }) => {
 
       const userData = userSnapshot.docs[0].data();
       const username = userData.username;
+      const buyerCellphone = userData.cellphoneNumber;
 
       const order = {
         orderNumber: Math.floor(Math.random() * 100000),
         products: orderedServices,
-        totalQuantity: totalQuantity,
+        totalQuantity: totalQuantity, 
         totalPrice: totalPrice,
         customerID: currentUserUID,
         sellerID: seller.uid,
         sellerName: seller.username,
         customerUsername: username,
         status: "PENDING",
+        buyerCellphone,
       };
 
       // Wait for the order to be added
@@ -287,9 +292,11 @@ const Catalogue1 = ({ navigation }) => {
   );
 
   const totalPrice = services.reduce(
-    (total, item, index) => total + (cart[index] || 0) * (item.price || 0),
+    (total, item, index) =>
+      total + (cart[index] || 0) * parseFloat(item.price || 0),
     0
   );
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -477,5 +484,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#878787",
     marginBottom: 24,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
   },
 });

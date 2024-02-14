@@ -8,6 +8,7 @@ import {
   View,
   Image,
   Pressable,
+  Modal
 } from "react-native";
 import FeatherIcon from "react-native-vector-icons/Feather";
 import { FIRESTORE_DB, FIREBASE_AUTH } from "../../config/firebase";
@@ -16,6 +17,8 @@ import { useRoute } from "@react-navigation/native";
 import { onAuthStateChanged } from "firebase/auth";
 import Toast from "../../componets/Toast";
 import { ActivityIndicator } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
+import * as Linking from "expo-linking";
 
 const Catalogue1 = ({ navigation }) => {
   const [products, setProducts] = useState([]);
@@ -30,6 +33,23 @@ const Catalogue1 = ({ navigation }) => {
   const [isImageModalVisible, setImageModalVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedImageUri, setSelectedImageUri] = useState("");
+  
+
+  const openWhatsAppChat = async () => {
+    const sellerPhoneNumber = seller.cellphoneNumber;
+
+    const message = "Hello, I am interested in your product.";
+
+    const deepLink = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    try {
+      await Linking.openURL(deepLink);
+    } catch (error) {
+      console.error("Error opening WhatsApp:", error);
+    }
+  };
 
   const openImageFullscreen = (uri) => {
     setSelectedImageUri(uri);
@@ -43,6 +63,7 @@ const Catalogue1 = ({ navigation }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        setLoading(true)
         const sellerId = route.params.seller.uid;
 
         const productsCollection = collection(FIRESTORE_DB, "users");
@@ -72,6 +93,8 @@ const Catalogue1 = ({ navigation }) => {
         setProducts(productsData);
       } catch (error) {
         console.error("Error fetching products: ", error);
+      } finally{
+        setLoading(false)
       }
     };
 
@@ -140,6 +163,7 @@ const Catalogue1 = ({ navigation }) => {
 
       const userData = userSnapshot.docs[0].data();
       const username = userData.username;
+      const buyerCellphone = userData.cellphoneNumber
 
       const order = {
         orderNumber: Math.floor(Math.random() * 100000),
@@ -151,12 +175,13 @@ const Catalogue1 = ({ navigation }) => {
         sellerName: seller.username,
         customerUsername: username,
         status: "PENDING",
+        buyerCellphone,
       };
 
       // Wait for the order to be added
       await addDoc(collection(FIRESTORE_DB, "Orders"), order);
 
-      // Order added successfully, now reset the cart
+      // Order added successfully then reset the cart
       setCart({});
       console.log("Cart:", cart);
       console.log("Services:", products);
@@ -484,5 +509,11 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#878787",
     marginBottom: 24,
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
   },
 });

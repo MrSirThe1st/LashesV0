@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   ActivityIndicator,
+  FlatList,
 } from "react-native";
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -44,6 +45,7 @@ const EditAccount = () => {
   const [transferred, setTransferred] = useState(0);
   const [userData, setUserData] = useState(null);
   const [selectedProfile, setSelectedProfile] = useState([]);
+  const [thumbnails, setThumbnails] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -74,12 +76,10 @@ const EditAccount = () => {
       }
     } catch (error) {
       console.error("Error picking profile image:", error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
-
-
 
   async function fetchDocument(userUID) {
     const usersCollectionRef = collection(FIRESTORE_DB, "users");
@@ -93,6 +93,7 @@ const EditAccount = () => {
         const document = querySnapshot.docs[0];
         const userData = document.data();
         setUserData(userData);
+        setThumbnails(userData.thumbnails || []);
         console.log(userData);
       } else {
         console.log("No matching document found!");
@@ -129,7 +130,8 @@ const EditAccount = () => {
           address: userData.address,
           overview: userData.overview,
           profile: userData.profile,
-          // userImg: imgUrl,
+          thumbnails: thumbnails,
+          Userwebsite: userData.Userwebsite,
         });
 
         console.log("User Updated!");
@@ -152,11 +154,49 @@ const EditAccount = () => {
     fetchDocument(userUID);
   }, []);
 
+  const renderThumbnailItem = ({ item, index }) => (
+    <View style={styles.thumbnailItem}>
+      <Image source={{ uri: item }} style={styles.thumbnailImage} />
+      <Pressable
+        style={styles.deleteButton}
+        onPress={() => deleteThumbnail(index)}
+      >
+        <Feather name="x-circle" size={20} color="#1e90ff" />
+      </Pressable>
+    </View>
+  );
 
+  const deleteThumbnail = (index) => {
+    const updatedThumbnails = [...thumbnails];
+    updatedThumbnails.splice(index, 1); 
+    setThumbnails(updatedThumbnails); 
+  };
+
+  const addThumbnails = async () => {
+    try {
+      setLoading(true);
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        aspect: [4, 3],
+        quality: 1,
+        allowsMultipleSelection: true,
+      });
+
+      if (!result.canceled) {
+        const selectedThumbnails = result.assets.map((asset) => asset.uri);
+        setThumbnails([...thumbnails, ...selectedThumbnails]);
+      }
+    } catch (error) {
+      console.error("Error picking images:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}>
-      <ScrollView style={styles.container}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.profile}>
           <Pressable style={styles.profileAvatarWrapper} onPress={pickProfile}>
             {userData && userData.profile && userData.profile.length > 0 ? (
@@ -205,10 +245,23 @@ const EditAccount = () => {
           <View style={styles.action}>
             <MaterialIcons name="alternate-email" size={20} color="#333333" />
             <TextInput
-              placeholder="Last Name"
+              placeholder=""
               placeholderTextColor="#666666"
               value={userData ? userData.email : ""}
               onChangeText={(txt) => setUserData({ ...userData, email: txt })}
+              autoCorrect={false}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.action}>
+            <MaterialIcons name="alternate-email" size={20} color="#333333" />
+            <TextInput
+              placeholder="Last Name"
+              placeholderTextColor="#666666"
+              value={userData ? userData.Userwebsite : ""}
+              onChangeText={(txt) =>
+                setUserData({ ...userData, Userwebsite: txt })
+              }
               autoCorrect={false}
               style={styles.textInput}
             />
@@ -300,7 +353,7 @@ const EditAccount = () => {
               }}
               query={{
                 key: "AIzaSyDZ_unBvP3bbZljXfJOVDMDnQG6Onwa4kM",
-                language: "en", // language of the results
+                language: "en",
               }}
               styles={{
                 textInput: styles.textInput,
@@ -308,6 +361,19 @@ const EditAccount = () => {
               }}
               fetchDetails={true}
             />
+          </View>
+          <View style={styles.thumbnailsContainer}>
+            <FlatList
+              data={thumbnails}
+              horizontal
+              renderItem={renderThumbnailItem}
+              keyExtractor={(item, index) => index.toString()}
+              showsHorizontalScrollIndicator={false}
+            />
+            <Pressable style={styles.addButton} onPress={addThumbnails}>
+              <Text style={styles.addButtonText}>Add</Text>
+              <Feather name="plus" size={20} color="white" />
+            </Pressable>
           </View>
           <View>
             <Submit Title="Submit" onPress={handleUpdate} />
@@ -424,5 +490,43 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(255, 255, 255, 0.8)",
+  },
+  thumbnailsContainer: {
+    marginTop: 20,
+    paddingHorizontal: 10,
+    alignItems:'center'
+  },
+  thumbnailsTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  thumbnailItem: {
+    marginRight: 10,
+  },
+  thumbnailImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+  },
+  deleteButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 5,
+  },
+  addButton: {
+    backgroundColor: "#1e90ff",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginTop: 10,
+    alignItems: "center",
+    borderRadius:12,
+    width:"20%",
+    flexDirection:'row'
+  },
+  addButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });

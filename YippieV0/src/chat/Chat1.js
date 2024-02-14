@@ -26,7 +26,7 @@
 //   const currentUserId = authUser.uid;
 
 //   useLayoutEffect(() => {
-//     navigation.setOptions({
+//     navigation.setOptions({z
 //       title: chatName,
 //     });
 //   }, [navigation, chatName]);

@@ -11,9 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "Dev.Marc.Lashes"
     },
     "android": {
       "adaptiveIcon": {
@@ -21,10 +24,18 @@
         "backgroundColor": "#ffffff"
       },
       "package": "Dev.Marc.Lashes",
-      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/lashes.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0104dcd0-d8c1-4f9b-983b-acf924f952b2"
+      }
     }
   }
 }

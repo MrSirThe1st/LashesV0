@@ -28,7 +28,6 @@ import { FIRESTORE_DB, FIREBASE_AUTH } from "../config/firebase";
 import { doc, getDocs, collection, query, where } from "firebase/firestore";
 import SkeletonHome from "../componets/SkeletonHome";
 import SearchPage from "../screens/BuyerUI/SearchPage";
-import Chat from "../chat/Chat";
 import Catalogue from "../screens/SellerUI/Catalogue";
 import CategoryScreen from "../categories/CategoryScreen";
 import ProductDescription from "../screens/SellerUI/ProductDescription";
@@ -51,7 +50,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SignUpStep1 from "../screens/Login&SignUp/SignUpStep1";
 import InboxSeller from "../screens/SellerUI/InboxSeller";
 import { ActivityIndicator, View } from "react-native";
-import ChatSeller from "../chat/ChatSeller";
 import Cart from "../screens/BuyerUI/Cart";
 import CartSeller from "../screens/SellerUI/CartSeller";
 import { Feather } from "@expo/vector-icons";
@@ -109,18 +107,6 @@ const HomeTabNavigator = () => (
       }}
     />
 
-    <Tab.Screen
-      name="Cart"
-      component={Cart}
-      options={{
-        tabBarIcon: ({ focused }) =>
-          focused ? (
-            <Feather name="shopping-cart" size={24} color="#1e90ff" />
-          ) : (
-            <Feather name="shopping-cart" size={24} color="black" />
-          ),
-      }}
-    />
 
     <Tab.Screen
       name="Profile"
@@ -210,19 +196,7 @@ const HomeTabNavigatorSeller = () => (
       }}
     />
 
-    <Tab.Screen
-      name="Cart"
-      component={CartSeller}
-      options={{
-        tabBarLabel: "",
-        tabBarIcon: ({ focused }) =>
-          focused ? (
-            <Feather name="shopping-cart" size={24} color="#1e90ff" />
-          ) : (
-            <Feather name="shopping-cart" size={24} color="black" />
-          ),
-      }}
-    />
+ 
 
     <Tab.Screen
       name="Profile"
@@ -375,24 +349,7 @@ const Navigation = ({ navigation }) => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
-                <Stack.Screen
-                  name="Chat"
-                  component={Chat}
-                  options={{
-                    headerShown: true,
-                    title: "",
-                    headerStyle: { backgroundColor: "white" },
-                  }}
-                />
-                <Stack.Screen
-                  name="ChatSeller"
-                  component={ChatSeller}
-                  options={{
-                    headerShown: true,
-                    title: "",
-                    headerStyle: { backgroundColor: "white" },
-                  }}
-                />
+       
 
                 <Stack.Screen
                   name="Catalogue"
@@ -582,24 +539,7 @@ const Navigation = ({ navigation }) => {
                     headerStyle: { backgroundColor: "white" },
                   }}
                 />
-                <Stack.Screen
-                  name="Chat"
-                  component={Chat}
-                  options={{
-                    headerShown: true,
-                    title: "",
-                    headerStyle: { backgroundColor: "white" },
-                  }}
-                />
-                <Stack.Screen
-                  name="ChatSeller"
-                  component={ChatSeller}
-                  options={{
-                    headerShown: true,
-                    title: "",
-                    headerStyle: { backgroundColor: "white" },
-                  }}
-                />
+    
                 <Stack.Screen
                   name="Catalogue"
                   component={Catalogue}

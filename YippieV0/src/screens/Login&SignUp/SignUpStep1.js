@@ -48,9 +48,9 @@ const SignUpStep1 = ({ navigation, route }) => {
       <View style={styles.container}>
         <BackButton navigation={navigation} />
         <View style={styles.form}>
-          <Text style={styles.title}>Where do you live ?</Text>
+          <Text style={styles.title}>What is your address ?</Text>
           <Text style={styles.subtitle}>
-            This helps us give you results best on your location
+            This helps us give you results based on your location
           </Text>
           <Controller
             control={control}
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   form: {
-    flex: 1, // Takes remaining space in the container
+    flex: 1, 
     paddingHorizontal: 16,
     marginTop: 35,
     justifyContent: "space-between",

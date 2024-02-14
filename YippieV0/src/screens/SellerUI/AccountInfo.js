@@ -279,7 +279,7 @@ export default function AccountInfo() {
             {isWebsiteAvailable && (
               <View style={styles.Websitebtn}>
                 <FontAwesome name="globe" size={18} color="#1e90ff" />
-                <Text>{seller.website}</Text>
+                <Text numberOfLines={1}>{seller.Userwebsite}</Text>
               </View>
             )}
             {isWhatsappAvailable && (
@@ -664,6 +664,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#1e90ff",
     marginRight: 5,
+    maxWidth:"80%"
   },
   ChatbtnText: {
     fontSize: 14,

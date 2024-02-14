@@ -19,13 +19,16 @@ import {
   query,
   where,
   deleteDoc,
-  updateDoc
+  updateDoc,
+  onSnapshot,
 } from "firebase/firestore";
 import { FIREBASE_APP } from "../../config/firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ActivityIndicator } from "react-native";
 import { Alert } from "react-native";
+import * as Linking from "expo-linking";
+import { FontAwesome } from "@expo/vector-icons";
 
 const OrderSeller = () => {
   const [sellerOrders, setSellerOrders] = useState([]);
@@ -33,49 +36,53 @@ const OrderSeller = () => {
   const auth = getAuth(FIREBASE_APP);
   const [completedOrders, setCompletedOrders] = useState([]);
 
- const fetchSellerOrders = async () => {
-   try {
-     const user = auth.currentUser;
+  const fetchSellerOrders = async () => {
+    try {
+      const user = auth.currentUser;
 
-     if (user) {
-       const sellerOrdersCollection = collection(FIRESTORE_DB, "Orders");
-       const q = query(
-         sellerOrdersCollection,
-         where("sellerID", "==", user.uid)
-       );
-       const querySnapshot = await getDocs(q);
+      if (user) {
+        const sellerOrdersCollection = collection(FIRESTORE_DB, "Orders");
+        const q = query(
+          sellerOrdersCollection,
+          where("sellerID", "==", user.uid)
+        );
 
-       const ordersData = [];
-       const completedOrdersData = [];
-       querySnapshot.forEach((doc) => {
-         const orderData = { id: doc.id, ...doc.data() };
-         ordersData.push(orderData);
-         if (orderData.status === "COMPLETED") {
-           completedOrdersData.push(orderData.id);
-         }
-       });
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const ordersData = [];
+          const completedOrdersData = [];
 
-       setSellerOrders(ordersData);
-       setCompletedOrders(completedOrdersData);
-     }
-   } catch (error) {
-     console.error("Error fetching seller orders: ", error);
-   } finally {
-     setLoading(false);
-   }
- };
+          querySnapshot.forEach((doc) => {
+            const orderData = { id: doc.id, ...doc.data() };
+            ordersData.push(orderData);
+            if (orderData.status === "COMPLETED") {
+              completedOrdersData.push(orderData.id);
+            }
+          });
 
- useEffect(() => {
-   const unsubscribe = onAuthStateChanged(auth, (user) => {
-     if (user && user.uid) {
-       fetchSellerOrders(user);
-     } else {
-       console.error("User not authenticated");
-     }
-   });
+          setSellerOrders(ordersData);
+          setCompletedOrders(completedOrdersData);
+          setLoading(false);
+        });
 
-   return () => unsubscribe();
- }, []);
+        return unsubscribe; 
+      }
+    } catch (error) {
+      console.error("Error fetching seller orders: ", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user && user.uid) {
+        fetchSellerOrders(user);
+      } else {
+        console.error("User not authenticated");
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // const deleteDocument = async (orderIndex) => {
   //   try {
@@ -156,6 +163,21 @@ const OrderSeller = () => {
     }
   };
 
+  const openWhatsAppChat = async (order) => {
+    const PhoneNumber = order.buyerCellphone;
+
+    const message = `Hello ${order.customerUsername}`;
+
+    const deepLink = `https://wa.me/${PhoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    try {
+      await Linking.openURL(deepLink);
+    } catch (error) {
+      console.error("Error opening WhatsApp:", error);
+    }
+  };
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -163,80 +185,109 @@ const OrderSeller = () => {
         <ActivityIndicator size="large" color="#1e90ff" />
       ) : sellerOrders.length > 0 ? (
         <View>
-          {sellerOrders.map((order, index) => (
-            <View key={index} style={styles.orderContainer}>
-              <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <Text style={styles.orderTitle}>{order.customerUsername}</Text>
+          {sellerOrders
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .map((order, index) => (
+              <View key={index} style={styles.orderContainer}>
                 <View
-                  style={[
-                    styles.orderStatus,
-                    {
-                      backgroundColor:
-                        order.status === "COMPLETED" ? "#66bb6a" : "#e0e0e0",
-                    },
-                  ]}
+                  style={{ justifyContent: "center", alignItems: "center" }}
                 >
-                  <Text style={styles.orderStatusText}>{order.status}</Text>
-                </View>
-                <Text style={styles.orderTitle}>
-                  Order Number #{order.orderNumber}
-                </Text>
-              </View>
-
-              {order.products.map((product, productIndex) => (
-                <View key={productIndex} style={styles.productContainer}>
-                  <Image
-                    resizeMode="cover"
-                    source={{ uri: product.img }}
-                    style={styles.cardImg}
-                  />
                   <View
                     style={{
                       flexDirection: "row",
+                      alignItems: "center",
                       justifyContent: "space-between",
-                      flex: 1,
+                      width: "100%",
                     }}
                   >
-                    <View style={{ flexDirection: "column" }}>
-                      <Text>{product.label}</Text>
-                      <Text>{product.price}</Text>
-                      <Text>Quantity {product.quantity}</Text>
-                    </View>
+                    <Text style={styles.orderTitle}>
+                      {order.customerUsername}
+                    </Text>
+                    <Pressable
+                      style={styles.Chat}
+                      onPress={() => openWhatsAppChat(order)}
+                    >
+                      <View style={styles.Chatbtn}>
+                        <Text style={styles.ChatbtnText}>Contact</Text>
+                        <FontAwesome
+                          name="whatsapp"
+                          size={16}
+                          color="#25D366"
+                        />
+                      </View>
+                    </Pressable>
+                  </View>
 
-                    <View>
-                      <Text>{product.totalPrice}</Text>
+                  <View
+                    style={[
+                      styles.orderStatus,
+                      {
+                        backgroundColor:
+                          order.status === "COMPLETED" ? "#66bb6a" : "#e0e0e0",
+                      },
+                    ]}
+                  >
+                    <Text style={styles.orderStatusText}>{order.status}</Text>
+                  </View>
+                  <Text style={styles.orderTitle}>
+                    Order Number #{order.orderNumber}
+                  </Text>
+                </View>
+
+                {order.products.map((product, productIndex) => (
+                  <View key={productIndex} style={styles.productContainer}>
+                    <Image
+                      resizeMode="cover"
+                      source={{ uri: product.img }}
+                      style={styles.cardImg}
+                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        flex: 1,
+                      }}
+                    >
+                      <View style={{ flexDirection: "column" }}>
+                        <Text>{product.label}</Text>
+                        <Text>{product.price}</Text>
+                        <Text>Quantity {product.quantity}</Text>
+                      </View>
+
+                      <View>
+                        <Text>{product.totalPrice}</Text>
+                      </View>
                     </View>
                   </View>
-                </View>
-              ))}
-              <View
-                style={{
-                  alignItems: "flex-end",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text style={styles.orderTotal}>Total</Text>
-                <Pressable
-                  onPress={() => markAsCompleted(index)}
-                  disabled={completedOrders.includes(order.id)} // Disable if already completed
-                  style={[
-                    styles.CompletedStatus,
-                    {
-                      backgroundColor: completedOrders.includes(order.id)
-                        ? "#d3d3d3"
-                        : "#a5d6b8",
-                    },
-                  ]}
+                ))}
+                <View
+                  style={{
+                    alignItems: "flex-end",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                  }}
                 >
-                  <Text style={styles.CompletedStatusText}>
-                    Mark as completed
-                  </Text>
-                </Pressable>
-                <Text style={styles.orderTotal}>{order.totalPrice}</Text>
+                  <Text style={styles.orderTotal}>Total</Text>
+                  <Pressable
+                    onPress={() => markAsCompleted(index)}
+                    disabled={completedOrders.includes(order.id)}
+                    style={[
+                      styles.CompletedStatus,
+                      {
+                        backgroundColor: completedOrders.includes(order.id)
+                          ? "#d3d3d3"
+                          : "#a5d6b8",
+                      },
+                    ]}
+                  >
+                    <Text style={styles.CompletedStatusText}>
+                      Mark as completed
+                    </Text>
+                  </Pressable>
+                  <Text style={styles.orderTotal}>{order.totalPrice}</Text>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
         </View>
       ) : (
         <View style={styles.empty}>
@@ -337,6 +388,26 @@ const styles = StyleSheet.create({
   CompletedStatusText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  Chatbtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    backgroundColor: "white",
+    borderWidth: 1,
+    borderColor: "#25D366",
+    marginVertical: 4,
+  },
+  ChatbtnText: {
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: "600",
+    marginRight: 4,
+    fontSize: 13,
+    color: "#25D366",
   },
 });
 

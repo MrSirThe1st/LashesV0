@@ -121,7 +121,7 @@ const Orders = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       {loading ? (
         <ActivityIndicator size="large" color="#1e90ff" />
-      ) : sellerOrders.length > 0 ? (
+      ) : sellerOrders && sellerOrders.length > 0 ? (
         <View>
           {sellerOrders.map((order, index) => (
             <View key={index} style={styles.orderContainer}>

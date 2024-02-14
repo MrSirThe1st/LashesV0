@@ -52,12 +52,11 @@ const Step4 = ({ navigation, route }) => {
   const country = WizardStore.getRawState().country;
   const category = WizardStore.getRawState().category;
   const address = WizardStore.getRawState().address;
-  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
-  const [websiteEnabled, setWebsiteEnabled] = useState(false);
-  const [deliveryEnabled, setDeliveryEnabled] = useState(false);
-  const [pickupEnabled, setPickupEnabled] = useState(false);
-
-
+  const Userwebsite = WizardStore.getRawState().Userwebsite;
+  const [whatsappEnabled, setWhatsappEnabled] = useState(true);
+  const [websiteEnabled, setWebsiteEnabled] = useState(true);
+  const [deliveryEnabled, setDeliveryEnabled] = useState(true);
+  const [pickupEnabled, setPickupEnabled] = useState(true);
   const [selectedImages, setSelectedImages] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -213,6 +212,7 @@ const Step4 = ({ navigation, route }) => {
           website: websiteEnabled,
           delivery: deliveryEnabled,
           pickup: pickupEnabled,
+          Userwebsite: Userwebsite,
         });
 
         console.log("User document created successfully");
@@ -242,21 +242,16 @@ const Step4 = ({ navigation, route }) => {
               }}
             >
               <Text style={styles.title}>
-                Take a last look at your{" "}
-                <Text style={{ color: "#1e90ff" }}>Profile</Text>
+                Add a few pictues that showcase your{" "}
+                <Text style={{ color: "#1e90ff" }}>work</Text>
               </Text>
             </View>
 
             <View style={styles.summaryEntriesContainer}>
               <View style={styles.photos}>
                 <Swiper
-                  renderPagination={(index, total) => (
-                    <View style={styles.photosPagination}>
-                      <Text style={styles.photosPaginationText}>
-                        {index + 1} / {total}
-                      </Text>
-                    </View>
-                  )}
+                  key={selectedImages.length} 
+                  showsPagination={true}
                 >
                   {selectedImages.map((imageUri, index) => (
                     <Image
@@ -282,8 +277,7 @@ const Step4 = ({ navigation, route }) => {
                 }}
               >
                 <Text style={styles.title}>
-                  Select Your
-                  <Text style={{ color: "#1e90ff" }}> Logo</Text>
+                  Add a<Text style={{ color: "#1e90ff" }}> Logo</Text>
                 </Text>
               </View>
               <View style={styles.profile}>
@@ -307,16 +301,17 @@ const Step4 = ({ navigation, route }) => {
       </ScrollView>
 
       <View style={styles.overlay}>
-        {loading ? (
-          <ActivityIndicator size="large" color="#1e90ff" />
-        ) : (
-          <TouchableOpacity onPress={signUp} mode="outlined">
-            <View style={styles.btn}>
-              <Text style={styles.btnText}>Finish</Text>
-            </View>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity onPress={signUp} mode="outlined">
+          <View style={styles.btn}>
+            <Text style={styles.btnText}>Finish</Text>
+          </View>
+        </TouchableOpacity>
       </View>
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#1e90ff" />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -367,23 +362,15 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "#fff",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
     paddingTop: 12,
     paddingHorizontal: 16,
     paddingBottom: 12,
     shadowColor: "#000",
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
+    justifyContent:'center'
   },
   photos: {
     marginTop: 12,
@@ -466,5 +453,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+  },
+  loadingContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
 });

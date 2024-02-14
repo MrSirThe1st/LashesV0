@@ -15,63 +15,53 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const services = [
   {
     id: "1",
-    image: require("../../assets/homeAssets/hairstlye-salon-1.png"),
+    image: require("../../assets/Assets/hair.jpg"),
     name: "Hair Styling",
   },
   {
     id: "2",
-    image: require("../../assets/homeAssets/makeup-3.png"),
+    image: require("../../assets/Assets/makeup2.jpg"),
     name: "Makeup",
   },
   {
     id: "3",
-    image: require("../../assets/homeAssets/dress-1.png"),
+    image: require("../../assets/Assets/tailor1.jpg"),
     name: "Tailoring",
   },
   {
     id: "4",
-    image: require("../../assets/homeAssets/nail-polish-1.png"),
+    image: require("../../assets/Assets/nails.jpg"),
     name: "Manicures",
   },
   {
     id: "5",
-    image: require("../../assets/homeAssets/skincare-cream-4.png"),
+    image: require("../../assets/Assets/skin.jpg"),
     name: "Skincare",
   },
   {
     id: "6",
-    image: require("../../assets/homeAssets/tableware.png"),
+    image: require("../../assets/Assets/food.jpg"),
     name: "Nutrition",
   },
   {
     id: "7",
-    image: require("../../assets/homeAssets/diamon-hands-1.png"),
+    image: require("../../assets/Assets/jewel.jpg"),
     name: "Jewelry",
   },
   {
     id: "8",
-    image: require("../../assets/homeAssets/work-calendar.png"),
-    name: "Event planning",
+    image: require("../../assets/Assets/Miscellaneous.jpg"),
+    name: "Miscellaneous",
   },
   {
     id: "9",
-    image: require("../../assets/homeAssets/celebration-cake-4.png"),
+    image: require("../../assets/Assets/cake.jpg"),
     name: "Baking",
   },
   {
-    id: "10",
-    image: require("../../assets/homeAssets/drumbell-fitness-1.png"),
-    name: "Health & Fitness",
-  },
-  {
     id: "11",
-    image: require("../../assets/homeAssets/scissors-2.png"),
+    image: require("../../assets/Assets/handmade.jpg"),
     name: "Handmade",
-  },
-  {
-    id: "12",
-    image: require("../../assets/homeAssets/trolley.png"),
-    name: "Babies & kids",
   },
 ];
 
@@ -143,7 +133,8 @@ const styles = StyleSheet.create({
   },
   text: {
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: 18,
+    marginVertical:10
   },
   SearchContainer: {
     flexDirection: "row",

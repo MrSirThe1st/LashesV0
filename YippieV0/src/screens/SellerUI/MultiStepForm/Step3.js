@@ -47,24 +47,16 @@ const data = [
     label: "Jewelry",
   },
   {
-    value: "Event planning",
-    label: "Event planning",
+    value: "Miscellaneous",
+    label: "Miscellaneous",
   },
   {
     value: "Baking",
     label: "Baking",
   },
   {
-    value: "Health & Fitness",
-    label: "Health & Fitness",
-  },
-  {
     value: "Handmade",
     label: "Handmade",
-  },
-  {
-    value: "Babies & kids",
-    label: "Babies & kids",
   },
 ];
 
@@ -75,7 +67,7 @@ const Step3 = ({ navigation, route }) => {
   const [brief, setBrief] = useState("");
   const [overview, setOverview] = useState("");
   const [category, setCategory] = useState("");
-  const [website, setWebsite] = useState("");
+  const [Userwebsite, setUserwebsite] = useState("");
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -95,12 +87,12 @@ const Step3 = ({ navigation, route }) => {
       s.overview = data.overview;
       s.brief = data.brief;
       s.category = data.category;
-      s.website = data.website;
+      s.Userwebsite = data.Userwebsite;
     });
     console.log("overview:", overview);
     console.log("brief:", brief);
     console.log("category:", category);
-    console.log("website:", website);
+    console.log("website:", Userwebsite);
     navigation.navigate("Step4", { role: "seller" });
   };
 
@@ -219,26 +211,26 @@ const Step3 = ({ navigation, route }) => {
                       <TextInput
                         autoCorrect={false}
                         onChangeText={(text) => {
-                          setWebsite(text);
+                          setUserwebsite(text);
                           onChange(text);
                         }}
                         placeholder="www.Lashes.com"
                         placeholderTextColor="#6b7280"
                         style={styles.inputControl}
-                        value={website}
+                        value={Userwebsite}
                         autoCapitalize="none"
                         onBlur={onBlur}
                       />
                     </View>
                   )}
-                  name="website"
+                  name="Userwebsite"
                 />
               </View>
 
               <View style={{ alignItems: "center", justifyContent: "center" }}>
                 <Text style={styles.title}>
                   Give us a small{" "}
-                  <Text style={{ color: "#1e90ff" }}>descripstion</Text> of your
+                  <Text style={{ color: "#1e90ff" }}>description</Text> of your
                   business below
                 </Text>
               </View>

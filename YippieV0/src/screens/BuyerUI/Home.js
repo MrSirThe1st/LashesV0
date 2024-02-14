@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  StatusBar,
-} from "react-native";
+import { View, StyleSheet, Image, StatusBar, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CardLists from "../../componets/CardLists";
 import { FIRESTORE_DB } from "../../config/firebase";
@@ -18,7 +13,6 @@ import {
 } from "firebase/firestore";
 import Geocoder from "react-native-geocoding";
 import SkeletonHome from "../../componets/SkeletonHome";
-
 
 const YourLogoComponent = () => (
   <Image
@@ -35,40 +29,41 @@ export default function Home({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [initialLoading, setInitialLoading] = useState(true);
   const [user, setUser] = useState(null);
-  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         const currentUserCoordinates = await getCurrentUserCoordinates();
+        const currentUser = FIREBASE_AUTH.currentUser;
+        const userId = currentUser.uid;
 
         const sellersSnapshot = await getDocs(
-          query(
-            collection(FIRESTORE_DB, "users"),
-            where("role", "==", "seller")
-          )
+          collection(FIRESTORE_DB, "users")
         );
 
         const updatedSellers = [];
 
         for (const doc of sellersSnapshot.docs) {
           const sellerData = doc.data();
-          const coordinates = await extractCoordinatesFromAddress(
-            sellerData.address
-          );
 
-          if (coordinates) {
-            const distance = haversine(currentUserCoordinates, coordinates);
-        
+          // Exclude the current user's data
+          if (sellerData.uid !== userId && sellerData.role === "seller") {
+            const coordinates = await extractCoordinatesFromAddress(
+              sellerData.address
+            );
 
-            updatedSellers.push({
-              ...sellerData,
-              id: doc.id,
-              distance,
-            });
-          } else {
-            console.error("Invalid seller coordinates.");
+            if (coordinates) {
+              const distance = haversine(currentUserCoordinates, coordinates);
+
+              updatedSellers.push({
+                ...sellerData,
+                id: doc.id,
+                distance,
+              });
+            } else {
+              console.error("Invalid seller coordinates.");
+            }
           }
         }
 
@@ -76,7 +71,7 @@ export default function Home({ navigation }) {
 
         setSellerData(updatedSellers);
       } catch (error) {
-   
+        console.error("Error fetching seller data: ", error);
       } finally {
         setLoading(false);
         if (initialLoading) {
@@ -110,19 +105,24 @@ export default function Home({ navigation }) {
 
       querySnapshot.forEach((doc) => {
         const userData = doc.data();
-        currentUserCoordinates = extractCoordinatesFromAddress(userData.address);
+        currentUserCoordinates = extractCoordinatesFromAddress(
+          userData.address
+        );
       });
 
       if (currentUserCoordinates) {
-     
         return currentUserCoordinates;
       } else {
-    
         throw new Error("Invalid current user coordinates");
       }
     } catch (error) {
       console.error("Error fetching user coordinates: ", error);
-      throw error; 
+      Alert.alert(
+        "Error",
+        "Check your internet connection or try again later",
+        [{ text: "OK" }]
+      );
+      throw error;
     }
   }
 
@@ -140,29 +140,28 @@ export default function Home({ navigation }) {
     }
   }
 
-function haversine(coord1, coord2) {
-  const R = 6371; // Radius of the Earth in kilometers
-  const dLat = deg2rad(coord2.latitude - coord1.latitude);
-  const dLon = deg2rad(coord2.longitude - coord1.longitude);
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(deg2rad(coord1.latitude)) *
-      Math.cos(deg2rad(coord2.latitude)) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = R * c; // Distance in kilometers
-  return distance;
-}
+  function haversine(coord1, coord2) {
+    const R = 6371; // Radius of the Earth in kilometers
+    const dLat = deg2rad(coord2.latitude - coord1.latitude);
+    const dLon = deg2rad(coord2.longitude - coord1.longitude);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(coord1.latitude)) *
+        Math.cos(deg2rad(coord2.latitude)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in kilometers
+    return distance;
+  }
 
-function deg2rad(deg) {
-  return deg * (Math.PI / 180);
-}
+  function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+  }
 
-
-if (initialLoading) {
-  return <SkeletonHome />;
-}
+  if (initialLoading) {
+    return <SkeletonHome />;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />

@@ -279,7 +279,7 @@ export default function AccountInfo1() {
             {isWebsiteAvailable && (
               <View style={styles.Websitebtn}>
                 <FontAwesome name="globe" size={18} color="#1e90ff" />
-                <Text>{seller.website}</Text>
+                <Text>{seller.Userwebsite}</Text>
               </View>
             )}
             {isWhatsappAvailable && (

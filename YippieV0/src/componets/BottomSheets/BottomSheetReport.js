@@ -5,22 +5,48 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Button,
 } from "react-native";
 import { MyButton } from "./MyButton";
 import BottomSheet from "@gorhom/bottom-sheet";
+import { Alert } from "react-native";
+import * as Clipboard from "expo-clipboard";
+import { Feather } from "@expo/vector-icons";
 
 export function BottomSheetReport({
   showBottomSheetReport,
   setShowBottomSheetReport,
 }) {
   const bottomSheetRef = useRef(null);
-  const snapPoints = ["30%", "60%"];
+  const snapPoints = ["28%"];
   const [currentIndex, setCurrentIndex] = useState(-1);
+
+  const emailToCopy = "Lashes_App@outlook.com";
+  const [copiedText, setCopiedText] = useState("");
 
   const handleSheetChanges = useCallback((index) => {
     setShowBottomSheetReport(index > -1);
     setCurrentIndex(index);
   }, []);
+
+  const copyEmailToClipboard = async () => {
+    try {
+      await Clipboard.setStringAsync(emailToCopy);
+      setCopiedText(emailToCopy);
+      Alert.alert("Copied", "we cannot wait to hear from you");
+    } catch (error) {
+      console.error("Error copying to clipboard:", error);
+    }
+  };
+
+  const fetchCopiedText = async () => {
+    try {
+      const text = await Clipboard.getStringAsync();
+      setCopiedText(text);
+    } catch (error) {
+      console.error("Error fetching from clipboard:", error);
+    }
+  };
 
   useEffect(() => {
     if (showBottomSheetReport) {
@@ -40,46 +66,51 @@ export function BottomSheetReport({
       onChange={handleSheetChanges}
     >
       <View style={styles.contentContainer}>
-        <Text style={styles.popupText}>Awesome! 🎉</Text>
-
-        {/* <View style={styles.btnWrap}>
-          <MyButton
-            onPress={() => {
-              if (currentIndex === 1) {
-                bottomSheetRef.current?.snapToIndex(0);
-              } else {
-                bottomSheetRef.current?.snapToIndex(1);
-              }
-            }}
-            title={`Animate To ${currentIndex === 1 ? "30%" : "60%"}`}
-          />
-        </View> */}
+        <View style={{ margin: 15 }}>
+          <Text style={{ fontSize: 16, fontWeight: "500", color: "grey" }}>
+            copy the link to report a bug or share an idea
+          </Text>
+        </View>
+        <View style={styles.content}>
+          <Text style={styles.emailText}>{emailToCopy}</Text>
+          <TouchableOpacity
+            onPress={copyEmailToClipboard}
+            style={styles.Button}
+          >
+            <Feather name="copy" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
       </View>
     </BottomSheet>
   );
 }
 
 const styles = StyleSheet.create({
-  btnWrap: {
-    padding: 12,
-  },
   contentContainer: {
-    marginTop: 24,
     flex: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
-  shadow: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.78,
-    shadowRadius: 12,
-    elevation: 24,
+  emailText: {
+    padding: 10,
+    fontWeight: "bold",
+    fontSize: 16,
+    color: "#1e90ff",
   },
-  popupText: {
-    fontSize: 44,
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fafdff",
+    elevation: 1,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+  },
+  Button: {
+    backgroundColor: "#1e90ff",
+    padding: 8,
+    borderRadius: 12,
   },
 });
 

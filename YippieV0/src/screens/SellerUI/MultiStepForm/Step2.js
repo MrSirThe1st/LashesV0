@@ -49,10 +49,6 @@ const Step2 = ({ navigation, route }) => {
       s.address = data.address;
     });
 
-    console.log("Country:", data.country);
-    console.log("City:", data.city);
-    console.log("Addressss:", data.address);
-
     navigation.navigate("Step3", { role: "seller" });
   };
 
@@ -75,178 +71,177 @@ const Step2 = ({ navigation, route }) => {
       keyboardDidHideListener.remove();
     };
   }, []);
+
   return (
-    <KeyboardAwareScrollView contentContainerStyle={styles.scrollContainer}>
-      <SafeAreaView style={styles.container}>
-        <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="#1e90ff" barStyle="light-content" />
 
-        <View
-          style={{
-            alignItems: "center",
-            justifyContent: "center",
-            marginBottom: 10,
-          }}
-        >
-          <Text style={styles.title}>
-            Let's Take Your <Text style={{ color: "#1e90ff" }}> Location </Text>
-          </Text>
-        </View>
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 10,
+        }}
+      >
+        <Text style={styles.title}>
+          Let's Take Your <Text style={{ color: "#1e90ff" }}> Location </Text>
+        </Text>
+      </View>
 
-        <View>
-          <View style={styles.formEntry}>
-            <Controller
-              control={control}
-              rules={{
-                required: true,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>Country</Text>
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setCountry(text);
-                      onChange(text);
-                    }}
-                    placeholder="Enter your country"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    value={country}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="country"
-            />
-            {errors.country && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                This is a required field.
-              </Text>
+      <View>
+        <View style={styles.formEntry}>
+          <Controller
+            control={control}
+            rules={{
+              required: true,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>Country</Text>
+                <TextInput
+                  autoCorrect={false}
+                  onChangeText={(text) => {
+                    setCountry(text);
+                    onChange(text);
+                  }}
+                  placeholder="Enter your country"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  value={country}
+                  autoCapitalize="none"
+                  onBlur={onBlur}
+                />
+              </View>
             )}
-          </View>
-        </View>
-
-        <View>
-          <View style={styles.formEntry}>
-            <Controller
-              control={control}
-              rules={{
-                required: false,
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View style={styles.input}>
-                  <Text style={styles.inputLabel}>City</Text>
-                  <TextInput
-                    autoCorrect={false}
-                    onChangeText={(text) => {
-                      setCity(text);
-                      onChange(text);
-                    }}
-                    placeholder="Enter your city"
-                    placeholderTextColor="#6b7280"
-                    style={styles.inputControl}
-                    value={city}
-                    autoCapitalize="none"
-                    onBlur={onBlur}
-                  />
-                </View>
-              )}
-              name="city"
-            />
-            {errors.city && (
-              <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-                This is a required field.
-              </Text>
-            )}
-          </View>
-        </View>
-        <Text style={styles.inputLabelA}>Address</Text>
-        <Controller
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { onChange} }) => (
-            <GooglePlacesAutocomplete
-              placeholder="Enter your address"
-              minLength={2}
-              autoFocus={false}
-              value={address}
-              onChangeText={(text) => {
-                setAddress(text);
-                onChange(text);
-              }}
-              returnKeyType="default"
-              fetchDetails={true}
-              isRowScrollable={true}
-              enablePoweredByContainer={false}
-              onPress={(data, details = null) => {
-                setAddress(data.description);
-                onChange(data.description);
-              }}
-              query={{
-                key: APY_KEY,
-                language: "en",
-                types: "address",
-              }}
-              styles={{
-                textInputContainer: {
-                  fontSize: 17,
-                  fontWeight: "600",
-                  color: "#222",
-                  marginBottom: 8,
-                },
-                textInput: {
-                  height: 44,
-                  backgroundColor: "#fff",
-                  paddingHorizontal: 16,
-                  borderRadius: 12,
-                  fontSize: 15,
-                  fontWeight: "500",
-                  color: "#222",
-                  borderWidth: 2,
-                  borderColor: "#6fbfff",
-                  marginHorizontal: 8,
-                  marginVertical: 4,
-                },
-                predefinedPlacesDescription: {
-                  color: "#1faadb",
-                },
-              }}
-            />
-          )}
-          name="address"
-        />
-        {errors.address && (
+            name="country"
+          />
+          {errors.country && (
             <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
-              add your addres before continuing.
+              This is a required field.
             </Text>
           )}
-        <View
-          style={[
-            styles.BottomContainer,
-            keyboardHeight > 0 && { opacity: 0 }, // Set opacity to 0 when the keyboard is up
-          ]}
-        >
-          <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
-            activeOpacity={1}
-            style={{
-              backgroundColor: "#1e90ff",
-              padding: 10,
-              borderRadius: 5,
-              fontSize: 18,
-              fontWeight: "bold",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Text style={{ color: "white" }}>Next step</Text>
-          </TouchableOpacity>
         </View>
-      </SafeAreaView>
-    </KeyboardAwareScrollView>
+      </View>
+
+      <View>
+        <View style={styles.formEntry}>
+          <Controller
+            control={control}
+            rules={{
+              required: false,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View style={styles.input}>
+                <Text style={styles.inputLabel}>City</Text>
+                <TextInput
+                  autoCorrect={false}
+                  onChangeText={(text) => {
+                    setCity(text);
+                    onChange(text);
+                  }}
+                  placeholder="Enter your city"
+                  placeholderTextColor="#6b7280"
+                  style={styles.inputControl}
+                  value={city}
+                  autoCapitalize="none"
+                  onBlur={onBlur}
+                />
+              </View>
+            )}
+            name="city"
+          />
+          {errors.city && (
+            <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+              This is a required field.
+            </Text>
+          )}
+        </View>
+      </View>
+      <Text style={styles.inputLabelA}>Address</Text>
+      <Controller
+        control={control}
+        rules={{
+          required: true,
+        }}
+        render={({ field: { onChange } }) => (
+          <GooglePlacesAutocomplete
+            placeholder="Enter your address"
+            minLength={2}
+            autoFocus={false}
+            value={address}
+            onChangeText={(text) => {
+              setAddress(text);
+              onChange(text);
+            }}
+            returnKeyType="default"
+            fetchDetails={true}
+            isRowScrollable={true}
+            enablePoweredByContainer={false}
+            onPress={(data, details = null) => {
+              setAddress(data.description);
+              onChange(data.description);
+            }}
+            query={{
+              key: APY_KEY,
+              language: "en",
+              types: "address",
+            }}
+            styles={{
+              textInputContainer: {
+                fontSize: 17,
+                fontWeight: "600",
+                color: "#222",
+                marginBottom: 8,
+              },
+              textInput: {
+                height: 44,
+                backgroundColor: "#fff",
+                paddingHorizontal: 16,
+                borderRadius: 12,
+                fontSize: 15,
+                fontWeight: "500",
+                color: "#222",
+                borderWidth: 2,
+                borderColor: "#6fbfff",
+                marginHorizontal: 8,
+                marginVertical: 4,
+              },
+              predefinedPlacesDescription: {
+                color: "#1faadb",
+              },
+            }}
+          />
+        )}
+        name="address"
+      />
+      {errors.address && (
+        <Text style={{ margin: 8, marginLeft: 16, color: "red" }}>
+          add your addres before continuing.
+        </Text>
+      )}
+      <View
+        style={[
+          styles.BottomContainer,
+          keyboardHeight > 0 && { opacity: 0 }, // Set opacity to 0 when the keyboard is up
+        ]}
+      >
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          activeOpacity={1}
+          style={{
+            backgroundColor: "#1e90ff",
+            padding: 10,
+            borderRadius: 5,
+            fontSize: 18,
+            fontWeight: "bold",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "white" }}>Next step</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 };
 

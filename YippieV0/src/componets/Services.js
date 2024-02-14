@@ -16,63 +16,53 @@ const Services = ({ navigation }) => {
   const services = [
     {
       id: "0",
-      image: require("../assets/homeAssets/hair1.jpg"),
+      image: require("../assets/Assets/hair.jpg"),
       name: "Hair Styling",
     },
     {
       id: "1",
-      image: require("../assets/homeAssets/makeup.jpg"),
+      image: require("../assets/Assets/makeup2.jpg"),
       name: "Makeup",
     },
     {
       id: "2",
-      image: require("../assets/homeAssets/tailor.jpg"),
+      image: require("../assets/Assets/tailor1.jpg"),
       name: "Tailoring",
     },
     {
       id: "3",
-      image: require("../assets/homeAssets/manicure.jpg"),
+      image: require("../assets/Assets/nails.jpg"),
       name: "Manicures",
     },
     {
       id: "4",
-      image: require("../assets/homeAssets/skincare1.jpg"),
+      image: require("../assets/Assets/skin.jpg"),
       name: "Skincare",
     },
     {
       id: "5",
-      image: require("../assets/homeAssets/food.jpg"),
+      image: require("../assets/Assets/food.jpg"),
       name: "Nutrition",
     },
     {
       id: "6",
-      image: require("../assets/homeAssets/jewel.jpg"),
+      image: require("../assets/Assets/jewel.jpg"),
       name: "Jewelry",
     },
     {
       id: "7",
-      image: require("../assets/homeAssets/event.jpg"),
-      name: "Event planning",
+      image: require("../assets/Assets/Miscellaneous.jpg"),
+      name: "Miscellaneous",
     },
     {
       id: "8",
-      image: require("../assets/homeAssets/cake.jpg"),
+      image: require("../assets/Assets/cake.jpg"),
       name: "Baking",
     },
     {
-      id: "9",
-      image: require("../assets/homeAssets/fitness.jpg"),
-      name: "Health & Fitness",
-    },
-    {
       id: "10",
-      image: require("../assets/homeAssets/hand.jpg"),
+      image: require("../assets/Assets/handmade.jpg"),
       name: "Handmade",
-    },
-    {
-      id: "11",
-      image: require("../assets/homeAssets/trolley.png"),
-      name: "Babies",
     },
   ];
   const windowWidth = Dimensions.get("window").width;

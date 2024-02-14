@@ -14,7 +14,7 @@ export const WizardStore = new Store({
   category: null,
   brief: "",
   address: "",
-  website:"",
+  Userwebsite:"",
 });
 
 registerInDevtools({

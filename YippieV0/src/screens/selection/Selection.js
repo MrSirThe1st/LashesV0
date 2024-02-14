@@ -27,9 +27,9 @@ const Selection = ({ navigation }) => {
         style={styles.backgroundVideo}
         resizeMode="cover"
         shouldPlay
-        isLooping
         volume={1.0}
-        isMuted={false}
+        isMuted={true}
+        isLooping
       />
       <StatusBar style="dark" />
       <View style={styles.upperContainer}>

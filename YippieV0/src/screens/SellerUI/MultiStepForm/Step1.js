@@ -94,7 +94,7 @@ const Step1 = ({ navigation, route }) => {
                         setUsername(text);
                         onChange(text);
                       }}
-                      placeholder="john"
+                      placeholder="username"
                       placeholderTextColor="#6b7280"
                       style={styles.inputControl}
                       value={username}
@@ -131,7 +131,7 @@ const Step1 = ({ navigation, route }) => {
                         setEmail(text);
                         onChange(text);
                       }}
-                      placeholder="john@example.com"
+                      placeholder="email address"
                       placeholderTextColor="#6b7280"
                       style={styles.inputControl}
                       value={email}
