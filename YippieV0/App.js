@@ -5,7 +5,6 @@ import { LogBox } from "react-native";
 import Navigation from "./src/Navigation/Navigation";
 import { ChatProvider } from "./src/chat/context";
 
-
 LogBox.ignoreLogs([
   "VirtualizedLists should never be nested inside plain ScrollViews",
 ]);
@@ -14,7 +13,6 @@ LogBox.ignoreLogs([
 Geocoding.init("AIzaSyDZ_unBvP3bbZljXfJOVDMDnQG6Onwa4kM");
 
 export default function App() {
- 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Navigation />
